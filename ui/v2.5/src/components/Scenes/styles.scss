@@ -1,8 +1,7 @@
 .card-popovers {
   display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  margin-bottom: 10px;
+    justify-content: center;
+  margin-bottom: 0px;
 
   .btn {
     padding-bottom: 3px;
@@ -10,19 +9,36 @@
   }
 
   .fa-icon {
-    margin-right: 7px;
+    margin-right: .4rem;
   }
 }
-
+.tags-dialog {
+  padding-right: 0!important;
+  display: flex!important;
+  justify-content: center!important;
+}
+.tags-dialog>* {
+  width: 900px;
+  max-width: 90vw;
+  display: flex;
+}
 .video-section {
   position: relative;
 }
-
-.card-section {
-  margin-bottom: 0;
-  padding: 0.5rem 1rem 0 1rem;
+a:visited {
+  color: inherit;
 }
-
+.card-section {
+height: -webkit-fill-available;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  margin-bottom: 0;
+  padding: 0 .75rem 0 .75rem;
+}
+.TruncatedText {
+  -webkit-line-clamp: 1!important;
+}
 .performer-tag-container,
 .movie-tag-container {
   display: inline-block;
@@ -118,7 +134,8 @@ textarea.scene-description {
 
 .scene-specs-overlay,
 .scene-interactive-speed-overlay {
-  bottom: 1rem;
+  top: 0.3rem;
+  height: 10%;
   color: $text-color;
   display: block;
   font-weight: 400;
@@ -134,6 +151,33 @@ textarea.scene-description {
 
 .scene-interactive-speed-overlay {
   left: 0.7rem;
+}
+
+.scene-studio-overlay {
+  display: block;
+  font-weight: 400;
+  height: 10%;
+  max-width: 75%;
+  opacity: 0.75;
+  position: absolute;
+  right: 0.7rem;
+  bottom: 1rem;
+  z-index: auto;
+
+  .image-thumbnail {
+    height: 50px;
+    object-fit: contain;
+    width: 100%;
+  }
+
+  a {
+    color: $text-color;
+    display: inline-block;
+    letter-spacing: -0.03rem;
+    text-align: right;
+    text-decoration: none;
+    text-shadow: 0 0 3px #000;
+  }
 }
 
 .extra-scene-info {
@@ -193,8 +237,16 @@ textarea.scene-description {
 
   &:hover,
   &:active {
-    .scene-specs-overlay {
+    .scene-specs-overlay,
+    .rating-banner,
+    .scene-studio-overlay {
       opacity: 0;
+      transition: opacity 0.5s;
+    }
+
+    .scene-studio-overlay:hover,
+    .scene-studio-overlay:active {
+      opacity: 0.75;
       transition: opacity 0.5s;
     }
 
@@ -209,7 +261,40 @@ textarea.scene-description {
     }
   }
 }
+.perfname-list .comma-list li span::after {
+  content: ", ";
+}
+.perfname-list .comma-list li:last-child span::after {
+  content: "";
+}
+.perfname-list:hover .comma-list.overflowable {
+  max-height: unset!important;
+}
 
+.perfname-list:hover {
+  position: absolute;
+  display: block;
+  z-index: 100;
+  background: #30404d;
+  margin-right: unset!important;
+  border-bottom-right-radius: 0.75rem;
+  border-bottom-left-radius: 0.75rem;
+}
+.perfname-list:hover .comma-list.overflowable {
+  padding-bottom: .3rem!important;
+}
+.perfname-list:hover li span {
+  display: inline!important;
+}
+.scene-card.card:hover {
+  overflow: visible!important;
+}
+.perfname-list {
+  margin-left: -.75rem;
+  margin-right: -.75rem;
+  padding-left: .75rem;
+  padding-right: .75rem;
+}
 .scene-card.card {
   overflow: hidden;
   padding: 0;
@@ -459,8 +544,10 @@ input[type="range"].blue-slider {
 
 @media (min-width: 1200px), (max-width: 575px) {
   .performer-card .fi {
-    height: 1.33rem;
+    height: 2rem;
     width: 2rem;
+border-radius: 999px;
+    background-size: cover;
   }
 
   .scene-performers {
