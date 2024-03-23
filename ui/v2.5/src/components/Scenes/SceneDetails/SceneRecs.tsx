@@ -222,7 +222,7 @@ export const SceneRecs: React.FC<IProps> = ({
                 }
                 {scene.performers.length != 0 ? 
                     <Button 
-                    className={`${isPerformers ? "" : "btn-secondary"}mr-2`}
+                    className={`${isPerformers ? "" : "btn-secondary"} mr-2`}
                     onClick={() => {
                         setIsStudio(false)
                         setIsAll(false)
