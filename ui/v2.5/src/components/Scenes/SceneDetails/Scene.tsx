@@ -74,6 +74,8 @@ const SceneVideoFilterPanel = lazyComponent(
   () => import("./SceneVideoFilterPanel")
 );
 import { objectPath, objectTitle } from "src/core/files";
+import { SceneRecs } from "./SceneRecs";
+
 
 interface IProps {
   scene: GQL.SceneDataFragment;
@@ -350,7 +352,6 @@ const ScenePage: React.FC<IProps> = ({
       </Dropdown.Menu>
     </Dropdown>
   );
-
   const renderTabs = () => (
     <Tab.Container
       activeKey={activeTabKey}
@@ -449,20 +450,35 @@ const ScenePage: React.FC<IProps> = ({
           <SceneDetailPanel scene={scene} />
         </Tab.Pane>
         <Tab.Pane eventKey="scene-queue-panel">
-          <QueueViewer
-            scenes={queueScenes}
-            currentID={scene.id}
-            continue={continuePlaylist}
-            setContinue={setContinuePlaylist}
-            onSceneClicked={onQueueSceneClicked}
-            onNext={onQueueNext}
-            onPrevious={onQueuePrevious}
-            onRandom={onQueueRandom}
-            start={queueStart}
-            hasMoreScenes={queueHasMoreScenes}
-            onLessScenes={onQueueLessScenes}
-            onMoreScenes={onQueueMoreScenes}
-          />
+          <div 
+            style={{
+            width: "100%",
+            height: "100%",
+            overflow: "scroll"
+            }}
+            className="side-bar"
+          >
+            <SceneRecs 
+            queueObj={
+              <QueueViewer
+              scenes={queueScenes}
+              currentID={scene.id}
+              continue={continuePlaylist}
+              setContinue={setContinuePlaylist}
+              onSceneClicked={onQueueSceneClicked}
+              onNext={onQueueNext}
+              onPrevious={onQueuePrevious}
+              onRandom={onQueueRandom}
+              start={queueStart}
+              hasMoreScenes={queueHasMoreScenes}
+              onLessScenes={onQueueLessScenes}
+              onMoreScenes={onQueueMoreScenes}
+              />
+            }
+            key={Math.random()}
+            scene={scene}
+            />
+          </div>
         </Tab.Pane>
         <Tab.Pane eventKey="scene-markers-panel">
           <SceneMarkersPanel
