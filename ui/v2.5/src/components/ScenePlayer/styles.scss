@@ -24,20 +24,19 @@ $sceneTabWidth: 450px;
 }
 
 .video-wrapper {
-  height: 56.25vw;
-  overflow: hidden;
+  height: 56.25%;
   position: relative;
   width: 100%;
-
-  @media (min-width: 1200px) {
-    height: 100%;
-  }
+  // scale:95%;
 }
 
 .video-js {
+  // scale:95%;
   height: 100%;
   position: absolute;
   width: 100%;
+  top:0;
+  left:0;
 
   .vjs-button {
     outline: none;
