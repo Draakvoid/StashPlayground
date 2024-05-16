@@ -551,31 +551,40 @@ $sceneTabWidth: 450px;
     }
   }
 
-  .scene-divider {
-    flex: 0 0 15px;
-    max-width: 15px;
+  Copy code
+.scene-divider {
+  flex: 0 0 15px;
+  max-width: 15px;
+  background: linear-gradient(to bottom, black, transparent); /* Gradient black bar */
+  position: relative;
+}
 
-    button {
-      background-color: transparent;
-      border: 0;
-      color: $link-color;
-      cursor: pointer;
-      font-size: 10px;
-      font-weight: 800;
-      height: 100%;
-      line-height: 100%;
-      padding: 0;
-      text-align: center;
-      width: 100%;
+.scene-divider button {
+  background-color: transparent;
+  border: 0;
+  color: $link-color;
+  cursor: pointer;
+  font-size: 10px;
+  font-weight: 800;
+  height: 100%;
+  line-height: 100%;
+  padding: 0;
+  text-align: center;
+  width: 100%;
+  position: relative;
+}
 
-      &:active:not(:hover),
-      &:focus:not(:hover) {
-        background-color: transparent;
-        border: 0;
-        box-shadow: none;
-      }
-    }
-  }
+.arrow-icon {
+  display: inline-block;
+  color: rgb(197, 190, 190);
+  opacity: 0; /* Initially hidden */
+  transition: opacity 0.3s ease;
+}
+
+.scene-divider button:hover .arrow-icon {
+  opacity: 1; /* Visible on hover */
+}
+  
 
   .scene-player-container {
     flex: 0 0 calc(100% - #{$sceneTabWidth} - 15px);

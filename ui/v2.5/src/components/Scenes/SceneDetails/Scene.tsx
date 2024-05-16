@@ -555,7 +555,7 @@ const ScenePage: React.FC<IProps> = ({
       </div>
       <div className="scene-divider d-none d-xl-block">
         <Button onClick={() => setCollapsed(!collapsed)}>
-          <Icon className="fa-fw" icon={getCollapseButtonIcon()} />
+        <span className="arrow-icon">{collapsed ? '◄' : '►'}</span>
         </Button>
       </div>
       <SubmitStashBoxDraft
