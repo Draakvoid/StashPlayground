@@ -3,9 +3,9 @@ import { FormattedMessage, useIntl } from "react-intl";
 import * as GQL from "src/core/generated-graphql";
 import TextUtils from "src/utils/text";
 import { TagLink } from "src/components/Shared/TagLink";
-import { PerformerCard } from "src/components/Performers/PerformerCard";
 import { sortPerformers } from "src/core/performers";
 import { DirectorLink } from "src/components/Shared/Link";
+import { PerformerCardAlt } from "src/components/Performers/PerformerCardAlt";
 
 interface ISceneDetailProps {
   scene: GQL.SceneDataFragment;
@@ -48,7 +48,7 @@ export const SceneDetailPanel: React.FC<ISceneDetailProps> = (props) => {
     if (props.scene.performers.length === 0) return;
     const performers = sortPerformers(props.scene.performers);
     const cards = performers.map((performer) => (
-      <PerformerCard
+      <PerformerCardAlt
         key={performer.id}
         performer={performer}
         ageFromDate={props.scene.date ?? undefined}
