@@ -37,6 +37,7 @@ import ScreenUtils from "src/utils/screen";
 import { PatchComponent } from "src/patch";
 import { TagDialog } from "./TagDialog";
 import { MarkerDialog } from "./MarkerDialog";
+import { StudioOverlay } from "../Shared/GridCard/StudioOverlay";
 interface IScenePreviewProps {
   isPortrait: boolean;
   image?: string;
@@ -304,11 +305,13 @@ const SceneCardPopovers = PatchComponent(
         return (
           <>
             <hr />
-            <ButtonGroup className="card-popovers" style={{
-              position: "absolute",
-              right: 0,
-              bottom: 10.5
-            }}>
+            <ButtonGroup className="card-popovers" 
+            // style={{
+            //   position: "absolute",
+            //   right: 0,
+            //   bottom: 10.5
+            // }}
+            >
               {maybeRenderTagPopoverButton()}
               {maybeRenderPerformerPopoverButton()}
               {maybeRenderMoviePopoverButton()}
@@ -330,44 +333,7 @@ const SceneCardPopovers = PatchComponent(
 const SceneCardOverlays = PatchComponent(
   "SceneCard.Overlays",
   (props: ISceneCardProps) => {
-    const { configuration } = React.useContext(ConfigurationContext);
-
-    function renderStudioThumbnail() {
-      const studioImage = props.scene.studio?.image_path;
-      const studioName = props.scene.studio?.name;
-
-      if (configuration?.interface.showStudioAsText || !studioImage) {
-        return studioName;
-      }
-
-      const studioImageURL = new URL(studioImage);
-      if (studioImageURL.searchParams.get("default") === "true") {
-        return studioName;
-      }
-
-      return (
-        <img
-          className="image-thumbnail"
-          loading="lazy"
-          alt={studioName}
-          src={studioImage}
-        />
-      );
-    }
-
-    function maybeRenderSceneStudioOverlay() {
-      if (!props.scene.studio) return;
-
-      return (
-        <div className="scene-studio-overlay">
-          <Link to={`/studios/${props.scene.studio.id}`}>
-            {renderStudioThumbnail()}
-          </Link>
-        </div>
-      );
-    }
-
-    return <>{maybeRenderSceneStudioOverlay()}</>;
+    return <StudioOverlay studio={props.scene.studio} />;
   }
 );
 
@@ -601,7 +567,11 @@ export const SceneCard = PatchComponent(
             justifyContent: "flex-end",
             height: "100%"
             }}>
-          <span className="scene-card__date">{props.scene.date}</span>
+          <div className="d-flex">
+            <span className="scene-card__date">{props.scene.date}</span>
+            <div className="flex-grow-1"></div>
+            <SceneCardPopovers {...props} />
+          </div>
           {maybeRenderStudioString()}
           <span className="file-path extra-scene-info">
           {objectPath(props.scene)}
@@ -609,12 +579,12 @@ export const SceneCard = PatchComponent(
           <TruncatedText
           className="scene-card__description"
           text={props.scene.details}
-          lineCount={3}     
+          lineCount={3}
           />
           </div>
         </div>
       }
-      popovers={<SceneCardPopovers {...props} />}
+      // popovers={<SceneCardPopovers {...props} />}
       selected={props.selected}
       selecting={props.selecting}
       onSelectedChanged={props.onSelectedChanged}
