@@ -12,6 +12,7 @@ import { Icon } from "src/components/Shared/Icon";
 import {
   faChevronRight,
   faChevronLeft,
+  faTimes
 } from "@fortawesome/free-solid-svg-icons";
 import { useSpriteInfo } from "src/hooks/sprite";
 
@@ -311,6 +312,13 @@ export const ScenePlayerScrubber: React.FC<IScenePlayerScrubberProps> = ({
     });
   }
 
+  function goHide() {
+    const slider = document.querySelector('.scrubber-wrapper') as HTMLElement;
+    if (slider) {
+      slider.style.display = 'none';
+    }
+  }
+
   return (
     <div className="scrubber-wrapper">
       <Button
@@ -345,6 +353,13 @@ export const ScenePlayerScrubber: React.FC<IScenePlayerScrubberProps> = ({
         onClick={() => goForward()}
       >
         <Icon className="fa-fw" icon={faChevronRight} />
+      </Button>
+      <Button
+        className="scrubber-button"
+        id="scrubber-hide"
+        onClick={goHide}
+      >
+        <Icon className="fa-fw" icon={faTimes} />
       </Button>
     </div>
   );
