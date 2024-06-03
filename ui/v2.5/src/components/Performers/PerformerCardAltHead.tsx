@@ -42,7 +42,7 @@ interface IPerformerCardProps {
   extraCriteria?: IPerformerCardExtraCriteria;
 }
 
-export const PerformerCardAlt2: React.FC<IPerformerCardProps> = ({
+export const PerformerCardAltHead: React.FC<IPerformerCardProps> = ({
   performer,
   containerWidth,
   ageFromDate,

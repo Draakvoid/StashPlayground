@@ -5,12 +5,10 @@ import TextUtils from "src/utils/text";
 import { TagLink } from "src/components/Shared/TagLink";
 import { sortPerformers } from "src/core/performers";
 import { DirectorLink } from "src/components/Shared/Link";
-import { PerformerCardAlt } from "src/components/Performers/PerformerCardAlt";
-import { PerformerCardAlt2 } from "src/components/Performers/PerformerCardAlt2";
+import { PerformerCardAltHead } from "src/components/Performers/PerformerCardAltHead"; // Import PerformerCardAltHead
 
 interface ISceneDetailProps {
   scene: GQL.SceneDataFragment;
-  useAlternateCard?: boolean;
 }
 
 const SceneDetailPanel: React.FC<ISceneDetailProps> = (props) => {
@@ -49,16 +47,13 @@ const SceneDetailPanel: React.FC<ISceneDetailProps> = (props) => {
   function renderPerformers() {
     if (props.scene.performers.length === 0) return;
     const performers = sortPerformers(props.scene.performers);
-    const cards = performers.map((performer) => {
-      const CardComponent = props.useAlternateCard ? PerformerCardAlt2 : PerformerCardAlt;
-      return (
-        <CardComponent
-          key={performer.id}
-          performer={performer}
-          ageFromDate={props.scene.date ?? undefined}
-        />
-      );
-    });
+    const cards = performers.map((performer) => (
+      <PerformerCardAltHead // Use PerformerCardAltHead directly
+        key={performer.id}
+        performer={performer}
+        ageFromDate={props.scene.date ?? undefined}
+      />
+    ));
 
     return (
       <>
@@ -92,7 +87,7 @@ const SceneDetailPanel: React.FC<ISceneDetailProps> = (props) => {
           {props.scene.code && (
             <h6>
               <FormattedMessage id="scene_code" />: {props.scene.code}{" "}
-            </h6>
+          </h6>
           )}
           {props.scene.director && (
             <h6>
