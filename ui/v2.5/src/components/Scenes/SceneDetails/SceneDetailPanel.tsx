@@ -6,12 +6,14 @@ import { TagLink } from "src/components/Shared/TagLink";
 import { sortPerformers } from "src/core/performers";
 import { DirectorLink } from "src/components/Shared/Link";
 import { PerformerCardAlt } from "src/components/Performers/PerformerCardAlt";
+import { PerformerCardAlt2 } from "src/components/Performers/PerformerCardAlt2";
 
 interface ISceneDetailProps {
   scene: GQL.SceneDataFragment;
+  useAlternateCard?: boolean;
 }
 
-export const SceneDetailPanel: React.FC<ISceneDetailProps> = (props) => {
+const SceneDetailPanel: React.FC<ISceneDetailProps> = (props) => {
   const intl = useIntl();
 
   function renderDetails() {
@@ -47,13 +49,16 @@ export const SceneDetailPanel: React.FC<ISceneDetailProps> = (props) => {
   function renderPerformers() {
     if (props.scene.performers.length === 0) return;
     const performers = sortPerformers(props.scene.performers);
-    const cards = performers.map((performer) => (
-      <PerformerCardAlt
-        key={performer.id}
-        performer={performer}
-        ageFromDate={props.scene.date ?? undefined}
-      />
-    ));
+    const cards = performers.map((performer) => {
+      const CardComponent = props.useAlternateCard ? PerformerCardAlt2 : PerformerCardAlt;
+      return (
+        <CardComponent
+          key={performer.id}
+          performer={performer}
+          ageFromDate={props.scene.date ?? undefined}
+        />
+      );
+    });
 
     return (
       <>
@@ -70,7 +75,6 @@ export const SceneDetailPanel: React.FC<ISceneDetailProps> = (props) => {
     );
   }
 
-  // filename should use entire row if there is no studio
   const sceneDetailsWidth = props.scene.studio ? "col-9" : "col-12";
 
   return (

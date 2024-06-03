@@ -42,7 +42,7 @@ interface IPerformerCardProps {
   extraCriteria?: IPerformerCardExtraCriteria;
 }
 
-export const PerformerCardAlt: React.FC<IPerformerCardProps> = ({
+export const PerformerCardAlt2: React.FC<IPerformerCardProps> = ({
   performer,
   containerWidth,
   ageFromDate,
@@ -244,7 +244,7 @@ export const PerformerCardAlt: React.FC<IPerformerCardProps> = ({
     }
   }
 
-  function maybeRenderAltImage() {
+  function maybeRenderAltImage2() {
     const {data} = GQL.useFindImagesQuery({variables: {
       image_filter: {
         performers: {
@@ -253,7 +253,7 @@ export const PerformerCardAlt: React.FC<IPerformerCardProps> = ({
         },
         tags: {
           modifier: GQL.CriterionModifier.Includes,
-          value: ["1"] // insert your alt image tag id # here ex: ["1736"]
+          value: ["3"] // insert your alt image tag id # here ex: ["1736"]
         }
       }
     }})
@@ -283,7 +283,7 @@ export const PerformerCardAlt: React.FC<IPerformerCardProps> = ({
             loading="lazy"
             className="performer-card-image"
             alt={performer.name ?? ""}
-            src={maybeRenderAltImage() ?? ""}
+            src={maybeRenderAltImage2() ?? ""}
           />
         </>
       }
