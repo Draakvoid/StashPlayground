@@ -33,7 +33,7 @@ import { ListFilterModel } from "src/models/list-filter/filter";
 import Mousetrap from "mousetrap";
 import { OrganizedButton } from "./OrganizedButton";
 import { ConfigurationContext } from "src/hooks/Config";
-import { getPlayerPosition } from "src/components/ScenePlayer/util";
+import { getPlayerPosition} from "src/components/ScenePlayer/util";
 import {
   faEllipsisV,
   faChevronRight,
@@ -50,12 +50,10 @@ import { useRatingKeybinds } from "src/hooks/keybinds";
 import { lazyComponent } from "src/utils/lazyComponent";
 import cx from "classnames";
 import { TruncatedText } from "src/components/Shared/TruncatedText";
+import ScenePlayer from "src/components/ScenePlayer/ScenePlayer";
 
 const SubmitStashBoxDraft = lazyComponent(
   () => import("src/components/Dialogs/SubmitDraft")
-);
-const ScenePlayer = lazyComponent(
-  () => import("src/components/ScenePlayer/ScenePlayer")
 );
 
 const GalleryViewer = lazyComponent(
@@ -100,7 +98,7 @@ const VideoFrameRateResolution: React.FC<{
     }
     return undefined;
   }, [width, height]);
-
+    
   const frameRateDisplay = useMemo(() => {
     if (frameRate) {
       return (
@@ -362,6 +360,13 @@ const ScenePage: React.FC<IProps> = ({
         <Icon icon={faEllipsisV} />
       </Dropdown.Toggle>
       <Dropdown.Menu className="bg-secondary text-white">
+      <Dropdown.Item
+          key="download"
+          className="bg-secondary text-white"
+          onClick={() => onRescan()}
+        >
+          <FormattedMessage id="actions.download" />
+        </Dropdown.Item>
         {!!scene.files.length && (
           <Dropdown.Item
             key="rescan"
@@ -946,6 +951,7 @@ const SceneLoader: React.FC<RouteComponentProps<ISceneParams>> = ({
           onComplete={onComplete}
           onNext={() => queueNext(true)}
           onPrevious={() => queuePrevious(true)}
+
         />
       </div>
     </div>

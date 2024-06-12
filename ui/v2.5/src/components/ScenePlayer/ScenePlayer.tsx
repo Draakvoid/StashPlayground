@@ -220,6 +220,20 @@ export const ScenePlayer: React.FC<IScenePlayerProps> = ({
   onNext,
   onPrevious,
 }) => {
+  
+  const handleDownload = () => {
+    const player = getPlayer();
+    if (player) {
+      const source = player.currentSrc();
+      const link = document.createElement("a");
+      link.href = source;
+      link.download = "video.mp4"; // Set desired filename here
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }
+  };
+  
   const { configuration } = useContext(ConfigurationContext);
   const interfaceConfig = configuration?.interface;
   const uiConfig = configuration?.ui;
@@ -820,26 +834,25 @@ export const ScenePlayer: React.FC<IScenePlayerProps> = ({
   const isPortrait =
     file && file.height && file.width && file.height > file.width;
 
-  return (
-    <div
-      className={cx("VideoPlayer", { portrait: isPortrait })}
-      onKeyDownCapture={onKeyDown}
-    >
-      <div className="video-wrapper" ref={videoRef} />
-      {scene.interactive &&
-        (interactiveState !== ConnectionState.Ready ||
-          getPlayer()?.paused()) && <SceneInteractiveStatus />}
-      {file && showScrubber && (
-        <ScenePlayerScrubber
-          file={file}
-          scene={scene}
-          time={time}
-          onSeek={onScrubberSeek}
-          onScroll={onScrubberScroll}
-        />
-      )}
-    </div>
-  );
+    return (
+      <div className={cx("VideoPlayer", { portrait: isPortrait })}>
+        <div className="video-wrapper" ref={videoRef} />
+        {/* Download button */}
+        <button onClick={handleDownload}>Download</button>
+        {scene.interactive &&
+          (interactiveState !== ConnectionState.Ready ||
+            getPlayer()?.paused()) && <SceneInteractiveStatus />}
+        {file && showScrubber && (
+          <ScenePlayerScrubber
+            file={file}
+            scene={scene}
+            time={time}
+            onSeek={onScrubberSeek}
+            onScroll={onScrubberScroll}
+          />
+        )}
+      </div>
+    );
 };
 
 export default ScenePlayer;
