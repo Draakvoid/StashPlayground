@@ -38,6 +38,7 @@ import {
   faEllipsisV,
   faChevronRight,
   faChevronLeft,
+  faDownload,
 } from "@fortawesome/free-solid-svg-icons";
 import { objectPath, objectTitle } from "src/core/files";
 import { RatingSystem } from "src/components/Shared/Rating/RatingSystem";
@@ -349,6 +350,16 @@ const ScenePage: React.FC<IProps> = ({
     }
   }
 
+  const downloadStream = (url: string) => {
+    const link = document.createElement('a');
+    link.style.display = 'none';
+    link.href = url;
+    link.setAttribute('download', '');
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
   const renderOperations = () => (
     <Dropdown>
       <Dropdown.Toggle
@@ -406,6 +417,21 @@ const ScenePage: React.FC<IProps> = ({
         >
           <FormattedMessage
             id="actions.delete_entity"
+            values={{ entityType: intl.formatMessage({ id: "scene" }) }}
+          />
+        </Dropdown.Item>
+        <Dropdown.Item
+          key="download"
+          className="bg-secondary text-white"
+          onClick={() => {
+            const directStream = scene.sceneStreams.find(stream => stream.label === "Direct stream");
+            if (directStream) {
+              downloadStream(directStream.url);
+            }
+          }}
+        >
+          <FormattedMessage
+            id="actions.download"
             values={{ entityType: intl.formatMessage({ id: "scene" }) }}
           />
         </Dropdown.Item>
@@ -945,11 +971,9 @@ const SceneLoader: React.FC<RouteComponentProps<ISceneParams>> = ({
           onComplete={onComplete}
           onNext={() => queueNext(true)}
           onPrevious={() => queuePrevious(true)}
-
         />
       </div>
     </div>
-  );
-};
-
-export default SceneLoader;
+  );  
+}
+  export default SceneLoader;
