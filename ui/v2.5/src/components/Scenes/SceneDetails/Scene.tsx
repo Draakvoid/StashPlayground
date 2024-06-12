@@ -360,13 +360,6 @@ const ScenePage: React.FC<IProps> = ({
         <Icon icon={faEllipsisV} />
       </Dropdown.Toggle>
       <Dropdown.Menu className="bg-secondary text-white">
-      <Dropdown.Item
-          key="download"
-          className="bg-secondary text-white"
-          onClick={() => onRescan()}
-        >
-          <FormattedMessage id="actions.download" />
-        </Dropdown.Item>
         {!!scene.files.length && (
           <Dropdown.Item
             key="rescan"
@@ -419,6 +412,7 @@ const ScenePage: React.FC<IProps> = ({
       </Dropdown.Menu>
     </Dropdown>
   );
+  
 
   const renderTabs = () => (
     <Tab.Container
