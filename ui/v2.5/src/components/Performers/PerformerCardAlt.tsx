@@ -253,7 +253,7 @@ export const PerformerCardAlt: React.FC<IPerformerCardProps> = ({
         },
         tags: {
           modifier: GQL.CriterionModifier.Includes,
-          value: ["1486"] // insert your alt image tag id # here ex: ["1736"]
+          value: ["1560"] // insert your alt image tag id # here ex: ["1736"]
         }
       }
     }})
