@@ -242,11 +242,7 @@ const PerformerPage: React.FC<IProps> = ({ performer, tabKey }) => {
           }
       }
   }})
-  useEffect(() => {
-    if (data?.findImages.count != 0) {
-      setAltImage(data?.findImages.images[0].paths.image ?? null);
-    }
-  }, [data]);
+  
   return data?.findImages.count != 0 ? <img className="alt-hidden" src={data?.findImages.images[0].paths.image ?? ""}/> : ""
   }
 
