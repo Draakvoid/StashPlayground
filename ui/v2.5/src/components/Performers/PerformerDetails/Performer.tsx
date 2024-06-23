@@ -91,6 +91,28 @@ const PerformerPage: React.FC<IProps> = ({ performer, tabKey }) => {
   const [encodingImage, setEncodingImage] = useState<boolean>(false);
   const [altImage, setAltImage] = useState<string | null>(null);
   const loadStickyHeader = useLoadStickyHeader();
+  // a list of urls to display in the performer details
+  const urls = useMemo(() => {
+    if (!performer.urls?.length) {
+      return [];
+    }
+
+    const twitter = performer.urls.filter((u) =>
+      u.match(/https?:\/\/(?:www\.)?twitter.com\//)
+    );
+    const instagram = performer.urls.filter((u) =>
+      u.match(/https?:\/\/(?:www\.)?instagram.com\//)
+    );
+    const others = performer.urls.filter(
+      (u) => !twitter.includes(u) && !instagram.includes(u)
+    );
+
+    return [
+      { icon: faLink, className: "", urls: others },
+      { icon: faTwitter, className: "twitter", urls: twitter },
+      { icon: faInstagram, className: "instagram", urls: instagram },
+    ];
+  }, [performer.urls]);
   const toggleEditBar = () => {
     seteditbarActive(current => !current)
   }
