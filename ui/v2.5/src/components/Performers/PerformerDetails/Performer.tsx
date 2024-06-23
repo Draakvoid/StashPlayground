@@ -20,7 +20,6 @@ import { LoadingIndicator } from "src/components/Shared/LoadingIndicator";
 import { useLightbox } from "src/hooks/Lightbox/hooks";
 import { useToast } from "src/hooks/Toast";
 import { ConfigurationContext } from "src/hooks/Config";
-import TextUtils from "src/utils/text";
 import { RatingSystem } from "src/components/Shared/Rating/RatingSystem";
 import {
   CompressedPerformerDetailsPanel,
@@ -45,7 +44,7 @@ import { useRatingKeybinds } from "src/hooks/keybinds";
 import { DetailImage } from "src/components/Shared/DetailImage";
 import { useLoadStickyHeader } from "src/hooks/detailsPanel";
 import { useScrollToTopOnMount } from "src/hooks/scrollToTop";
-import { ExternalLink } from "src/components/Shared/ExternalLink";
+import { ExternalLinksButton } from "src/components/Shared/ExternalLinksButton";
 
 interface IProps {
   performer: GQL.PerformerDataFragment;
@@ -535,11 +534,6 @@ const PerformerPage: React.FC<IProps> = ({ performer, tabKey }) => {
     }
   }
   function renderClickableIcons() {
-    /* Collect urls adding into details */
-    /* This code can be removed once multple urls are supported for performers */
-    const detailURLsRegex = /\[((?:http|www\.)[^\n\]]+)\]/gm;
-    let urls = performer?.details?.match(detailURLsRegex);
-
     return (
       <span className="name-icons">
         <Button
@@ -551,53 +545,14 @@ const PerformerPage: React.FC<IProps> = ({ performer, tabKey }) => {
         >
           <Icon icon={faHeart} />
         </Button>
-        {performer.url && (
-          <Button
-            as={ExternalLink}
-            href={TextUtils.sanitiseURL(performer.url)}
-            className="minimal link"
-            title={performer.url}
-          >
-            <Icon icon={faLink} />
-          </Button>
-        )}
-        {(urls ?? []).map((url, index) => (
-          <Button
-            key={index}
-            as={ExternalLink}
-            href={TextUtils.sanitiseURL(url)}
-            className={`minimal link detail-link detail-link-${index}`}
-            title={url}
-          >
-            <Icon icon={faLink} />
-          </Button>
+        {urls.map((url) => (
+          <ExternalLinksButton
+            key={url.icon.iconName}
+            icon={url.icon}
+            className={url.className}
+            urls={url.urls}
+          />
         ))}
-        {performer.twitter && (
-          <Button
-            as={ExternalLink}
-            href={TextUtils.sanitiseURL(
-              performer.twitter,
-              TextUtils.twitterURL
-            )}
-            className="minimal link twitter"
-            title={performer.twitter}
-          >
-            <Icon icon={faTwitter} />
-          </Button>
-        )}
-        {performer.instagram && (
-          <Button
-            as={ExternalLink}
-            href={TextUtils.sanitiseURL(
-              performer.instagram,
-              TextUtils.instagramURL
-            )}
-            className="minimal link instagram"
-            title={performer.instagram}
-          >
-            <Icon icon={faInstagram} />
-          </Button>
-        )}
       </span>
     );
   }
