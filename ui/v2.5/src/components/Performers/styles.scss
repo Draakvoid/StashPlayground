@@ -50,7 +50,17 @@
     width: 100%;
   }
 }
-
+.perfbuttondiv:hover .alt-hidden {
+  opacity: 1!important;
+}
+.perfbuttondiv:hover .performer {
+  opacity: 0;
+}
+.alt-hidden {
+  opacity: 0;
+  position: absolute;
+  left: 2rem;
+}
 .performer-card {
   width: 20rem;
 
@@ -223,4 +233,9 @@
   max-height: calc(100vh - 12rem);
   overflow-y: auto;
   padding-right: 1.5rem;
+}
+
+.edit .form-label {
+  line-height: 1rem !important;
+  font-size: 1rem !important;
 }

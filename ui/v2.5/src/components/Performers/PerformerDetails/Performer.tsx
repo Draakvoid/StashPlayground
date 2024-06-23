@@ -89,7 +89,7 @@ const PerformerPage: React.FC<IProps> = ({ performer, tabKey }) => {
   const [image, setImage] = useState<string | null>();
   const [encodingImage, setEncodingImage] = useState<boolean>(false);
   const loadStickyHeader = useLoadStickyHeader();
-
+  const [altImage, setAltImage] = useState<string | null>(null);
   const activeImage = useMemo(() => {
     const performerImage = performer.image_path;
     if (isEditing) {
@@ -105,8 +105,11 @@ const PerformerPage: React.FC<IProps> = ({ performer, tabKey }) => {
   }, [image, isEditing, performer.image_path]);
 
   const lightboxImages = useMemo(
-    () => [{ paths: { thumbnail: activeImage, image: activeImage } }],
-    [activeImage]
+    () => [
+      { paths: { thumbnail: activeImage, image: activeImage } },
+      ...(altImage ? [{ paths: { thumbnail: altImage, image: altImage } }] : [])
+    ],
+    [activeImage, altImage]
   );
 
   const showLightbox = useLightbox({
@@ -221,15 +224,39 @@ const PerformerPage: React.FC<IProps> = ({ performer, tabKey }) => {
     setImage(undefined);
   }
 
+  function maybeRenderAlt() {
+    const {data} = GQL.useFindImagesQuery({variables: {
+      image_filter: {
+          performers: {
+              modifier: GQL.CriterionModifier.Includes,
+              value: [performer.id]
+          },
+          tags: {
+              modifier: GQL.CriterionModifier.Includes,
+              value: ["1"]
+          }
+      }
+  }})
+  useEffect(() => {
+    if (data?.findImages.count != 0) {
+      setAltImage(data?.findImages.images[0].paths.image ?? null);
+    }
+  }, [data]);
+  return data?.findImages.count != 0 ? <img className="alt-hidden" src={data?.findImages.images[0].paths.image ?? ""}/> : ""
+  }
+
   function renderImage() {
     if (activeImage) {
       return (
         <Button variant="link" onClick={() => showLightbox()}>
+          <div className="perfbuttondiv">
           <DetailImage
             className="performer"
             src={activeImage}
             alt={performer.name}
           />
+          {maybeRenderAlt()}
+          </div>
         </Button>
       );
     }
