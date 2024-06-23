@@ -20,16 +20,17 @@ import {
   ScrapedMoviesRow,
   ScrapedPerformersRow,
   ScrapedStudioRow,
+  ScrapedTagsRow,
 } from "src/components/Shared/ScrapeDialog/ScrapedObjectsRow";
 import {
   useCreateScrapedMovie,
   useCreateScrapedPerformer,
   useCreateScrapedStudio,
+  useCreateScrapedTag,
 } from "src/components/Shared/ScrapeDialog/createObjects";
 import { Tag } from "src/components/Tags/TagSelect";
 import { Studio } from "src/components/Studios/StudioSelect";
 import { Movie } from "src/components/Movies/MovieSelect";
-import { useScrapedTags } from "src/components/Shared/ScrapeDialog/scrapedTags";
 
 interface ISceneScrapeDialogProps {
   scene: Partial<GQL.SceneUpdateInput>;
@@ -131,9 +132,19 @@ export const SceneScrapeDialog: React.FC<ISceneScrapeDialogProps> = ({
     scraped.movies?.filter((t) => !t.stored_id) ?? []
   );
 
-  const { tags, newTags, scrapedTagsRow } = useScrapedTags(
-    sceneTags,
-    scraped.tags
+  const [tags, setTags] = useState<ObjectListScrapeResult<GQL.ScrapedTag>>(
+    new ObjectListScrapeResult<GQL.ScrapedTag>(
+      sortStoredIdObjects(
+        sceneTags.map((t) => ({
+          stored_id: t.id,
+          name: t.name,
+        }))
+      ),
+      sortStoredIdObjects(scraped.tags ?? undefined)
+    )
+  );
+  const [newTags, setNewTags] = useState<GQL.ScrapedTag[]>(
+    scraped.tags?.filter((t) => !t.stored_id) ?? []
   );
 
   const [details, setDetails] = useState<ScrapeResult<string>>(
@@ -162,6 +173,13 @@ export const SceneScrapeDialog: React.FC<ISceneScrapeDialogProps> = ({
     setScrapeResult: setMovies,
     newObjects: newMovies,
     setNewObjects: setNewMovies,
+  });
+
+  const createNewTag = useCreateScrapedTag({
+    scrapeResult: tags,
+    setScrapeResult: setTags,
+    newObjects: newTags,
+    setNewObjects: setNewTags,
   });
 
   const intl = useIntl();
@@ -260,7 +278,13 @@ export const SceneScrapeDialog: React.FC<ISceneScrapeDialogProps> = ({
           newObjects={newMovies}
           onCreateNew={createNewMovie}
         />
-        {scrapedTagsRow}
+        <ScrapedTagsRow
+          title={intl.formatMessage({ id: "tags" })}
+          result={tags}
+          onChange={(value) => setTags(value)}
+          newObjects={newTags}
+          onCreateNew={createNewTag}
+        />
         <ScrapedTextAreaRow
           title={intl.formatMessage({ id: "details" })}
           result={details}

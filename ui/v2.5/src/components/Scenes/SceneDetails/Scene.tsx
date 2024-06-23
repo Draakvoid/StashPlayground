@@ -33,12 +33,11 @@ import { ListFilterModel } from "src/models/list-filter/filter";
 import Mousetrap from "mousetrap";
 import { OrganizedButton } from "./OrganizedButton";
 import { ConfigurationContext } from "src/hooks/Config";
-import { getPlayerPosition} from "src/components/ScenePlayer/util";
+import { getPlayerPosition } from "src/components/ScenePlayer/util";
 import {
   faEllipsisV,
   faChevronRight,
   faChevronLeft,
-  faDownload,
 } from "@fortawesome/free-solid-svg-icons";
 import { objectPath, objectTitle } from "src/core/files";
 import { RatingSystem } from "src/components/Shared/Rating/RatingSystem";
@@ -51,10 +50,12 @@ import { useRatingKeybinds } from "src/hooks/keybinds";
 import { lazyComponent } from "src/utils/lazyComponent";
 import cx from "classnames";
 import { TruncatedText } from "src/components/Shared/TruncatedText";
-import ScenePlayer from "src/components/ScenePlayer/ScenePlayer";
 
 const SubmitStashBoxDraft = lazyComponent(
   () => import("src/components/Dialogs/SubmitDraft")
+);
+const ScenePlayer = lazyComponent(
+  () => import("src/components/ScenePlayer/ScenePlayer")
 );
 
 const GalleryViewer = lazyComponent(
@@ -99,7 +100,7 @@ const VideoFrameRateResolution: React.FC<{
     }
     return undefined;
   }, [width, height]);
-    
+
   const frameRateDisplay = useMemo(() => {
     if (frameRate) {
       return (
@@ -350,16 +351,6 @@ const ScenePage: React.FC<IProps> = ({
     }
   }
 
-  const downloadStream = (url: string) => {
-    const link = document.createElement('a');
-    link.style.display = 'none';
-    link.href = url;
-    link.setAttribute('download', '');
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-  };
-
   const renderOperations = () => (
     <Dropdown>
       <Dropdown.Toggle
@@ -420,25 +411,9 @@ const ScenePage: React.FC<IProps> = ({
             values={{ entityType: intl.formatMessage({ id: "scene" }) }}
           />
         </Dropdown.Item>
-        <Dropdown.Item
-          key="download"
-          className="bg-secondary text-white"
-          onClick={() => {
-            const directStream = scene.sceneStreams.find(stream => stream.label === "Direct stream");
-            if (directStream) {
-              downloadStream(directStream.url);
-            }
-          }}
-        >
-          <FormattedMessage
-            id="actions.download"
-            values={{ entityType: intl.formatMessage({ id: "scene" }) }}
-          />
-        </Dropdown.Item>
       </Dropdown.Menu>
     </Dropdown>
   );
-  
 
   const renderTabs = () => (
     <Tab.Container
@@ -974,6 +949,7 @@ const SceneLoader: React.FC<RouteComponentProps<ISceneParams>> = ({
         />
       </div>
     </div>
-  );  
-}
-  export default SceneLoader;
+  );
+};
+
+export default SceneLoader;

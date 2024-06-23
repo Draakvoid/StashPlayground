@@ -1,5 +1,11 @@
 import cloneDeep from "lodash-es/cloneDeep";
-import React, { useCallback, useEffect, useRef, useState } from "react";
+import React, {
+  HTMLAttributes,
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 import cx from "classnames";
 import Mousetrap from "mousetrap";
 import { SortDirectionEnum } from "src/core/generated-graphql";
@@ -21,8 +27,10 @@ import { ListFilterModel } from "src/models/list-filter/filter";
 import useFocus from "src/utils/focus";
 import { ListFilterOptions } from "src/models/list-filter/filter-options";
 import { FormattedMessage, useIntl } from "react-intl";
-import { SavedFilterDropdown } from "./SavedFilterList";
+import { PersistanceLevel } from "./ItemList";
+import { SavedFilterList } from "./SavedFilterList";
 import {
+  faBookmark,
   faCaretDown,
   faCaretUp,
   faCheck,
@@ -31,13 +39,12 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { FilterButton } from "./Filters/FilterButton";
 import { useDebounce } from "src/hooks/debounce";
-import { View } from "./views";
 
 interface IListFilterProps {
   onFilterUpdate: (newFilter: ListFilterModel) => void;
   filter: ListFilterModel;
   filterOptions: ListFilterOptions;
-  view?: View;
+  persistState?: PersistanceLevel;
   openFilterDialog: () => void;
 }
 
@@ -48,7 +55,7 @@ export const ListFilter: React.FC<IListFilterProps> = ({
   filter,
   filterOptions,
   openFilterDialog,
-  view,
+  persistState,
 }) => {
   const [customPageSizeShowing, setCustomPageSizeShowing] = useState(false);
   const [queryRef, setQueryFocus] = useFocus();
@@ -184,6 +191,22 @@ export const ListFilter: React.FC<IListFilterProps> = ({
       ));
   }
 
+  const SavedFilterDropdown = React.forwardRef<
+    HTMLDivElement,
+    HTMLAttributes<HTMLDivElement>
+  >(({ style, className }: HTMLAttributes<HTMLDivElement>, ref) => (
+    <div ref={ref} style={style} className={className}>
+      <SavedFilterList
+        filter={filter}
+        onSetFilter={(f) => {
+          onFilterUpdate(f);
+        }}
+        persistState={persistState}
+      />
+    </div>
+  ));
+  SavedFilterDropdown.displayName = "SavedFilterDropdown";
+
   function render() {
     const currentSortBy = filterOptions.sortByOptions.find(
       (o) => o.value === filter.sortBy
@@ -234,13 +257,24 @@ export const ListFilter: React.FC<IListFilterProps> = ({
         </div>
 
         <ButtonGroup className="mr-2 mb-2">
-          <SavedFilterDropdown
-            filter={filter}
-            onSetFilter={(f) => {
-              onFilterUpdate(f);
-            }}
-            view={view}
-          />
+          <Dropdown>
+            <OverlayTrigger
+              placement="top"
+              overlay={
+                <Tooltip id="filter-tooltip">
+                  <FormattedMessage id="search_filter.saved_filters" />
+                </Tooltip>
+              }
+            >
+              <Dropdown.Toggle variant="secondary">
+                <Icon icon={faBookmark} />
+              </Dropdown.Toggle>
+            </OverlayTrigger>
+            <Dropdown.Menu
+              as={SavedFilterDropdown}
+              className="saved-filter-list-menu"
+            />
+          </Dropdown>
           <OverlayTrigger
             placement="top"
             overlay={

@@ -2,7 +2,6 @@ import React from "react";
 import * as GQL from "src/core/generated-graphql";
 import { ImageList } from "src/components/Images/ImageList";
 import { usePerformerFilterHook } from "src/core/performers";
-import { View } from "src/components/List/views";
 
 interface IPerformerImagesPanel {
   active: boolean;
@@ -14,11 +13,5 @@ export const PerformerImagesPanel: React.FC<IPerformerImagesPanel> = ({
   performer,
 }) => {
   const filterHook = usePerformerFilterHook(performer);
-  return (
-    <ImageList
-      filterHook={filterHook}
-      alterQuery={active}
-      view={View.PerformerImages}
-    />
-  );
+  return <ImageList filterHook={filterHook} alterQuery={active} />;
 };

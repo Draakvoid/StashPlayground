@@ -139,11 +139,6 @@ Returns `void`.
 
 #### Patchable components and functions
 
-- `App`
-- `BooleanSetting`
-- `ChangeButtonSetting`
-- `CompressedPerformerDetailsPanel`
-- `ConstantSetting`
 - `CountrySelect`
 - `DateInput`
 - `FolderSelect`
@@ -151,13 +146,9 @@ Returns `void`.
 - `GallerySelect`
 - `GallerySelect.sort`
 - `Icon`
-- `ModalSetting`
 - `MovieIDSelect`
 - `MovieSelect`
 - `MovieSelect.sort`
-- `NumberSetting`
-- `PerformerDetailsPanel`
-- `PerformerDetailsPanel.DetailGroup`
 - `PerformerIDSelect`
 - `PerformerSelect`
 - `PerformerSelect.sort`
@@ -170,20 +161,13 @@ Returns `void`.
 - `SceneIDSelect`
 - `SceneSelect`
 - `SceneSelect.sort`
-- `SelectSetting`
 - `Setting`
-- `SettingModal`
-- `StringSetting`
-- `StringListSetting`
 - `StudioIDSelect`
 - `StudioSelect`
 - `StudioSelect.sort`
 - `TagIDSelect`
 - `TagSelect`
 - `TagSelect.sort`
-- `PluginSettings`
-- `Setting`
-- `SettingGroup`
 
 ### `PluginApi.Event`
 

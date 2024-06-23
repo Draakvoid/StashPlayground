@@ -3,7 +3,6 @@ import * as GQL from "src/core/generated-graphql";
 import { ParentStudiosCriterion } from "src/models/list-filter/criteria/studios";
 import { ListFilterModel } from "src/models/list-filter/filter";
 import { StudioList } from "../StudioList";
-import { View } from "src/components/List/views";
 
 interface IStudioChildrenPanel {
   active: boolean;
@@ -46,12 +45,5 @@ export const StudioChildrenPanel: React.FC<IStudioChildrenPanel> = ({
     return filter;
   }
 
-  return (
-    <StudioList
-      fromParent
-      filterHook={filterHook}
-      alterQuery={active}
-      view={View.StudioChildren}
-    />
-  );
+  return <StudioList fromParent filterHook={filterHook} alterQuery={active} />;
 };

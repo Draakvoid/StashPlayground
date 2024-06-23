@@ -38,10 +38,6 @@ import {
 import { SceneInteractiveStatus } from "src/hooks/Interactive/status";
 import { languageMap } from "src/utils/caption";
 import { VIDEO_PLAYER_ID } from "./util";
-import { faDownload } from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-
-
 
 // @ts-ignore
 import airplay from "@silvermine/videojs-airplay";
@@ -213,24 +209,6 @@ interface IScenePlayerProps {
   onPrevious: () => void;
 }
 
-export const handleDownload = (getPlayer: () => VideoJsPlayer | null) => {
-  if (!getPlayer) {
-    console.error("getPlayer function is not provided.");
-    return;
-  }
-
-  const player = getPlayer();
-  if (player) {
-    const source = player.currentSrc();
-    const link = document.createElement("a");
-    link.href = source;
-    link.download = "video.mp4"; // Set desired filename here
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-  }
-};
-
 export const ScenePlayer: React.FC<IScenePlayerProps> = ({
   scene,
   hideScrubberOverride,
@@ -242,7 +220,6 @@ export const ScenePlayer: React.FC<IScenePlayerProps> = ({
   onNext,
   onPrevious,
 }) => {
-    
   const { configuration } = useContext(ConfigurationContext);
   const interfaceConfig = configuration?.interface;
   const uiConfig = configuration?.ui;
@@ -299,7 +276,6 @@ export const ScenePlayer: React.FC<IScenePlayerProps> = ({
     if (_player.isDisposed()) return null;
     return _player;
   }, [_player]);
-
 
   useEffect(() => {
     if (hideScrubberOverride || fullscreen) {
@@ -844,33 +820,26 @@ export const ScenePlayer: React.FC<IScenePlayerProps> = ({
   const isPortrait =
     file && file.height && file.width && file.height > file.width;
 
-    return (
-      <div className={cx("VideoPlayer", { portrait: isPortrait })}>
-        <div className="video-wrapper" ref={videoRef} />
-        {scene.interactive &&
-          (interactiveState !== ConnectionState.Ready ||
-            getPlayer()?.paused()) && <SceneInteractiveStatus />}
-        {file && showScrubber && (
-          <ScenePlayerScrubber
-            file={file}
-            scene={scene}
-            time={time}
-            onSeek={onScrubberSeek}
-            onScroll={onScrubberScroll}
-          />
-        )}
-        {/* Download button container */}
-        <div className="download-button-container">
-          {/* Download button */}
-          <button 
-            className="download-button"
-            onClick={() => handleDownload(getPlayer)}
-          >
-            <FontAwesomeIcon icon={faDownload} /> {/* Replace 'faDownload' with the FontAwesome icon you want */}
-          </button>
-        </div>
-      </div>
-    );
+  return (
+    <div
+      className={cx("VideoPlayer", { portrait: isPortrait })}
+      onKeyDownCapture={onKeyDown}
+    >
+      <div className="video-wrapper" ref={videoRef} />
+      {scene.interactive &&
+        (interactiveState !== ConnectionState.Ready ||
+          getPlayer()?.paused()) && <SceneInteractiveStatus />}
+      {file && showScrubber && (
+        <ScenePlayerScrubber
+          file={file}
+          scene={scene}
+          time={time}
+          onSeek={onScrubberSeek}
+          onScroll={onScrubberScroll}
+        />
+      )}
+    </div>
+  );
 };
 
 export default ScenePlayer;

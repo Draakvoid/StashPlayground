@@ -18,7 +18,9 @@ fragment ScrapedPerformerData on ScrapedPerformer {
   name
   disambiguation
   gender
-  urls
+  url
+  twitter
+  instagram
   birthdate
   ethnicity
   country
@@ -48,7 +50,9 @@ fragment ScrapedScenePerformerData on ScrapedPerformer {
   name
   disambiguation
   gender
-  urls
+  url
+  twitter
+  instagram
   birthdate
   ethnicity
   country
@@ -86,16 +90,13 @@ fragment ScrapedMovieData on ScrapedMovie {
   date
   rating
   director
-  urls
+  url
   synopsis
   front_image
   back_image
 
   studio {
     ...ScrapedMovieStudioData
-  }
-  tags {
-    ...ScrapedSceneTagData
   }
 }
 
@@ -107,16 +108,13 @@ fragment ScrapedSceneMovieData on ScrapedMovie {
   date
   rating
   director
-  urls
+  url
   synopsis
   front_image
   back_image
 
   studio {
     ...ScrapedMovieStudioData
-  }
-  tags {
-    ...ScrapedSceneTagData
   }
 }
 

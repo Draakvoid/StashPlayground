@@ -284,13 +284,11 @@ type mappedMovieScraperConfig struct {
 	mappedConfig
 
 	Studio mappedConfig `yaml:"Studio"`
-	Tags   mappedConfig `yaml:"Tags"`
 }
 type _mappedMovieScraperConfig mappedMovieScraperConfig
 
 const (
 	mappedScraperConfigMovieStudio = "Studio"
-	mappedScraperConfigMovieTags   = "Tags"
 )
 
 func (s *mappedMovieScraperConfig) UnmarshalYAML(unmarshal func(interface{}) error) error {
@@ -305,10 +303,8 @@ func (s *mappedMovieScraperConfig) UnmarshalYAML(unmarshal func(interface{}) err
 	thisMap := make(map[string]interface{})
 
 	thisMap[mappedScraperConfigMovieStudio] = parentMap[mappedScraperConfigMovieStudio]
-	delete(parentMap, mappedScraperConfigMovieStudio)
 
-	thisMap[mappedScraperConfigMovieTags] = parentMap[mappedScraperConfigMovieTags]
-	delete(parentMap, mappedScraperConfigMovieTags)
+	delete(parentMap, mappedScraperConfigMovieStudio)
 
 	// re-unmarshal the sub-fields
 	yml, err := yaml.Marshal(thisMap)
@@ -536,21 +532,6 @@ func (p *postProcessJavascript) Apply(ctx context.Context, value string, q mappe
 	if err := vm.Set("value", value); err != nil {
 		logger.Warnf("javascript failed to set value: %v", err)
 		return value
-	}
-
-	log := &javascript.Log{
-		Logger:       logger.Logger,
-		Prefix:       "",
-		ProgressChan: make(chan float64),
-	}
-
-	if err := log.AddToVM("log", vm); err != nil {
-		logger.Logger.Errorf("error adding log API: %w", err)
-	}
-
-	util := &javascript.Util{}
-	if err := util.AddToVM("util", vm); err != nil {
-		logger.Logger.Errorf("error adding util API: %w", err)
 	}
 
 	script, err := javascript.CompileScript("", "(function() { "+string(*p)+"})()")
@@ -1090,7 +1071,6 @@ func (s mappedScraper) scrapeMovie(ctx context.Context, q mappedQuery) (*models.
 	movieMap := movieScraperConfig.mappedConfig
 
 	movieStudioMap := movieScraperConfig.Studio
-	movieTagsMap := movieScraperConfig.Tags
 
 	results := movieMap.process(ctx, q, s.Common)
 
@@ -1105,19 +1085,7 @@ func (s mappedScraper) scrapeMovie(ctx context.Context, q mappedQuery) (*models.
 		}
 	}
 
-	// now apply the tags
-	if movieTagsMap != nil {
-		logger.Debug(`Processing movie tags:`)
-		tagResults := movieTagsMap.process(ctx, q, s.Common)
-
-		for _, p := range tagResults {
-			tag := &models.ScrapedTag{}
-			p.apply(tag)
-			ret.Tags = append(ret.Tags, tag)
-		}
-	}
-
-	if len(results) == 0 && ret.Studio == nil && len(ret.Tags) == 0 {
+	if len(results) == 0 && ret.Studio == nil {
 		return nil, nil
 	}
 

@@ -2,12 +2,7 @@ import { IntlShape } from "react-intl";
 import { ITypename } from "src/utils/data";
 import { ImageWallOptions } from "src/utils/imageWall";
 import { RatingSystemOptions } from "src/utils/rating";
-import {
-  FilterMode,
-  SavedFilterDataFragment,
-  SortDirectionEnum,
-} from "./generated-graphql";
-import { View } from "src/components/List/views";
+import { FilterMode, SortDirectionEnum } from "./generated-graphql";
 
 // NOTE: double capitals aren't converted correctly in the backend
 
@@ -29,10 +24,6 @@ export interface ICustomFilter extends ITypename {
   sortBy: string;
   direction: SortDirectionEnum;
 }
-
-export type DefaultFilters = {
-  [P in View]?: SavedFilterDataFragment;
-};
 
 export type FrontPageContent = ISavedFilterRow | ICustomFilter;
 
@@ -95,8 +86,6 @@ export interface IUIConfig {
   advancedMode?: boolean;
 
   taskDefaults?: Record<string, {}>;
-
-  defaultFilters?: DefaultFilters;
 }
 
 export function getFrontPageContent(

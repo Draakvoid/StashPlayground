@@ -107,50 +107,12 @@ const PerformerModal: React.FC<IPerformerModalProps> = ({
           </strong>
         </div>
         {truncate ? (
-          <div className="col-7 performer-create-modal-value">
+          <div className="col-7">
             <TruncatedText text={text} />
           </div>
         ) : (
-          <span className="col-7 performer-create-modal-value">{text}</span>
+          <span className="col-7">{text}</span>
         )}
-      </div>
-    );
-  }
-
-  function maybeRenderURLListField(
-    name: string,
-    text: string[] | null | undefined,
-    truncate: boolean = true
-  ) {
-    if (!text) return;
-
-    return (
-      <div className="row no-gutters">
-        <div className="col-5 performer-create-modal-field" key={name}>
-          {!create && (
-            <Button
-              onClick={() => toggleField(name)}
-              variant="secondary"
-              className={excluded[name] ? "text-muted" : "text-success"}
-            >
-              <Icon icon={excluded[name] ? faTimes : faCheck} />
-            </Button>
-          )}
-          <strong>
-            <FormattedMessage id={name} />:
-          </strong>
-        </div>
-        <div className="col-7 performer-create-modal-value">
-          <ul>
-            {text.map((t, i) => (
-              <li key={i}>
-                <ExternalLink href={t}>
-                  {truncate ? <TruncatedText text={t} /> : t}
-                </ExternalLink>
-              </li>
-            ))}
-          </ul>
-        </div>
       </div>
     );
   }
@@ -243,7 +205,9 @@ const PerformerModal: React.FC<IPerformerModalProps> = ({
       career_length: performer.career_length,
       tattoos: performer.tattoos,
       piercings: performer.piercings,
-      urls: performer.urls,
+      url: performer.url,
+      twitter: performer.twitter,
+      instagram: performer.instagram,
       image: images.length > imageIndex ? images[imageIndex] : undefined,
       details: performer.details,
       death_date: performer.death_date,
@@ -326,7 +290,9 @@ const PerformerModal: React.FC<IPerformerModalProps> = ({
           {maybeRenderField("piercings", performer.piercings, false)}
           {maybeRenderField("weight", performer.weight, false)}
           {maybeRenderField("details", performer.details)}
-          {maybeRenderURLListField("urls", performer.urls)}
+          {maybeRenderField("url", performer.url)}
+          {maybeRenderField("twitter", performer.twitter)}
+          {maybeRenderField("instagram", performer.instagram)}
           {maybeRenderStashBoxLink()}
         </div>
         {maybeRenderImage()}

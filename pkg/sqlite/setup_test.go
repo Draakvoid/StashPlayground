@@ -150,12 +150,9 @@ const (
 const (
 	movieIdxWithScene = iota
 	movieIdxWithStudio
-	movieIdxWithTag
-	movieIdxWithTwoTags
-	movieIdxWithThreeTags
 	// movies with dup names start from the end
-	// create 7 more basic movies (can remove this if we add more indexes)
-	movieIdxWithDupName = movieIdxWithStudio + 7
+	// create 10 more basic movies (can remove this if we add more indexes)
+	movieIdxWithDupName = movieIdxWithStudio + 10
 
 	moviesNameCase   = movieIdxWithDupName
 	moviesNameNoCase = 1
@@ -207,9 +204,6 @@ const (
 	tagIdxWithPerformer
 	tagIdx1WithPerformer
 	tagIdx2WithPerformer
-	tagIdxWithStudio
-	tagIdx1WithStudio
-	tagIdx2WithStudio
 	tagIdxWithGallery
 	tagIdx1WithGallery
 	tagIdx2WithGallery
@@ -220,10 +214,6 @@ const (
 	tagIdxWithParentAndChild
 	tagIdxWithGrandParent
 	tagIdx2WithMarkers
-	tagIdxWithMovie
-	tagIdx1WithMovie
-	tagIdx2WithMovie
-	tagIdx3WithMovie
 	// new indexes above
 	// tags with dup names start from the end
 	tagIdx1WithDupName
@@ -248,10 +238,6 @@ const (
 	studioIdxWithScenePerformer
 	studioIdxWithImagePerformer
 	studioIdxWithGalleryPerformer
-	studioIdxWithTag
-	studioIdx2WithTag
-	studioIdxWithTwoTags
-	studioIdxWithParentTag
 	studioIdxWithGrandChild
 	studioIdxWithParentAndChild
 	studioIdxWithGrandParent
@@ -501,12 +487,6 @@ var (
 	movieStudioLinks = [][2]int{
 		{movieIdxWithStudio, studioIdxWithMovie},
 	}
-
-	movieTags = linkMap{
-		movieIdxWithTag:       {tagIdxWithMovie},
-		movieIdxWithTwoTags:   {tagIdx1WithMovie, tagIdx2WithMovie},
-		movieIdxWithThreeTags: {tagIdx1WithMovie, tagIdx2WithMovie, tagIdx3WithMovie},
-	}
 )
 
 var (
@@ -514,15 +494,6 @@ var (
 		{studioIdxWithChildStudio, studioIdxWithParentStudio},
 		{studioIdxWithGrandChild, studioIdxWithParentAndChild},
 		{studioIdxWithParentAndChild, studioIdxWithGrandParent},
-	}
-)
-
-var (
-	studioTags = linkMap{
-		studioIdxWithTag:       {tagIdxWithStudio},
-		studioIdx2WithTag:      {tagIdx2WithStudio},
-		studioIdxWithTwoTags:   {tagIdx1WithStudio, tagIdx2WithStudio},
-		studioIdxWithParentTag: {tagIdxWithParentAndChild},
 	}
 )
 
@@ -651,12 +622,12 @@ func populateDB() error {
 
 		// TODO - link folders to zip files
 
-		if err := createTags(ctx, db.Tag, tagsNameCase, tagsNameNoCase); err != nil {
-			return fmt.Errorf("error creating tags: %s", err.Error())
-		}
-
 		if err := createMovies(ctx, db.Movie, moviesNameCase, moviesNameNoCase); err != nil {
 			return fmt.Errorf("error creating movies: %s", err.Error())
+		}
+
+		if err := createTags(ctx, db.Tag, tagsNameCase, tagsNameNoCase); err != nil {
+			return fmt.Errorf("error creating tags: %s", err.Error())
 		}
 
 		if err := createPerformers(ctx, performersNameCase, performersNameNoCase); err != nil {
@@ -1332,15 +1303,6 @@ func getMovieNullStringValue(index int, field string) string {
 	return ret.String
 }
 
-func getMovieEmptyString(index int, field string) string {
-	v := getPrefixedNullStringValue("movie", index, field)
-	if !v.Valid {
-		return ""
-	}
-
-	return v.String
-}
-
 // createMoviees creates n movies with plain Name and o movies with camel cased NaMe included
 func createMovies(ctx context.Context, mqb models.MovieReaderWriter, n int, o int) error {
 	const namePlain = "Name"
@@ -1349,8 +1311,6 @@ func createMovies(ctx context.Context, mqb models.MovieReaderWriter, n int, o in
 	for i := 0; i < n+o; i++ {
 		index := i
 		name := namePlain
-
-		tids := indexesToIDs(tagIDs, movieTags[i])
 
 		if i >= n { // i<n tags get normal names
 			name = nameNoCase       // i>=n movies get dup names if case is not checked
@@ -1361,10 +1321,7 @@ func createMovies(ctx context.Context, mqb models.MovieReaderWriter, n int, o in
 		name = getMovieStringValue(index, name)
 		movie := models.Movie{
 			Name: name,
-			URLs: models.NewRelatedStrings([]string{
-				getMovieEmptyString(i, urlField),
-			}),
-			TagIDs: models.NewRelatedIDs(tids),
+			URL:  getMovieNullStringValue(index, urlField),
 		}
 
 		err := mqb.Create(ctx, &movie)
@@ -1388,15 +1345,6 @@ func getPerformerNullStringValue(index int, field string) string {
 	ret := getPrefixedNullStringValue("performer", index, field)
 
 	return ret.String
-}
-
-func getPerformerEmptyString(index int, field string) string {
-	v := getPrefixedNullStringValue("performer", index, field)
-	if !v.Valid {
-		return ""
-	}
-
-	return v.String
 }
 
 func getPerformerBoolValue(index int) bool {
@@ -1504,19 +1452,17 @@ func createPerformers(ctx context.Context, n int, o int) error {
 			Name:           getPerformerStringValue(index, name),
 			Disambiguation: getPerformerStringValue(index, "disambiguation"),
 			Aliases:        models.NewRelatedStrings(performerAliases(index)),
-			URLs: models.NewRelatedStrings([]string{
-				getPerformerEmptyString(i, urlField),
-			}),
-			Favorite:      getPerformerBoolValue(i),
-			Birthdate:     getPerformerBirthdate(i),
-			DeathDate:     getPerformerDeathDate(i),
-			Details:       getPerformerStringValue(i, "Details"),
-			Ethnicity:     getPerformerStringValue(i, "Ethnicity"),
-			PenisLength:   getPerformerPenisLength(i),
-			Circumcised:   getPerformerCircumcised(i),
-			Rating:        getIntPtr(getRating(i)),
-			IgnoreAutoTag: getIgnoreAutoTag(i),
-			TagIDs:        models.NewRelatedIDs(tids),
+			URL:            getPerformerNullStringValue(i, urlField),
+			Favorite:       getPerformerBoolValue(i),
+			Birthdate:      getPerformerBirthdate(i),
+			DeathDate:      getPerformerDeathDate(i),
+			Details:        getPerformerStringValue(i, "Details"),
+			Ethnicity:      getPerformerStringValue(i, "Ethnicity"),
+			PenisLength:    getPerformerPenisLength(i),
+			Circumcised:    getPerformerCircumcised(i),
+			Rating:         getIntPtr(getRating(i)),
+			IgnoreAutoTag:  getIgnoreAutoTag(i),
+			TagIDs:         models.NewRelatedIDs(tids),
 		}
 
 		careerLength := getPerformerCareerLength(i)
@@ -1580,11 +1526,6 @@ func getTagGalleryCount(id int) int {
 func getTagPerformerCount(id int) int {
 	idx := indexFromID(tagIDs, id)
 	return len(performerTags.reverseLookup(idx))
-}
-
-func getTagStudioCount(id int) int {
-	idx := indexFromID(tagIDs, id)
-	return len(studioTags.reverseLookup(idx))
 }
 
 func getTagParentCount(id int) int {
@@ -1702,13 +1643,11 @@ func createStudios(ctx context.Context, n int, o int) error {
 		// studios [ i ] and [ n + o - i - 1  ] should have similar names with only the Name!=NaMe part different
 
 		name = getStudioStringValue(index, name)
-		tids := indexesToIDs(tagIDs, studioTags[i])
 		studio := models.Studio{
 			Name:          name,
 			URL:           getStudioStringValue(index, urlField),
 			Favorite:      getStudioBoolValue(index),
 			IgnoreAutoTag: getIgnoreAutoTag(i),
-			TagIDs:        models.NewRelatedIDs(tids),
 		}
 		// only add aliases for some scenes
 		if i == studioIdxWithMovie || i%5 == 0 {

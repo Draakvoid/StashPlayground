@@ -77,7 +77,7 @@ func createFullPerformer(id int, name string) *models.Performer {
 		ID:             id,
 		Name:           name,
 		Disambiguation: disambiguation,
-		URLs:           models.NewRelatedStrings([]string{url, twitter, instagram}),
+		URL:            url,
 		Aliases:        models.NewRelatedStrings(aliases),
 		Birthdate:      &birthDate,
 		CareerLength:   careerLength,
@@ -90,9 +90,11 @@ func createFullPerformer(id int, name string) *models.Performer {
 		Favorite:       true,
 		Gender:         &genderEnum,
 		Height:         &height,
+		Instagram:      instagram,
 		Measurements:   measurements,
 		Piercings:      piercings,
 		Tattoos:        tattoos,
+		Twitter:        twitter,
 		CreatedAt:      createTime,
 		UpdatedAt:      updateTime,
 		Rating:         &rating,
@@ -112,7 +114,6 @@ func createEmptyPerformer(id int) models.Performer {
 		CreatedAt: createTime,
 		UpdatedAt: updateTime,
 		Aliases:   models.NewRelatedStrings([]string{}),
-		URLs:      models.NewRelatedStrings([]string{}),
 		TagIDs:    models.NewRelatedIDs([]int{}),
 		StashIDs:  models.NewRelatedStashIDs([]models.StashID{}),
 	}
@@ -122,7 +123,7 @@ func createFullJSONPerformer(name string, image string) *jsonschema.Performer {
 	return &jsonschema.Performer{
 		Name:           name,
 		Disambiguation: disambiguation,
-		URLs:           []string{url, twitter, instagram},
+		URL:            url,
 		Aliases:        aliases,
 		Birthdate:      birthDate.String(),
 		CareerLength:   careerLength,
@@ -135,9 +136,11 @@ func createFullJSONPerformer(name string, image string) *jsonschema.Performer {
 		Favorite:       true,
 		Gender:         gender,
 		Height:         strconv.Itoa(height),
+		Instagram:      instagram,
 		Measurements:   measurements,
 		Piercings:      piercings,
 		Tattoos:        tattoos,
+		Twitter:        twitter,
 		CreatedAt: json.JSONTime{
 			Time: createTime,
 		},
@@ -158,7 +161,6 @@ func createFullJSONPerformer(name string, image string) *jsonschema.Performer {
 func createEmptyJSONPerformer() *jsonschema.Performer {
 	return &jsonschema.Performer{
 		Aliases:  []string{},
-		URLs:     []string{},
 		StashIDs: []models.StashID{},
 		CreatedAt: json.JSONTime{
 			Time: createTime,

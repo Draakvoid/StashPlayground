@@ -12,8 +12,4 @@ fragment SlimStudioData on Studio {
   details
   rating100
   aliases
-  tags {
-    id
-    name
-  }
 }

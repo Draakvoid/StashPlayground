@@ -3,7 +3,9 @@ fragment SlimPerformerData on Performer {
   name
   disambiguation
   gender
-  urls
+  url
+  twitter
+  instagram
   image_path
   favorite
   ignore_auto_tag

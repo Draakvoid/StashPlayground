@@ -947,6 +947,7 @@ func (qb *FileStore) setQuerySort(query *queryBuilder, findFilter *models.FindFi
 func (qb *FileStore) captionRepository() *captionRepository {
 	return &captionRepository{
 		repository: repository{
+			tx:        qb.tx,
 			tableName: videoCaptionsTable,
 			idColumn:  fileIDColumn,
 		},

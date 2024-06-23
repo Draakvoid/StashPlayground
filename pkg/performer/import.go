@@ -188,6 +188,7 @@ func performerJSONToPerformer(performerJSON jsonschema.Performer) models.Perform
 	newPerformer := models.Performer{
 		Name:           performerJSON.Name,
 		Disambiguation: performerJSON.Disambiguation,
+		URL:            performerJSON.URL,
 		Ethnicity:      performerJSON.Ethnicity,
 		Country:        performerJSON.Country,
 		EyeColor:       performerJSON.EyeColor,
@@ -197,6 +198,8 @@ func performerJSONToPerformer(performerJSON jsonschema.Performer) models.Perform
 		Tattoos:        performerJSON.Tattoos,
 		Piercings:      performerJSON.Piercings,
 		Aliases:        models.NewRelatedStrings(performerJSON.Aliases),
+		Twitter:        performerJSON.Twitter,
+		Instagram:      performerJSON.Instagram,
 		Details:        performerJSON.Details,
 		HairColor:      performerJSON.HairColor,
 		Favorite:       performerJSON.Favorite,
@@ -206,25 +209,6 @@ func performerJSONToPerformer(performerJSON jsonschema.Performer) models.Perform
 
 		TagIDs:   models.NewRelatedIDs([]int{}),
 		StashIDs: models.NewRelatedStashIDs(performerJSON.StashIDs),
-	}
-
-	if len(performerJSON.URLs) > 0 {
-		newPerformer.URLs = models.NewRelatedStrings(performerJSON.URLs)
-	} else {
-		urls := []string{}
-		if performerJSON.URL != "" {
-			urls = append(urls, performerJSON.URL)
-		}
-		if performerJSON.Twitter != "" {
-			urls = append(urls, performerJSON.Twitter)
-		}
-		if performerJSON.Instagram != "" {
-			urls = append(urls, performerJSON.Instagram)
-		}
-
-		if len(urls) > 0 {
-			newPerformer.URLs = models.NewRelatedStrings([]string{performerJSON.URL})
-		}
 	}
 
 	if performerJSON.Gender != "" {

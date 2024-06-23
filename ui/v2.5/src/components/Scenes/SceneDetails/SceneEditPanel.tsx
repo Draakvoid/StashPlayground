@@ -45,10 +45,10 @@ import {
   PerformerSelect,
 } from "src/components/Performers/PerformerSelect";
 import { formikUtils } from "src/utils/form";
+import { Tag, TagSelect } from "src/components/Tags/TagSelect";
 import { Studio, StudioSelect } from "src/components/Studios/StudioSelect";
 import { Gallery, GallerySelect } from "src/components/Galleries/GallerySelect";
 import { Movie } from "src/components/Movies/MovieSelect";
-import { useTagsEdit } from "src/hooks/tagsEdit";
 
 const SceneScrapeDialog = lazyComponent(() => import("./SceneScrapeDialog"));
 const SceneQueryModal = lazyComponent(() => import("./SceneQueryModal"));
@@ -76,6 +76,7 @@ export const SceneEditPanel: React.FC<IProps> = ({
   const [galleries, setGalleries] = useState<Gallery[]>([]);
   const [performers, setPerformers] = useState<Performer[]>([]);
   const [movies, setMovies] = useState<Movie[]>([]);
+  const [tags, setTags] = useState<Tag[]>([]);
   const [studio, setStudio] = useState<Studio | null>(null);
 
   const Scrapers = useListSceneScrapers();
@@ -106,6 +107,10 @@ export const SceneEditPanel: React.FC<IProps> = ({
   useEffect(() => {
     setMovies(scene.movies?.map((m) => m.movie) ?? []);
   }, [scene.movies]);
+
+  useEffect(() => {
+    setTags(scene.tags ?? []);
+  }, [scene.tags]);
 
   useEffect(() => {
     setStudio(scene.studio ?? null);
@@ -169,11 +174,6 @@ export const SceneEditPanel: React.FC<IProps> = ({
     onSubmit: (values) => onSave(schema.cast(values)),
   });
 
-  const { tags, updateTagsStateFromScraper, tagsControl } = useTagsEdit(
-    scene.tags,
-    (ids) => formik.setFieldValue("tag_ids", ids)
-  );
-
   const coverImagePreview = useMemo(() => {
     const sceneImage = scene.paths?.screenshot;
     const formImage = formik.values.cover_image;
@@ -210,6 +210,14 @@ export const SceneEditPanel: React.FC<IProps> = ({
     setPerformers(items);
     formik.setFieldValue(
       "performer_ids",
+      items.map((item) => item.id)
+    );
+  }
+
+  function onSetTags(items: Tag[]) {
+    setTags(items);
+    formik.setFieldValue(
+      "tag_ids",
       items.map((item) => item.id)
     );
   }
@@ -411,6 +419,7 @@ export const SceneEditPanel: React.FC<IProps> = ({
               key={s.endpoint}
               onClick={() =>
                 onScrapeQueryClicked({
+                  stash_box_index: index,
                   stash_box_endpoint: s.endpoint,
                 })
               }
@@ -442,7 +451,7 @@ export const SceneEditPanel: React.FC<IProps> = ({
   function onSceneSelected(s: GQL.ScrapedSceneDataFragment) {
     if (!scraper) return;
 
-    if (scraper?.stash_box_endpoint !== undefined) {
+    if (scraper?.stash_box_index !== undefined) {
       // must be stash-box - assume full scene
       setScrapedScene(s);
     } else {
@@ -482,6 +491,7 @@ export const SceneEditPanel: React.FC<IProps> = ({
             key={s.endpoint}
             onClick={() =>
               onScrapeClicked({
+                stash_box_index: index,
                 stash_box_endpoint: s.endpoint,
               })
             }
@@ -585,7 +595,23 @@ export const SceneEditPanel: React.FC<IProps> = ({
       }
     }
 
-    updateTagsStateFromScraper(updatedScene.tags ?? undefined);
+    if (updatedScene?.tags?.length) {
+      const idTags = updatedScene.tags.filter((p) => {
+        return p.stored_id !== undefined && p.stored_id !== null;
+      });
+
+      if (idTags.length > 0) {
+        onSetTags(
+          idTags.map((p) => {
+            return {
+              id: p.stored_id!,
+              name: p.name ?? "",
+              aliases: [],
+            };
+          })
+        );
+      }
+    }
 
     if (updatedScene.image) {
       // image is a base64 string
@@ -747,7 +773,16 @@ export const SceneEditPanel: React.FC<IProps> = ({
 
   function renderTagsField() {
     const title = intl.formatMessage({ id: "tags" });
-    return renderField("tag_ids", title, tagsControl(), fullWidthProps);
+    const control = (
+      <TagSelect
+        isMulti
+        onSelect={onSetTags}
+        values={tags}
+        hoverPlacement="right"
+      />
+    );
+
+    return renderField("tag_ids", title, control, fullWidthProps);
   }
 
   function renderDetailsField() {

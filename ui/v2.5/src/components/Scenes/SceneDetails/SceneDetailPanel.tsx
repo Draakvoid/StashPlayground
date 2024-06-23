@@ -3,15 +3,15 @@ import { FormattedMessage, useIntl } from "react-intl";
 import * as GQL from "src/core/generated-graphql";
 import TextUtils from "src/utils/text";
 import { TagLink } from "src/components/Shared/TagLink";
+import { PerformerCard } from "src/components/Performers/PerformerCard";
 import { sortPerformers } from "src/core/performers";
 import { DirectorLink } from "src/components/Shared/Link";
-import { PerformerCardAltHead } from "src/components/Performers/PerformerCardAltHead"; // Import PerformerCardAltHead
 
 interface ISceneDetailProps {
   scene: GQL.SceneDataFragment;
 }
 
-const SceneDetailPanel: React.FC<ISceneDetailProps> = (props) => {
+export const SceneDetailPanel: React.FC<ISceneDetailProps> = (props) => {
   const intl = useIntl();
 
   function renderDetails() {
@@ -48,7 +48,7 @@ const SceneDetailPanel: React.FC<ISceneDetailProps> = (props) => {
     if (props.scene.performers.length === 0) return;
     const performers = sortPerformers(props.scene.performers);
     const cards = performers.map((performer) => (
-      <PerformerCardAltHead // Use PerformerCardAltHead directly
+      <PerformerCard
         key={performer.id}
         performer={performer}
         ageFromDate={props.scene.date ?? undefined}
@@ -70,6 +70,7 @@ const SceneDetailPanel: React.FC<ISceneDetailProps> = (props) => {
     );
   }
 
+  // filename should use entire row if there is no studio
   const sceneDetailsWidth = props.scene.studio ? "col-9" : "col-12";
 
   return (
@@ -87,7 +88,7 @@ const SceneDetailPanel: React.FC<ISceneDetailProps> = (props) => {
           {props.scene.code && (
             <h6>
               <FormattedMessage id="scene_code" />: {props.scene.code}{" "}
-          </h6>
+            </h6>
           )}
           {props.scene.director && (
             <h6>

@@ -54,11 +54,7 @@ export const ScrapedStudioRow: React.FC<IScrapedStudioRow> = ({
         isDisabled={!isNew}
         onSelect={(items) => {
           if (onChangeFn) {
-            const { id, ...data } = items[0];
-            onChangeFn({
-              ...data,
-              stored_id: id,
-            });
+            onChangeFn(items[0]);
           }
         }}
         values={selectValue}

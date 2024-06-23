@@ -10,9 +10,7 @@ type Movie {
   studio: Studio
   director: String
   synopsis: String
-  url: String @deprecated(reason: "Use urls")
-  urls: [String!]!
-  tags: [Tag!]!
+  url: String
   created_at: Time!
   updated_at: Time!
 
@@ -33,9 +31,7 @@ input MovieCreateInput {
   studio_id: ID
   director: String
   synopsis: String
-  url: String @deprecated(reason: "Use urls")
-  urls: [String!]
-  tag_ids: [ID!]
+  url: String
   "This should be a URL or a base64 encoded data URL"
   front_image: String
   "This should be a URL or a base64 encoded data URL"
@@ -53,9 +49,7 @@ input MovieUpdateInput {
   studio_id: ID
   director: String
   synopsis: String
-  url: String @deprecated(reason: "Use urls")
-  urls: [String!]
-  tag_ids: [ID!]
+  url: String
   "This should be a URL or a base64 encoded data URL"
   front_image: String
   "This should be a URL or a base64 encoded data URL"
@@ -69,8 +63,6 @@ input BulkMovieUpdateInput {
   rating100: Int
   studio_id: ID
   director: String
-  urls: BulkUpdateStrings
-  tag_ids: BulkUpdateIds
 }
 
 input MovieDestroyInput {

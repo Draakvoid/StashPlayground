@@ -8,7 +8,6 @@ import {
   ScrapeDialogRow,
   ScrapedTextAreaRow,
   ScrapedCountryRow,
-  ScrapedStringListRow,
 } from "src/components/Shared/ScrapeDialog/ScrapeDialog";
 import { Form } from "react-bootstrap";
 import {
@@ -22,10 +21,14 @@ import {
   stringToCircumcised,
 } from "src/utils/circumcised";
 import { IStashBox } from "./PerformerStashBoxModal";
-import { ScrapeResult } from "src/components/Shared/ScrapeDialog/scrapeResult";
+import {
+  ObjectListScrapeResult,
+  ScrapeResult,
+} from "src/components/Shared/ScrapeDialog/scrapeResult";
+import { ScrapedTagsRow } from "src/components/Shared/ScrapeDialog/ScrapedObjectsRow";
+import { sortStoredIdObjects } from "src/utils/data";
 import { Tag } from "src/components/Tags/TagSelect";
-import { uniq } from "lodash-es";
-import { useScrapedTags } from "src/components/Shared/ScrapeDialog/scrapedTags";
+import { useCreateScrapedTag } from "src/components/Shared/ScrapeDialog/createObjects";
 
 function renderScrapedGender(
   result: ScrapeResult<string>,
@@ -270,13 +273,14 @@ export const PerformerScrapeDialog: React.FC<IPerformerScrapeDialogProps> = (
   const [piercings, setPiercings] = useState<ScrapeResult<string>>(
     new ScrapeResult<string>(props.performer.piercings, props.scraped.piercings)
   );
-  const [urls, setURLs] = useState<ScrapeResult<string[]>>(
-    new ScrapeResult<string[]>(
-      props.performer.urls,
-      props.scraped.urls
-        ? uniq((props.performer.urls ?? []).concat(props.scraped.urls ?? []))
-        : undefined
-    )
+  const [url, setURL] = useState<ScrapeResult<string>>(
+    new ScrapeResult<string>(props.performer.url, props.scraped.url)
+  );
+  const [twitter, setTwitter] = useState<ScrapeResult<string>>(
+    new ScrapeResult<string>(props.performer.twitter, props.scraped.twitter)
+  );
+  const [instagram, setInstagram] = useState<ScrapeResult<string>>(
+    new ScrapeResult<string>(props.performer.instagram, props.scraped.instagram)
   );
   const [gender, setGender] = useState<ScrapeResult<string>>(
     new ScrapeResult<string>(
@@ -300,10 +304,28 @@ export const PerformerScrapeDialog: React.FC<IPerformerScrapeDialogProps> = (
     )
   );
 
-  const { tags, newTags, scrapedTagsRow } = useScrapedTags(
-    props.performerTags,
-    props.scraped.tags
+  const [tags, setTags] = useState<ObjectListScrapeResult<GQL.ScrapedTag>>(
+    new ObjectListScrapeResult<GQL.ScrapedTag>(
+      sortStoredIdObjects(
+        props.performerTags.map((t) => ({
+          stored_id: t.id,
+          name: t.name,
+        }))
+      ),
+      sortStoredIdObjects(props.scraped.tags ?? undefined)
+    )
   );
+
+  const [newTags, setNewTags] = useState<GQL.ScrapedTag[]>(
+    props.scraped.tags?.filter((t) => !t.stored_id) ?? []
+  );
+
+  const createNewTag = useCreateScrapedTag({
+    scrapeResult: tags,
+    setScrapeResult: setTags,
+    newObjects: newTags,
+    setNewObjects: setNewTags,
+  });
 
   const [image, setImage] = useState<ScrapeResult<string>>(
     new ScrapeResult<string>(
@@ -335,7 +357,9 @@ export const PerformerScrapeDialog: React.FC<IPerformerScrapeDialogProps> = (
     careerLength,
     tattoos,
     piercings,
-    urls,
+    url,
+    twitter,
+    instagram,
     gender,
     image,
     tags,
@@ -367,7 +391,9 @@ export const PerformerScrapeDialog: React.FC<IPerformerScrapeDialogProps> = (
       career_length: careerLength.getNewValue(),
       tattoos: tattoos.getNewValue(),
       piercings: piercings.getNewValue(),
-      urls: urls.getNewValue(),
+      url: url.getNewValue(),
+      twitter: twitter.getNewValue(),
+      instagram: instagram.getNewValue(),
       gender: gender.getNewValue(),
       tags: tags.getNewValue(),
       images: newImage ? [newImage] : undefined,
@@ -479,17 +505,33 @@ export const PerformerScrapeDialog: React.FC<IPerformerScrapeDialogProps> = (
           result={piercings}
           onChange={(value) => setPiercings(value)}
         />
-        <ScrapedStringListRow
-          title={intl.formatMessage({ id: "urls" })}
-          result={urls}
-          onChange={(value) => setURLs(value)}
+        <ScrapedInputGroupRow
+          title={intl.formatMessage({ id: "url" })}
+          result={url}
+          onChange={(value) => setURL(value)}
+        />
+        <ScrapedInputGroupRow
+          title={intl.formatMessage({ id: "twitter" })}
+          result={twitter}
+          onChange={(value) => setTwitter(value)}
+        />
+        <ScrapedInputGroupRow
+          title={intl.formatMessage({ id: "instagram" })}
+          result={instagram}
+          onChange={(value) => setInstagram(value)}
         />
         <ScrapedTextAreaRow
           title={intl.formatMessage({ id: "details" })}
           result={details}
           onChange={(value) => setDetails(value)}
         />
-        {scrapedTagsRow}
+        <ScrapedTagsRow
+          title={intl.formatMessage({ id: "tags" })}
+          result={tags}
+          onChange={(value) => setTags(value)}
+          newObjects={newTags}
+          onCreateNew={createNewTag}
+        />
         <ScrapedImagesRow
           title={intl.formatMessage({ id: "performer_image" })}
           className="performer-image"

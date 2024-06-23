@@ -6,12 +6,11 @@ import Movie from "./MovieDetails/Movie";
 import MovieCreate from "./MovieDetails/MovieCreate";
 import { MovieList } from "./MovieList";
 import { useScrollToTopOnMount } from "src/hooks/scrollToTop";
-import { View } from "../List/views";
 
 const Movies: React.FC = () => {
   useScrollToTopOnMount();
 
-  return <MovieList view={View.Movies} />;
+  return <MovieList />;
 };
 
 const MovieRoutes: React.FC = () => {

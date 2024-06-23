@@ -15,17 +15,18 @@ import {
 import {
   ScrapedPerformersRow,
   ScrapedStudioRow,
+  ScrapedTagsRow,
 } from "src/components/Shared/ScrapeDialog/ScrapedObjectsRow";
 import { sortStoredIdObjects } from "src/utils/data";
 import { Performer } from "src/components/Performers/PerformerSelect";
 import {
   useCreateScrapedPerformer,
   useCreateScrapedStudio,
+  useCreateScrapedTag,
 } from "src/components/Shared/ScrapeDialog/createObjects";
 import { uniq } from "lodash-es";
 import { Tag } from "src/components/Tags/TagSelect";
 import { Studio } from "src/components/Studios/StudioSelect";
-import { useScrapedTags } from "src/components/Shared/ScrapeDialog/scrapedTags";
 
 interface IGalleryScrapeDialogProps {
   gallery: Partial<GQL.GalleryUpdateInput>;
@@ -98,9 +99,19 @@ export const GalleryScrapeDialog: React.FC<IGalleryScrapeDialogProps> = ({
     scraped.performers?.filter((t) => !t.stored_id) ?? []
   );
 
-  const { tags, newTags, scrapedTagsRow } = useScrapedTags(
-    galleryTags,
-    scraped.tags
+  const [tags, setTags] = useState<ObjectListScrapeResult<GQL.ScrapedTag>>(
+    new ObjectListScrapeResult<GQL.ScrapedTag>(
+      sortStoredIdObjects(
+        galleryTags.map((t) => ({
+          stored_id: t.id,
+          name: t.name,
+        }))
+      ),
+      sortStoredIdObjects(scraped.tags ?? undefined)
+    )
+  );
+  const [newTags, setNewTags] = useState<GQL.ScrapedTag[]>(
+    scraped.tags?.filter((t) => !t.stored_id) ?? []
   );
 
   const [details, setDetails] = useState<ScrapeResult<string>>(
@@ -118,6 +129,13 @@ export const GalleryScrapeDialog: React.FC<IGalleryScrapeDialogProps> = ({
     setScrapeResult: setPerformers,
     newObjects: newPerformers,
     setNewObjects: setNewPerformers,
+  });
+
+  const createNewTag = useCreateScrapedTag({
+    scrapeResult: tags,
+    setScrapeResult: setTags,
+    newObjects: newTags,
+    setNewObjects: setNewTags,
   });
 
   // don't show the dialog if nothing was scraped
@@ -200,7 +218,13 @@ export const GalleryScrapeDialog: React.FC<IGalleryScrapeDialogProps> = ({
           newObjects={newPerformers}
           onCreateNew={createNewPerformer}
         />
-        {scrapedTagsRow}
+        <ScrapedTagsRow
+          title={intl.formatMessage({ id: "tags" })}
+          result={tags}
+          onChange={(value) => setTags(value)}
+          newObjects={newTags}
+          onCreateNew={createNewTag}
+        />
         <ScrapedTextAreaRow
           title={intl.formatMessage({ id: "details" })}
           result={details}

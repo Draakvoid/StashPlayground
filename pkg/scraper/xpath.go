@@ -62,33 +62,15 @@ func (s *xpathScraper) scrapeByURL(ctx context.Context, url string, ty ScrapeCon
 	}
 
 	q := s.getXPathQuery(doc)
-	// if these just return the return values from scraper.scrape* functions then
-	// it ends up returning ScrapedContent(nil) rather than nil
 	switch ty {
 	case ScrapeContentTypePerformer:
-		ret, err := scraper.scrapePerformer(ctx, q)
-		if err != nil || ret == nil {
-			return nil, err
-		}
-		return ret, nil
+		return scraper.scrapePerformer(ctx, q)
 	case ScrapeContentTypeScene:
-		ret, err := scraper.scrapeScene(ctx, q)
-		if err != nil || ret == nil {
-			return nil, err
-		}
-		return ret, nil
+		return scraper.scrapeScene(ctx, q)
 	case ScrapeContentTypeGallery:
-		ret, err := scraper.scrapeGallery(ctx, q)
-		if err != nil || ret == nil {
-			return nil, err
-		}
-		return ret, nil
+		return scraper.scrapeGallery(ctx, q)
 	case ScrapeContentTypeMovie:
-		ret, err := scraper.scrapeMovie(ctx, q)
-		if err != nil || ret == nil {
-			return nil, err
-		}
-		return ret, nil
+		return scraper.scrapeMovie(ctx, q)
 	}
 
 	return nil, ErrNotSupported

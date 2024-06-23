@@ -247,9 +247,7 @@
             "successfully_cancelled_temporary_behaviour": "Úspěšně zrušeno dočasné chování",
             "until_restart": "pouze do restartu",
             "video_sort_order": "Výchozí řazení videa",
-            "video_sort_order_desc": "Nastav řazení videí na výchozí.",
-            "server_port": "Port serveru",
-            "server_port_desc": "Port, na kterém poběží DLNA server. Po změně, vyžaduje DLNA restart."
+            "video_sort_order_desc": "Nastav řazení videí na výchozí."
         },
         "general": {
             "auth": {
@@ -703,7 +701,7 @@
                         "heading": "(Výchozí nastavení) Pokračovat v playlistu"
                     },
                     "show_scrubber": "Zobrazit Scrubber",
-                    "track_activity": "Povolit historii přehrávání scén",
+                    "track_activity": "Sledování činností",
                     "disable_mobile_media_auto_rotate": "Zakázat automatické otáčení médií na celou obrazovku v mobilu",
                     "enable_chromecast": "Povolit Chromecast",
                     "show_ab_loop_controls": "Zobrazit ovládací prvky pluginu AB Loop",
@@ -772,7 +770,7 @@
                 "heading": "Zobrazení tagů"
             },
             "use_stash_hosted_funscript": {
-                "description": "Je-li povoleno, budou funscripty poskytovány přímo ze Stash do vašeho zařízení Handy bez použití serveru Handy třetí strany. Vyžaduje, aby byl Stash dostupný z vašeho zařízení Handy a vygenerovaný API klíč, pokud má stash nakonfigurované údaje.",
+                "description": "Je-li povoleno, budou funscripty poskytovány přímo ze Stash do vašeho zařízení Handy bez použití serveru Handy třetí strany. Vyžaduje, aby byl Stash dostupný z vašeho zařízení Handy.",
                 "heading": "Funscripty podávejte přímo"
             }
         },

@@ -48,11 +48,6 @@ func (r *mutationResolver) StudioCreate(ctx context.Context, input models.Studio
 		return nil, fmt.Errorf("converting parent id: %w", err)
 	}
 
-	newStudio.TagIDs, err = translator.relatedIds(input.TagIds)
-	if err != nil {
-		return nil, fmt.Errorf("converting tag ids: %w", err)
-	}
-
 	// Process the base 64 encoded image string
 	var imageData []byte
 	if input.Image != nil {
@@ -117,11 +112,6 @@ func (r *mutationResolver) StudioUpdate(ctx context.Context, input models.Studio
 	updatedStudio.ParentID, err = translator.optionalIntFromString(input.ParentID, "parent_id")
 	if err != nil {
 		return nil, fmt.Errorf("converting parent id: %w", err)
-	}
-
-	updatedStudio.TagIDs, err = translator.updateIds(input.TagIds, "tag_ids")
-	if err != nil {
-		return nil, fmt.Errorf("converting tag ids: %w", err)
 	}
 
 	// Process the base 64 encoded image string

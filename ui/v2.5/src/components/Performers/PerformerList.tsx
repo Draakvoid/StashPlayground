@@ -9,7 +9,11 @@ import {
   useFindPerformers,
   usePerformersDestroy,
 } from "src/core/StashService";
-import { makeItemList, showWhenSelected } from "../List/ItemList";
+import {
+  makeItemList,
+  PersistanceLevel,
+  showWhenSelected,
+} from "../List/ItemList";
 import { ListFilterModel } from "src/models/list-filter/filter";
 import { DisplayMode } from "src/models/list-filter/types";
 import { PerformerTagger } from "../Tagger/performers/PerformerTagger";
@@ -21,7 +25,6 @@ import { EditPerformersDialog } from "./EditPerformersDialog";
 import { cmToImperial, cmToInches, kgToLbs } from "src/utils/units";
 import TextUtils from "src/utils/text";
 import { PerformerCardGrid } from "./PerformerCardGrid";
-import { View } from "../List/views";
 
 const PerformerItemList = makeItemList({
   filterMode: GQL.FilterMode.Performers,
@@ -159,14 +162,14 @@ export const FormatPenisLength = (penis_length?: number | null) => {
 
 interface IPerformerList {
   filterHook?: (filter: ListFilterModel) => ListFilterModel;
-  view?: View;
+  persistState?: PersistanceLevel;
   alterQuery?: boolean;
   extraCriteria?: IPerformerCardExtraCriteria;
 }
 
 export const PerformerList: React.FC<IPerformerList> = ({
   filterHook,
-  view,
+  persistState,
   alterQuery,
   extraCriteria,
 }) => {
@@ -322,7 +325,7 @@ export const PerformerList: React.FC<IPerformerList> = ({
     <PerformerItemList
       selectable
       filterHook={filterHook}
-      view={view}
+      persistState={persistState}
       alterQuery={alterQuery}
       otherOperations={otherOperations}
       addKeybinds={addKeybinds}

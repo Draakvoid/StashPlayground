@@ -36,16 +36,8 @@ const sortByOptions = ["name", "random"]
       value: "scenes_count",
     },
     {
-      messageID: "movie_count",
-      value: "movies_count",
-    },
-    {
       messageID: "marker_count",
       value: "scene_markers_count",
-    },
-    {
-      messageID: "studio_count",
-      value: "studios_count",
     },
   ]);
 
@@ -61,8 +53,6 @@ const criterionOptions = [
   createMandatoryNumberCriterionOption("image_count"),
   createMandatoryNumberCriterionOption("gallery_count"),
   createMandatoryNumberCriterionOption("performer_count"),
-  createMandatoryNumberCriterionOption("studio_count"),
-  createMandatoryNumberCriterionOption("movie_count"),
   createMandatoryNumberCriterionOption("marker_count"),
   ParentTagsCriterionOption,
   new MandatoryNumberCriterionOption("parent_tag_count", "parent_count"),

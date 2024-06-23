@@ -7,11 +7,9 @@ type ScrapedMovie {
   date: String
   rating: String
   director: String
-  url: String @deprecated(reason: "use urls")
-  urls: [String!]
+  url: String
   synopsis: String
   studio: ScrapedStudio
-  tags: [ScrapedTag!]
 
   "This should be a base64 encoded data URL"
   front_image: String
@@ -26,8 +24,6 @@ input ScrapedMovieInput {
   date: String
   rating: String
   director: String
-  url: String @deprecated(reason: "use urls")
-  urls: [String!]
+  url: String
   synopsis: String
-  # not including tags for the input
 }

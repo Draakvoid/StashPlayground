@@ -135,40 +135,6 @@ export const SettingsInterfacePanel: React.FC = () => {
     });
   }
 
-  function validateLocaleString(v: string) {
-    if (!v) return;
-    try {
-      JSON.parse(v);
-    } catch (e) {
-      throw new Error(
-        intl.formatMessage(
-          { id: "errors.invalid_json_string" },
-          {
-            error: (e as SyntaxError).message,
-          }
-        )
-      );
-    }
-  }
-
-  function validateJavascriptString(v: string) {
-    if (!v) return;
-    try {
-      // creates a function from the string to validate it but does not execute it
-      // eslint-disable-next-line @typescript-eslint/no-implied-eval
-      new Function(v);
-    } catch (e) {
-      throw new Error(
-        intl.formatMessage(
-          { id: "errors.invalid_javascript_string" },
-          {
-            error: (e as SyntaxError).message,
-          }
-        )
-      );
-    }
-  }
-
   if (error) return <h1>{error.message}</h1>;
   if (loading) return <LoadingIndicator />;
 
@@ -760,23 +726,16 @@ export const SettingsInterfacePanel: React.FC = () => {
           subHeadingID="config.ui.custom_javascript.description"
           value={iface.javascript ?? undefined}
           onChange={(v) => saveInterface({ javascript: v })}
-          validateChange={validateJavascriptString}
-          renderField={(value, setValue, err) => (
-            <>
-              <Form.Control
-                as="textarea"
-                value={value}
-                onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) =>
-                  setValue(e.currentTarget.value)
-                }
-                rows={16}
-                className="text-input code"
-                isInvalid={!!err}
-              />
-              <Form.Control.Feedback type="invalid">
-                {err}
-              </Form.Control.Feedback>
-            </>
+          renderField={(value, setValue) => (
+            <Form.Control
+              as="textarea"
+              value={value}
+              onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) =>
+                setValue(e.currentTarget.value)
+              }
+              rows={16}
+              className="text-input code"
+            />
           )}
           renderValue={() => {
             return <></>;
@@ -797,23 +756,16 @@ export const SettingsInterfacePanel: React.FC = () => {
           subHeadingID="config.ui.custom_locales.description"
           value={iface.customLocales ?? undefined}
           onChange={(v) => saveInterface({ customLocales: v })}
-          validateChange={validateLocaleString}
-          renderField={(value, setValue, err) => (
-            <>
-              <Form.Control
-                as="textarea"
-                value={value}
-                onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) =>
-                  setValue(e.currentTarget.value)
-                }
-                rows={16}
-                className="text-input code"
-                isInvalid={!!err}
-              />
-              <Form.Control.Feedback type="invalid">
-                {err}
-              </Form.Control.Feedback>
-            </>
+          renderField={(value, setValue) => (
+            <Form.Control
+              as="textarea"
+              value={value}
+              onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) =>
+                setValue(e.currentTarget.value)
+              }
+              rows={16}
+              className="text-input code"
+            />
           )}
           renderValue={() => {
             return <></>;

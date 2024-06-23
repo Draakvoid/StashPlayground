@@ -264,7 +264,7 @@ export const Tagger: React.FC<ITaggerProps> = ({ scenes, queue }) => {
         <div>
           {filteredScenes.map((s, i) => (
             <Scene
-              key={s.id}
+              key={i}
               scene={s}
               searchResult={searchResults[s.id]}
               index={i}
