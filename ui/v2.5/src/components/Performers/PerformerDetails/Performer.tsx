@@ -233,7 +233,7 @@ const PerformerPage: React.FC<IProps> = ({ performer, tabKey }) => {
           },
           tags: {
               modifier: GQL.CriterionModifier.Includes,
-              value: ["1"]
+              value: ["1560"]
           }
       }
   }})
