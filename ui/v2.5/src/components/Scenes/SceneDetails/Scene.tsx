@@ -45,6 +45,7 @@ import {
   faImage,
   faX,
   faPlay,
+  faDownload
 } from "@fortawesome/free-solid-svg-icons";
 import { lazyComponent } from "src/utils/lazyComponent";
 
@@ -424,6 +425,16 @@ const ScenePage: React.FC<IProps> = ({
     }
   }
 
+  const downloadStream = (url: string) => {
+    const link = document.createElement('a');
+    link.style.display = 'none';
+    link.href = url;
+    link.setAttribute('download', '');
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
   const renderOperations = () => (
     <Dropdown>
       <Dropdown.Toggle
@@ -481,6 +492,21 @@ const ScenePage: React.FC<IProps> = ({
         >
           <FormattedMessage
             id="actions.delete_entity"
+            values={{ entityType: intl.formatMessage({ id: "scene" }) }}
+          />
+        </Dropdown.Item>
+        <Dropdown.Item
+          key="download"
+          className="bg-secondary text-white"
+          onClick={() => {
+            const directStream = scene.sceneStreams.find(stream => stream.label === "Direct stream");
+            if (directStream) {
+              downloadStream(directStream.url);
+            }
+          }}
+        >
+          <FormattedMessage
+            id="actions.download"
             values={{ entityType: intl.formatMessage({ id: "scene" }) }}
           />
         </Dropdown.Item>
@@ -707,6 +733,16 @@ const UtilityBar: React.FC<UBarProps> = ({
   const [decrementO] = useSceneDecrementO(scene.id);
   const [resetO] = useSceneResetO(scene.id);
 
+  const downloadStream = (url: string) => {
+    const link = document.createElement('a');
+    link.style.display = 'none';
+    link.href = url;
+    link.setAttribute('download', '');
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
   const [organizedLoading, setOrganizedLoading] = useState(false);
 
   const [activeTabKey, setActiveTabKey] = useState("scene-details-panel");
@@ -742,11 +778,11 @@ const UtilityBar: React.FC<UBarProps> = ({
     Toast.success(intl.formatMessage({ id: "toast.generating_screenshot" }));
   }
   const renderOperations = () => (
-    <Dropdown className="h-fc">
+    <Dropdown>
       <Dropdown.Toggle
         variant="secondary"
         id="operation-menu"
-        className="minimal h-fc"
+        className="minimal"
         title={intl.formatMessage({ id: "operations" })}
       >
         <Icon icon={faEllipsisV} />
@@ -798,6 +834,21 @@ const UtilityBar: React.FC<UBarProps> = ({
         >
           <FormattedMessage
             id="actions.delete_entity"
+            values={{ entityType: intl.formatMessage({ id: "scene" }) }}
+          />
+        </Dropdown.Item>
+        <Dropdown.Item
+          key="download"
+          className="bg-secondary text-white"
+          onClick={() => {
+            const directStream = scene.sceneStreams.find(stream => stream.label === "Direct stream");
+            if (directStream) {
+              downloadStream(directStream.url);
+            }
+          }}
+        >
+          <FormattedMessage
+            id="actions.download"
             values={{ entityType: intl.formatMessage({ id: "scene" }) }}
           />
         </Dropdown.Item>
