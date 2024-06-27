@@ -2,12 +2,12 @@
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
-  margin-bottom: 0px;
+  margin-bottom: 100px;
+  scale: 0.95;
 
   .btn {
-    padding-bottom: 100px;
+    padding-bottom: 3px;
     padding-top: 3px;
-    scale: 0.95
   }
 
   .fa-icon {
