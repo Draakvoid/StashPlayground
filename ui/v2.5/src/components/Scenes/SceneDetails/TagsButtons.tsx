@@ -24,7 +24,7 @@ export const TagButtons: React.FC<IProps> = ({
     }
     scene.tags.forEach((tag) => {ids.push(tag.id)})
     // console.info(ids)
-    const {data} = GQL.useFindTagsQuery({variables: {ids: ids}})
+    const {data} = GQL.useFindTagsQuery({variables: {}})
     // console.info(data?.findTags.tags)
     const tagsSorted = data?.findTags.tags.map((tag) => tag).sort(sortBySceneCount)
     // console.info(tagsSorted)

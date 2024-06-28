@@ -1,4 +1,4 @@
-import { Tab, Nav, Dropdown, Button, ButtonGroup, Toast } from "react-bootstrap";
+import { Tab, Nav, Dropdown, Button, ButtonGroup, Toast, Modal } from "react-bootstrap";
 import React, {
   useEffect,
   useState,
@@ -51,10 +51,13 @@ import {
   faDownload,
   faArrowLeft,
   faUsersViewfinder,
+  faMapPin,
+  faLocationDot,
 } from "@fortawesome/free-solid-svg-icons";
 import { lazyComponent } from "src/utils/lazyComponent";
 import PerformerPill from "./PerformerPill";
 import { VideoJsPlayer } from "video.js";
+import { SceneMarkerForm } from "./SceneMarkerForm";
 
 const SubmitStashBoxDraft = lazyComponent(
   () => import("src/components/Dialogs/SubmitDraft")
@@ -664,7 +667,6 @@ const ScenePage: React.FC<IProps> = ({
             scene={scene}
             onSubmit={onSave}
             onDelete={() => setIsDeleteAlertOpen(true)}
-            setEditMode={()=> {}}
           />
         </Tab.Pane>
         <Tab.Pane eventKey="scene-history-panel">
@@ -1206,6 +1208,31 @@ scene,
   return render
 }
 
+interface MDProps {
+  scene: GQL.SceneDataFragment;
+  onCancel: () => void;
+}
+const NewMarkerDialog: React.FC<MDProps> = ({
+  scene,
+  onCancel,
+}) => {
+  const [editingMarker, setEditingMarker] = useState<GQL.SceneMarkerDataFragment>();
+  return <>
+  <Modal show onHide={() => onCancel()} className="sceneMarkerDialog">
+    <Modal.Header className="sceneMarkerDialogHeader">
+      <span>New Marker</span>
+    </Modal.Header>
+    <Modal.Body>
+      <SceneMarkerForm
+          sceneID={scene.id}
+          marker={editingMarker}
+          onClose={() =>onCancel()}
+        />
+    </Modal.Body>
+  </Modal>
+  </>
+};
+
 const SceneLoader: React.FC<RouteComponentProps<ISceneParams>> = ({
   location,
   history,
@@ -1248,6 +1275,7 @@ const SceneLoader: React.FC<RouteComponentProps<ISceneParams>> = ({
 
   const [queueScenes, setQueueScenes] = useState<QueuedScene[]>([]);
   const [updateScene] = useSceneUpdate();
+  const [markerModal, setMarkerModal] = useState(false)
   const Toast = useToast();
   const intl = useIntl();
   const [isDeleteAlertOpen, setIsDeleteAlertOpen] = useState<boolean>(false);
@@ -1318,6 +1346,14 @@ const SceneLoader: React.FC<RouteComponentProps<ISceneParams>> = ({
       getQueueScenes(sceneQueue.sceneIDs);
     }
   }, [sceneQueue]);
+
+  useEffect(() => {
+    let ssbutton = (document.querySelector('.ssbutton'));
+    let nmbutton = (document.querySelector('.nmbutton'));
+    let duration = (document.querySelector('.vjs-duration'));
+    duration?.appendChild(ssbutton!);
+    duration?.appendChild(nmbutton!);
+  }, [play])
 
   async function onQueueLessScenes() {
     if (!sceneQueue.query || queueStart <= 1) {
@@ -1470,15 +1506,7 @@ const SceneLoader: React.FC<RouteComponentProps<ISceneParams>> = ({
     if (error) return <ErrorMessage error={error.message} />;
     return <ErrorMessage error={`No scene found with id ${id}.`} />;
   }
-  function maybeRenderTags() {
-    return scene!.tags.length != 0 ? (
-      <div
-      className="d-flex flex-wrap justify-content-start align-items-start align-content-start h-fc" 
-      >
-        <TagButtons scene={scene!}/>
-      </div>
-    ) : ("")
-  }
+  
   function maybeRenderPerformers() {
     return scene!.performers.length != 0 ? (
       <div className="d-flex flex-wrap justify-content-start align-content-start" style={{
@@ -1581,7 +1609,7 @@ return (
         <div className="d-flex flex-row under-player">
           {!editMode ? 
             <div className="barsordeets">
-                  <div className="cheeseReset">
+                <div className="cheeseReset" key={cheeseKey}>
                   <Button 
                   className="btn-clear"
                   onClick={() => {
@@ -1590,8 +1618,8 @@ return (
                   >
                     <Icon icon={faArrowLeft}/>
                   </Button>
-                  <Button 
-                  className="btn-screen"
+                  <Button
+                  className="btn-clear ssbutton"
                   onClick={() => {
                     let canvas = document.createElement('canvas');
                     let video = (document.getElementById("VideoJsPlayer_html5_api") as HTMLVideoElement);
@@ -1604,11 +1632,20 @@ return (
                   >
                     <Icon icon={faImage}/>
                   </Button>
+                  <Button 
+                  className="btn-clear nmbutton"
+                  onClick={() => {
+                    setMarkerModal(true);
+                  }}
+                  >
+                    <Icon icon={faLocationDot}/>
+                  </Button>
+                  {markerModal ? <NewMarkerDialog onCancel={() => setMarkerModal(false)} scene={scene}/> : ""}
                 </div>
               <div className="dadeets">
                 {scene.date ? <span className="dadate mt-3">{scene.date!}</span> : ""}
                 {scene.details ? <span className="dadetails mt-5">{scene.details!}</span>: ""}
-                <PerformerPill performers={scene.performers} sceneDate={scene.date} />
+                <PerformerPill performers={scene.performers}/>
                 {scene.tags.length !== 0 ? (
                   <div className="daTags mt-5">
                     {scene.tags.map((tag) => (
@@ -1629,7 +1666,6 @@ return (
             isVisible={editMode}
             onSubmit={onSave}
             onDelete={() => setIsDeleteAlertOpen(true)}
-            setEditMode={() => setEditMode(false)}
           />
           }
         </div>

@@ -71,6 +71,10 @@ dd {
   white-space: pre-line;
 }
 
+.ssbutton, .nmbutton {
+  pointer-events: all;
+}
+
 .sticky.detail-header {
   display: block;
   min-height: 50px;
