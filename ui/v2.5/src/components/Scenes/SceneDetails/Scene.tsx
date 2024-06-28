@@ -48,6 +48,7 @@ import {
   faDownload
 } from "@fortawesome/free-solid-svg-icons";
 import { lazyComponent } from "src/utils/lazyComponent";
+import PerformerPill from "./PerformerPill";
 
 const SubmitStashBoxDraft = lazyComponent(
   () => import("src/components/Dialogs/SubmitDraft")
@@ -1504,92 +1505,90 @@ const SceneLoader: React.FC<RouteComponentProps<ISceneParams>> = ({
     <UtilityBar scene={scene} setEditMode={() => setEditMode(!editMode)}/>
   </div>
 
-  return (
-    <div className="the-window">
-      <div className="d-flex flex-row afterwindow">
-        <ScenePage 
-          scene={scene} 
-          setTimestamp={setTimestamp}
-          queueScenes={queueScenes}
-          queueStart={queueStart}
-          onDelete={onDelete}
-          onQueueNext={() => queueNext(autoPlayOnSelected)}
-          onQueuePrevious={() => queuePrevious(autoPlayOnSelected)}
-          onQueueRandom={() => queueRandom(autoPlayOnSelected)}
-          onQueueSceneClicked={onQueueSceneClicked}
-          continuePlaylist={continuePlaylist}
-          queueHasMoreScenes={queueHasMoreScenes}
-          onQueueLessScenes={onQueueLessScenes}
-          onQueueMoreScenes={onQueueMoreScenes}
-          collapsed={collapsed}
-          setCollapsed={setCollapsed}
-          setContinuePlaylist={setContinuePlaylist}
-          >
-
-        </ScenePage>
-        <div className={`the-vert h-fc h-100`}>
-          <div className="topScene">
-            {leftDeets}
-            <div className="scene-player-container">
-              <ScenePlayer
-                key="ScenePlayer"
-                play={play}
-                scene={scene}
-                hideScrubberOverride={hideScrubber}
-                autoplay={autoplay}
-                permitLoop={!continuePlaylist}
-                initialTimestamp={initialTimestamp}
-                sendSetTimestamp={getSetTimestamp}
-                onComplete={onComplete}
-                onNext={() => queueNext(true)}
-                onPrevious={() => queuePrevious(true)}
-                />
-            </div>
-            <div className="tsfloat">
-            <ScenePreview
-                  image={scene.paths.screenshot ?? ""}
-                  video={scene.paths.preview ?? ""}
-                  isPortrait={false}
-                  soundActive={false}
-                  />
-            </div>
-          </div>
-          <div className="d-flex flex-row under-player">
-            {!editMode ? 
-              <div className="barsordeets">
-                <div className="dadeets">
-                  {scene.date ? <span className="dadate mt-3">{scene.date!}</span> : ""}
-                  {scene.details ? <span className="dadetails mt-5">{scene.details!}</span>: ""}
-                  {scene.performers.length != 0 ? <div className="daPerfs mt-5">
-                    {scene.performers.map((perf) => <div className="daPerfsCard">
-                      <div className="daPerfsCardImage mb-2" style={{backgroundImage: `url(${perf.image_path ?? ""})`}}/>
-                      <h5>{perf.name}</h5>
-                    </div>)}
-                  </div>: ""}
-                  {scene.tags.length != 0 ? <div className="daTags mt-5">
-                    {scene.tags.map((tag) => <a href={`/tags/${tag.id}`} className="daTagsTag">
-                      {tag.name}
-                    </a>)}
-                  </div>: ""}
-                </div>
-                <div className="dabars">
-                  <NextBars scene={scene}/>
-                </div>
-              </div>
-            : 
-            <SceneEditPanel 
+return (
+  <div className="the-window">
+    <div className="d-flex flex-row afterwindow">
+      <ScenePage 
+        scene={scene} 
+        setTimestamp={setTimestamp}
+        queueScenes={queueScenes}
+        queueStart={queueStart}
+        onDelete={onDelete}
+        onQueueNext={() => queueNext(autoPlayOnSelected)}
+        onQueuePrevious={() => queuePrevious(autoPlayOnSelected)}
+        onQueueRandom={() => queueRandom(autoPlayOnSelected)}
+        onQueueSceneClicked={onQueueSceneClicked}
+        continuePlaylist={continuePlaylist}
+        queueHasMoreScenes={queueHasMoreScenes}
+        onQueueLessScenes={onQueueLessScenes}
+        onQueueMoreScenes={onQueueMoreScenes}
+        collapsed={collapsed}
+        setCollapsed={setCollapsed}
+        setContinuePlaylist={setContinuePlaylist}
+        >
+      </ScenePage>
+      <div className={`the-vert h-fc h-100`}>
+        <div className="topScene">
+          {leftDeets}
+          <div className="scene-player-container">
+            <ScenePlayer
+              key="ScenePlayer"
+              play={play}
               scene={scene}
-              isVisible={editMode}
-              onSubmit={onSave}
-              onDelete={() => setIsDeleteAlertOpen(true)}
-              setEditMode={() => setEditMode(false)}
-            />
-            }
+              hideScrubberOverride={hideScrubber}
+              autoplay={autoplay}
+              permitLoop={!continuePlaylist}
+              initialTimestamp={initialTimestamp}
+              sendSetTimestamp={getSetTimestamp}
+              onComplete={onComplete}
+              onNext={() => queueNext(true)}
+              onPrevious={() => queuePrevious(true)}
+              />
           </div>
+          <div className="tsfloat">
+            <ScenePreview
+              image={scene.paths.screenshot ?? ""}
+              video={scene.paths.preview ?? ""}
+              isPortrait={false}
+              soundActive={false}
+              />
+          </div>
+        </div>
+        <div className="d-flex flex-row under-player">
+          {!editMode ? 
+            <div className="barsordeets">
+              <div className="dadeets">
+                {scene.date ? <span className="dadate mt-3">{scene.date!}</span> : ""}
+                {scene.details ? <span className="dadetails mt-5">{scene.details!}</span>: ""}
+                <PerformerPill performers={scene.performers} sceneDate={scene.date} />
+                {scene.tags.length !== 0 ? (
+                  <div className="daTags mt-5">
+                    {scene.tags.map((tag) => (
+                      <a href={`/tags/${tag.id}`} className="daTagsTag">
+                        {tag.name}
+                      </a>
+                    ))}
+                  </div>
+                ) : null}
+              </div>
+              <div className="dabars">
+                <NextBars scene={scene}/>
+              </div>
+            </div>
+          : 
+          <SceneEditPanel 
+            scene={scene}
+            isVisible={editMode}
+            onSubmit={onSave}
+            onDelete={() => setIsDeleteAlertOpen(true)}
+            setEditMode={() => setEditMode(false)}
+          />
+          }
         </div>
       </div>
     </div>
-  );
+  </div>
+);
 };
 
 export default SceneLoader;

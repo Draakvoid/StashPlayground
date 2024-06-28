@@ -6,8 +6,8 @@
   scale: 0.95;
 
   .btn {
-    padding-bottom: 3px;
-    padding-top: 3px;
+    padding-bottom: 1px;
+    padding-top: 1px;
   }
 
   .fa-icon {
@@ -93,13 +93,49 @@ a:visited {
   text-decoration: none;
   color: #fff;
 }
-.daPerfsCardImage {
-  width: 15vw;
-  height: calc(1920/1080*15vw);
-  background-size: cover;
-  background-position: 50% 50%;
-  border-radius: 1rem;
+.daPerfsCard {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
+
+.rounded-rect-container {
+  width: 240px;  /* Increase the width for a longer container */
+  height: 80px;  /* Adjust the height as necessary */
+  border-radius: 20px; /* Adjust the border-radius for a larger container */
+  display: flex;
+  align-items: center;
+  background-color: #f0f0f00a; /* Background color for the container */
+  overflow: hidden; /* To contain the image inside */
+  padding-left: 10px; /* Optional: add some padding */
+  border: 2px solid transparent; /* Initial border color */
+  transition: border-color 0.3s; /* Smooth transition for border color */
+}
+
+.circular-crop {
+  width: 60px;  /* Adjust as necessary */
+  height: 60px; /* Adjust as necessary */
+  border-radius: 50%; /* Circular shape */
+  background-size: cover;
+  background-position: center;
+  margin-right: 20px; /* Add margin to separate the image from the text */
+}
+
+.rounded-rect-container h5 {
+  font-size: 1.5rem; /* Adjust the font size for larger text */
+  margin: 0; /* Remove default margin */
+  text-decoration: none; /* Ensure no underline by default */
+  color: white;
+}
+
+.daPerfsCard:hover .rounded-rect-container {
+  border-color: white; /* Change border color on hover */
+}
+
+.daPerfsCard:hover .rounded-rect-container h5 {
+  text-decoration: none; /* Ensure text is not underlined on hover */
+}
+
 .StudioRowNext, .PerfRowNext {
   img {
     border-radius: 5px;
