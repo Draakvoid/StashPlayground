@@ -15,6 +15,13 @@
   }
 }
 
+.gallery img {
+  max-width: 150px; /* Adjust as per your desired maximum width */
+  max-height: 150px; /* Adjust as per your desired maximum height */
+  cursor: pointer; /* Optional: Add cursor pointer for better UX */
+}
+
+
 // .scene-card-preview {
 //   overflow: hidden;
 // }

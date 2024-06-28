@@ -23,6 +23,9 @@ import {
   queryFindScenesByID,
 } from "src/core/StashService";
 
+import { CriterionModifier } from "src/core/generated-graphql";
+import { useFindImagesQuery } from "src/core/generated-graphql";
+import { useGalleryLightbox } from "src/hooks/Lightbox/hooks";
 import { SceneEditPanel } from "./SceneEditPanel";
 import { ErrorMessage } from "src/components/Shared/ErrorMessage";
 import { LoadingIndicator } from "src/components/Shared/LoadingIndicator";
@@ -907,7 +910,7 @@ const UtilityBar: React.FC<UBarProps> = ({
   }
 
   const galleriesimages = scene.galleries.map((gallery) => {
-    const {data} = GQL.useFindImagesQuery({
+    const { data } = GQL.useFindImagesQuery({
       variables: {
         filter: {
           per_page: -1,
@@ -915,88 +918,105 @@ const UtilityBar: React.FC<UBarProps> = ({
         image_filter: {
           galleries: {
             modifier: GQL.CriterionModifier.Includes,
-            value: [gallery.id]
-          }
-        }
-      }
-    })
-    const renderoutput = data?.findImages.images.map((img) => <a href={`/images/${img.id}`} style={{backgroundImage: `url(${img.paths.thumbnail ?? ""})`}} className="scenegallerylink" />)
-    return renderoutput
-  })
+            value: [gallery.id],
+          },
+        },
+      },
+    });
+  
+    const images = data?.findImages.images ?? [];
+    const showGalleryLightbox = useGalleryLightbox(gallery.id);
+  
+    return (
+      <div key={gallery.id} className="gallery">
+        {images.map((img) => (
+          <img
+            key={img.id}
+            src={img.paths.thumbnail ?? ""}
+            alt={img.id}
+            className="gallery-thumbnail" // Add a class for styling
+            onClick={() => showGalleryLightbox(images.indexOf(img))}
+          />
+        ))}
+      </div>
+    );
+  });  
+  
   const renderButtons = () => (
     <ButtonGroup className={`ml-auto ubar ${hidePlugins ? "hideplugins" : ""} ${toolbarExpand ? "toolbarexpanded" : ""}`}>
-    <Nav.Item className="ml-auto">
-      <ExternalPlayerButton scene={scene} />
-    </Nav.Item>
-    <Nav.Item className="ml-auto">
-      <OCounterButton
-        value={scene.o_counter || 0}
-        onIncrement={onIncrementClick}
-        onDecrement={onDecrementClick}
-        onReset={onResetClick}
-      />
-    </Nav.Item>
-    <Nav.Item>
-      <Button 
-      className="btn-clear"
-      onClick={() => setToolbarExpand(!toolbarExpand)}
-      >
-        <Icon icon={toolbarExpand ? faChevronLeft : faChevronRight} />
-      </Button>
-    </Nav.Item>
-    {toolbarExpand && scene.galleries.length != 0 ? 
+      <Nav.Item className="ml-auto">
+        <ExternalPlayerButton scene={scene} />
+      </Nav.Item>
+      <Nav.Item className="ml-auto">
+        <OCounterButton
+          value={scene.o_counter || 0}
+          onIncrement={onIncrementClick}
+          onDecrement={onDecrementClick}
+          onReset={onResetClick}
+        />
+      </Nav.Item>
       <Nav.Item>
-      <Button 
-      className="btn-clear"
-      onClick={() => setGalleryOpen(!isGalleryOpen)}
-      >
-        <Icon icon={faImage} />
-      </Button>
-      </Nav.Item> : ""
-    }
-    {isGalleryOpen ? <>
-    <div className="scenepage-gallery">
-      <Button
-        className="btn-clear gclose"
-        onClick={() => setGalleryOpen(false)}
+        <Button
+          className="btn-clear"
+          onClick={() => setToolbarExpand(!toolbarExpand)}
         >
-        <Icon icon={faX} />
-      </Button>
-      <div className="imgsection">
-      {galleriesimages}
-      </div>
-      <div className="aftersgfade"></div>
-    </div>
-    
-    </> : ""}
-    <Nav.Item>
-      <Button 
-      className="btn-clear"
-      onClick={() => setHidePlugins(!hidePlugins)}
-      >
-        <Icon icon={faLightbulb} />
-      </Button>
-    </Nav.Item>
-    <Nav.Item>
-      <OrganizedButton
-        loading={organizedLoading}
-        organized={scene.organized}
-        onClick={onOrganizedClick}
-      />
-    </Nav.Item>
-    <Nav.Item>
-      <Button
-      className="btn-clear"
-      onClick={() => setEditMode()}
-      >
-        <FormattedMessage id="actions.edit"/>
-      </Button>
-    </Nav.Item>
-    <Nav.Item>{renderOperations()}</Nav.Item>
-  </ButtonGroup>
-  )
-  return <>{renderButtons()}</>
+          <Icon icon={toolbarExpand ? faChevronLeft : faChevronRight} />
+        </Button>
+      </Nav.Item>
+      {toolbarExpand && scene.galleries.length !== 0 && (
+        <Nav.Item>
+          <Button
+            className="btn-clear"
+            onClick={() => setGalleryOpen(!isGalleryOpen)}
+          >
+            <Icon icon={faImage} />
+          </Button>
+        </Nav.Item>
+      )}
+      {isGalleryOpen && (
+        <div className="scenepage-gallery">
+          <Button
+            className="btn-clear gclose"
+            onClick={() => setGalleryOpen(false)}
+          >
+            <Icon icon={faX} />
+          </Button>
+          <div className="imgsection">
+            {galleriesimages}
+          </div>
+          <div className="aftersgfade"></div>
+        </div>
+      )}
+      <Nav.Item>
+        <Button
+          className="btn-clear"
+          onClick={() => setHidePlugins(!hidePlugins)}
+        >
+          <Icon icon={faLightbulb} />
+        </Button>
+      </Nav.Item>
+      <Nav.Item>
+        <OrganizedButton
+          loading={false} // Replace with your organizedLoading state
+          organized={scene.organized}
+          onClick={onOrganizedClick}
+        />
+      </Nav.Item>
+      <Nav.Item>
+        <Button
+          className="btn-clear"
+          onClick={() => setEditMode()}
+        >
+          <FormattedMessage id="actions.edit" />
+        </Button>
+      </Nav.Item>
+      <Nav.Item>{renderOperations()}</Nav.Item>
+    </ButtonGroup>
+  );
+
+  return <>{renderButtons()}</>;
 };
+
 interface barProps {
   scene: GQL.SceneDataFragment
 }
