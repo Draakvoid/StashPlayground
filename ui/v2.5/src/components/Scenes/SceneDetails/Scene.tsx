@@ -48,10 +48,13 @@ import {
   faImage,
   faX,
   faPlay,
-  faDownload
+  faDownload,
+  faArrowLeft,
+  faUsersViewfinder,
 } from "@fortawesome/free-solid-svg-icons";
 import { lazyComponent } from "src/utils/lazyComponent";
 import PerformerPill from "./PerformerPill";
+import { VideoJsPlayer } from "video.js";
 
 const SubmitStashBoxDraft = lazyComponent(
   () => import("src/components/Dialogs/SubmitDraft")
@@ -1259,6 +1262,7 @@ const SceneLoader: React.FC<RouteComponentProps<ISceneParams>> = ({
     return Number.parseInt(queryParams.get("t") ?? "0", 10);
   }, [queryParams]);
 
+  const [cheeseKey, setKey] = useState(0);
   const [queueTotal, setQueueTotal] = useState(0);
   const [queueStart, setQueueStart] = useState(1);
 
@@ -1518,7 +1522,7 @@ const SceneLoader: React.FC<RouteComponentProps<ISceneParams>> = ({
       )}
     <Button
       className="btn-success mt-4"
-      onClick={() => setPlay(true)}
+      onClick={() => setPlay(!play)}
     >
       <Icon icon={faPlay}/> Watch
     </Button>
@@ -1552,7 +1556,7 @@ return (
           {leftDeets}
           <div className="scene-player-container">
             <ScenePlayer
-              key="ScenePlayer"
+              key={cheeseKey}
               play={play}
               scene={scene}
               hideScrubberOverride={hideScrubber}
@@ -1577,6 +1581,30 @@ return (
         <div className="d-flex flex-row under-player">
           {!editMode ? 
             <div className="barsordeets">
+                  <div className="cheeseReset">
+                  <Button 
+                  className="btn-clear"
+                  onClick={() => {
+                    setKey(cheeseKey + 1);
+                  }}
+                  >
+                    <Icon icon={faArrowLeft}/>
+                  </Button>
+                  <Button 
+                  className="btn-screen"
+                  onClick={() => {
+                    let canvas = document.createElement('canvas');
+                    let video = (document.getElementById("VideoJsPlayer_html5_api") as HTMLVideoElement);
+                    canvas.width = 3840;
+                    canvas.height = 2160;
+                    let ctx = canvas.getContext('2d');
+                    ctx!.drawImage( video, 0, 0, canvas.width, canvas.height );
+                    canvas.toBlob((blob) => {window.open(URL.createObjectURL(blob!), '_blank')})
+                  }}
+                  >
+                    <Icon icon={faImage}/>
+                  </Button>
+                </div>
               <div className="dadeets">
                 {scene.date ? <span className="dadate mt-3">{scene.date!}</span> : ""}
                 {scene.details ? <span className="dadetails mt-5">{scene.details!}</span>: ""}
