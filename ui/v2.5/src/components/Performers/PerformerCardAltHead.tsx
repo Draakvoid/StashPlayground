@@ -1,3 +1,5 @@
+// PerformerCardAltHead.tsx
+
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { useIntl } from "react-intl";
@@ -41,6 +43,29 @@ interface IPerformerCardProps {
   onSelectedChanged?: (selected: boolean, shiftKey: boolean) => void;
   extraCriteria?: IPerformerCardExtraCriteria;
 }
+
+// Export maybeRenderAltImageHead function
+export function maybeRenderAltImageHead(performerId: string): string | null {
+  const { data } = GQL.useFindImagesQuery({
+    variables: {
+      image_filter: {
+        performers: {
+          modifier: GQL.CriterionModifier.Includes,
+          value: [performerId],
+        },
+        tags: {
+          modifier: GQL.CriterionModifier.Includes,
+          value: ["3"], // insert your alt image tag id # here ex: ["1736"]
+        },
+      },
+    },
+  });
+
+  return data?.findImages.count !== 0
+    ? data?.findImages.images[0]?.paths.image ?? null
+    : null;
+}
+
 
 export const PerformerCardAltHead: React.FC<IPerformerCardProps> = ({
   performer,
@@ -243,22 +268,6 @@ export const PerformerCardAltHead: React.FC<IPerformerCardProps> = ({
       );
     }
   }
-
-  function maybeRenderAltImage2() {
-    const {data} = GQL.useFindImagesQuery({variables: {
-      image_filter: {
-        performers: {
-          modifier: GQL.CriterionModifier.Includes,
-          value: [performer.id]
-        },
-        tags: {
-          modifier: GQL.CriterionModifier.Includes,
-          value: ["1559"] // insert your alt image tag id # here ex: ["1736"]
-        }
-      }
-    }})
-    return data?.findImages.count != 0 ? data?.findImages.images[0].paths.image : performer.image_path
-  }
   return (
     <GridCard
       className="performer-card"
@@ -283,7 +292,7 @@ export const PerformerCardAltHead: React.FC<IPerformerCardProps> = ({
             loading="lazy"
             className="performer-card-image"
             alt={performer.name ?? ""}
-            src={maybeRenderAltImage2() ?? ""}
+            src={maybeRenderAltImageHead(performer.id) ?? ""}
           />
         </>
       }
@@ -313,3 +322,5 @@ export const PerformerCardAltHead: React.FC<IPerformerCardProps> = ({
     />
   );
 };
+
+export default PerformerCardAltHead;
