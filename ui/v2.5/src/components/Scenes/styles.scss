@@ -16,6 +16,16 @@
   }
 }
 
+img, video {
+  filter:blur(10px)
+}
+
+.markerCar {
+  display: flex;
+  margin-left: -5rem;
+  flex-direction: row;
+  overflow-x: scroll;
+}
 
 .card-popovers {
   display: flex;
@@ -191,6 +201,19 @@ a:visited {
   display: flex;
   flex-direction: column;
 }
+
+
+.under-player {
+  .studio-logo, .scene-header {
+    display: none;
+  }
+  .scene-tabs {
+    width: 100%;
+    flex: unset;
+    max-width: unset;
+  }
+}
+
 .dadeets {
   display: none;
 }
@@ -550,7 +573,7 @@ textarea.scene-description {
 
 }
 .floatingdeets .ubar {
-  margin-top: 70px;
+  margin-top: 25px;
   display: flex;
   flex-direction: row-reverse;
   justify-content: flex-end;
@@ -571,8 +594,14 @@ textarea.scene-description {
 .btn-clear:active {
   background-color: #454545!important;
 }
-.floatingdeets:has(.hideplugins) .ubar {
-  > :nth-child(2) {
+.the-window:has(.hideplugins) {
+  .ubar {
+    margin-top: 70px;
+    > :nth-child(2) {
+      display: none;
+    }
+  }
+  .markerCar {
     display: none;
   }
 }

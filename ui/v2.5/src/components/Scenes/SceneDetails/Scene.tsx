@@ -8,7 +8,7 @@ import React, {
   useLayoutEffect,
 } from "react";
 import { FormattedMessage, useIntl } from "react-intl";
-import { Link, RouteComponentProps } from "react-router-dom";
+import { Link, RouteComponentProps, useHistory } from "react-router-dom";
 import { Helmet } from "react-helmet";
 import * as GQL from "src/core/generated-graphql";
 import {
@@ -19,7 +19,7 @@ import {
   useSceneResetO,
   useSceneGenerateScreenshot,
   useSceneUpdate,
-  queryFindScenes,
+  queryFindScenes,  
   queryFindScenesByID,
 } from "src/core/StashService";
 
@@ -243,6 +243,7 @@ interface IProps {
   onQueueLessScenes: () => void;
   queueStart: number;
   collapsed: boolean;
+  editFirst?: boolean;
   setCollapsed: (state: boolean) => void;
   setContinuePlaylist: (value: boolean) => void;
 }
@@ -261,6 +262,7 @@ const ScenePage: React.FC<IProps> = ({
   onQueueLessScenes,
   queueStart,
   collapsed,
+  editFirst,
   setCollapsed,
   setContinuePlaylist,
 }) => {
@@ -279,7 +281,7 @@ const ScenePage: React.FC<IProps> = ({
 
   const [organizedLoading, setOrganizedLoading] = useState(false);
 
-  const [activeTabKey, setActiveTabKey] = useState("scene-details-panel");
+  const [activeTabKey, setActiveTabKey] = useState(editFirst ? "scene-edit-panel" : "scene-details-panel");
 
   const [isDeleteAlertOpen, setIsDeleteAlertOpen] = useState<boolean>(false);
   const [isGenerateDialogOpen, setIsGenerateDialogOpen] = useState(false);
@@ -1241,6 +1243,7 @@ const SceneLoader: React.FC<RouteComponentProps<ISceneParams>> = ({
   const { id } = match.params;
   const { configuration } = useContext(ConfigurationContext);
   const { data, loading, error } = useFindScene(id);
+  const [fakeAutoPlay, setFakeAutoPlay] = useState(true);
 
   const [scene, setScene] = useState<GQL.SceneDataFragment>();
   const file = useMemo(
@@ -1294,7 +1297,7 @@ const SceneLoader: React.FC<RouteComponentProps<ISceneParams>> = ({
   const [queueTotal, setQueueTotal] = useState(0);
   const [queueStart, setQueueStart] = useState(1);
 
-  const autoplay = queryParams.get("autoplay") === "true";
+  var autoplay = queryParams.get("autoplay") === "true";
   const [play, setPlay]= useState(false)
   const autoPlayOnSelected =
     configuration?.interface.autostartVideoOnPlaySelected ?? false;
@@ -1377,6 +1380,7 @@ const SceneLoader: React.FC<RouteComponentProps<ISceneParams>> = ({
   const queueHasMoreScenes = useMemo(() => {
     return queueStart + queueScenes.length - 1 < queueTotal;
   }, [queueStart, queueScenes, queueTotal]);
+
 
   async function onQueueMoreScenes() {
     if (!sceneQueue.query || !queueHasMoreScenes) {
@@ -1532,6 +1536,50 @@ const SceneLoader: React.FC<RouteComponentProps<ISceneParams>> = ({
       )
     );
   }
+  const markerCar = 
+  <div className="markerCar">
+    {scene.scene_markers.map((marker) => <>
+      <div>
+            <Link
+            to={`/scenes/${marker.scene.id}?t=${marker.seconds}`}
+            onClick={() => setPlay(!play)}
+            style={{
+                display: "flex",
+                flexDirection: "column",
+                width: "fit-content",
+                padding: "0 .75rem",
+                paddingBottom: "0.25rem",
+                textDecoration: "none",
+                color: "#fff"
+            }}
+            >
+            <img
+                style={{
+                    height: "100px",
+                    aspectRatio: "auto",
+                    borderRadius: ".75rem",
+                }}
+                src={marker.preview}
+            >
+            </img>
+            <span
+                style={{
+                    textAlign: "center"
+                }}
+            >
+                {marker.title ? marker.title : marker.primary_tag.name}
+            </span>
+            <span
+                style={{
+                textAlign: "center"
+            }}
+            >
+                {TextUtils.secondsToTimestamp(marker.seconds)}
+            </span>
+            </Link>
+        </div>
+    </>)}
+  </div>
   const leftDeets = 
   <div className="floatingdeets">
     <div className="studio-row">
@@ -1555,6 +1603,7 @@ const SceneLoader: React.FC<RouteComponentProps<ISceneParams>> = ({
       <Icon icon={faPlay}/> Watch
     </Button>
     <UtilityBar scene={scene} setEditMode={() => setEditMode(!editMode)}/>
+    {markerCar}
   </div>
 
 return (
@@ -1588,7 +1637,7 @@ return (
               play={play}
               scene={scene}
               hideScrubberOverride={hideScrubber}
-              autoplay={autoplay}
+              autoplay={false}
               permitLoop={!continuePlaylist}
               initialTimestamp={initialTimestamp}
               sendSetTimestamp={getSetTimestamp}
@@ -1613,7 +1662,11 @@ return (
                   <Button 
                   className="btn-clear"
                   onClick={() => {
-                    setKey(cheeseKey + 1);
+                    if (Number.parseInt(queryParams.get("t") ?? "0", 10)) history.push(`/scenes/${scene.id}/`)
+                      autoplay=false;
+                      console.info("autoplay false")
+                      setFakeAutoPlay(false);
+                      setKey(cheeseKey + 1); 
                   }}
                   >
                     <Icon icon={faArrowLeft}/>
@@ -1661,12 +1714,27 @@ return (
               </div>
             </div>
           : 
-          <SceneEditPanel 
-            scene={scene}
-            isVisible={editMode}
-            onSubmit={onSave}
-            onDelete={() => setIsDeleteAlertOpen(true)}
-          />
+          <ScenePage 
+          scene={scene} 
+          setTimestamp={setTimestamp}
+          queueScenes={queueScenes}
+          queueStart={queueStart}
+          onDelete={onDelete}
+          onQueueNext={() => queueNext(autoPlayOnSelected)}
+          onQueuePrevious={() => queuePrevious(autoPlayOnSelected)}
+          onQueueRandom={() => queueRandom(autoPlayOnSelected)}
+          onQueueSceneClicked={onQueueSceneClicked}
+          continuePlaylist={continuePlaylist}
+          queueHasMoreScenes={queueHasMoreScenes}
+          onQueueLessScenes={onQueueLessScenes}
+          onQueueMoreScenes={onQueueMoreScenes}
+          collapsed={false}
+          editFirst={true}
+          setCollapsed={setCollapsed}
+          setContinuePlaylist={setContinuePlaylist}
+          >
+
+        </ScenePage>
           }
         </div>
       </div>
