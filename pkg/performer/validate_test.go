@@ -15,9 +15,6 @@ func nameFilter(n string) *models.PerformerFilterType {
 			Value:    n,
 			Modifier: models.CriterionModifierEquals,
 		},
-		Disambiguation: &models.StringCriterionInput{
-			Modifier: models.CriterionModifierIsNull,
-		},
 	}
 }
 
@@ -44,6 +41,13 @@ func TestValidateName(t *testing.T) {
 		newName     = "new name"
 		newDisambig = "new disambiguation"
 	)
+	// existing1 := models.Performer{
+	// 	Name: name1,
+	// }
+	// existing2 := models.Performer{
+	// 	Name:           name2,
+	// 	Disambiguation: disambig,
+	// }
 
 	pp := 1
 	findFilter := &models.FindFilterType{

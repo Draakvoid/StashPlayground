@@ -102,15 +102,11 @@ func validateName(ctx context.Context, name string, disambig string, existingID 
 		},
 	}
 
-	modifier := models.CriterionModifierIsNull
-
 	if disambig != "" {
-		modifier = models.CriterionModifierEquals
-	}
-
-	performerFilter.Disambiguation = &models.StringCriterionInput{
-		Value:    disambig,
-		Modifier: modifier,
+		performerFilter.Disambiguation = &models.StringCriterionInput{
+			Value:    disambig,
+			Modifier: models.CriterionModifierEquals,
+		}
 	}
 
 	if existingID == nil {
