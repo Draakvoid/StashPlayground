@@ -1,42 +1,12 @@
-.cheeseReset .btn-clear{
-  opacity: 0;
-  position: fixed;
-  top: 6rem;
-  left: 4rem;
-  z-index: 10005;
-  transition: opacity 1s;
-  svg {
-    height: 2rem;
-    width: 2rem;
-  }
-}
-.the-window:has(.vjs-has-started):has(.vjs-user-active) {
-  .cheeseReset .btn-clear {
-    opacity: 1;
-  }
-}
-
-// NSFW Filter// img, video {
-//   filter:blur(10px)
-// }
-
-.markerCar {
-  display: flex;
-  margin-left: -5rem;
-  flex-direction: row;
-  overflow-x: scroll;
-}
-
 .card-popovers {
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
-  margin-bottom: 65px;
-  scale: 0.95;
+  margin-bottom: 0px;
 
   .btn {
-    padding-bottom: 1px;
-    padding-top: 1px;
+    padding-bottom: 3px;
+    padding-top: 3px;
   }
 
   .fa-icon {
@@ -44,19 +14,30 @@
   }
 }
 
-.gallery img {
-  max-width: 150px; /* Adjust as per your desired maximum width */
-  max-height: 150px; /* Adjust as per your desired maximum height */
-  cursor: pointer; /* Optional: Add cursor pointer for better UX */
-}
-
-
-// .scene-card-preview {
+// .scene-card-preview, .modal-body img {
 //   overflow: hidden;
 // }
-
-// .card, img, video, .video-js {
-//   filter:blur(10px)
+// .TruncatedText, .studio-name span {
+//   visibility: hidden;
+// }
+// .TruncatedText::after {
+//   visibility: visible;
+//   position: absolute;
+//   left: .75rem;
+//   content: "CSS SFW Title"
+// }
+// .studio-name span {
+//   display: flex;
+//   width: 100%;
+// }
+// .studio-name span::after {
+//   visibility: visible;
+//   position: absolute;
+//   left: 0;
+//   content: "CSS SFW Studio"
+// }
+// img, video {
+//   filter:blur(25px)
 // }
 
 .w-fc {
@@ -65,7 +46,12 @@
 .h-fc {
   height: fit-content;
 }
-
+.markerCar {
+  display: flex;
+  margin-left: -5rem;
+  flex-direction: row;
+  overflow-x: scroll;
+}
 .tags-dialog {
   padding-right: 0!important;
   display: flex!important;
@@ -94,7 +80,7 @@ a:visited {
   -webkit-line-clamp: 1!important;
 }
 .performer-tag-container,
-.movie-tag-container {
+.group-tag-container {
   display: inline-block;
   margin: 5px;
 }
@@ -129,49 +115,13 @@ a:visited {
   text-decoration: none;
   color: #fff;
 }
-.daPerfsCard {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-
-.rounded-rect-container {
-  width: 240px;  /* Increase the width for a longer container */
-  height: 80px;  /* Adjust the height as necessary */
-  border-radius: 20px; /* Adjust the border-radius for a larger container */
-  display: flex;
-  align-items: center;
-  background-color: #f0f0f00a; /* Background color for the container */
-  overflow: hidden; /* To contain the image inside */
-  padding-left: 10px; /* Optional: add some padding */
-  border: 2px solid transparent; /* Initial border color */
-  transition: border-color 0.3s; /* Smooth transition for border color */
-}
-
-.circular-crop {
-  width: 60px;  /* Adjust as necessary */
-  height: 60px; /* Adjust as necessary */
-  border-radius: 50%; /* Circular shape */
+.daPerfsCardImage {
+  width: 15vw;
+  height: calc(1920/1080*15vw);
   background-size: cover;
-  background-position: center;
-  margin-right: 20px; /* Add margin to separate the image from the text */
+  background-position: 50% 50%;
+  border-radius: 1rem;
 }
-
-.rounded-rect-container h5 {
-  font-size: 1.5rem; /* Adjust the font size for larger text */
-  margin: 0; /* Remove default margin */
-  text-decoration: none; /* Ensure no underline by default */
-  color: white;
-}
-
-.daPerfsCard:hover .rounded-rect-container {
-  border-color: white; /* Change border color on hover */
-}
-
-.daPerfsCard:hover .rounded-rect-container h5 {
-  text-decoration: none; /* Ensure text is not underlined on hover */
-}
-
 .StudioRowNext, .PerfRowNext {
   img {
     border-radius: 5px;
@@ -201,19 +151,6 @@ a:visited {
   display: flex;
   flex-direction: column;
 }
-
-
-.under-player {
-  .studio-logo, .scene-header {
-    display: none;
-  }
-  .scene-tabs {
-    width: 100%;
-    flex: unset;
-    max-width: unset;
-  }
-}
-
 .dadeets {
   display: none;
 }
@@ -250,14 +187,30 @@ a:visited {
 .maybehide {
   display: none;
 }
-
+.cheeseReset {
+  opacity: 0;
+  position: fixed;
+  top: 6rem;
+  left: 4rem;
+  z-index: 10005;
+  transition: opacity 1s;
+  svg {
+    height: 2rem;
+    width: 2rem;
+  }
+}
+.the-window:has(.vjs-has-started):has(.vjs-user-active) {
+  .cheeseReset {
+    opacity: 1;
+  }
+}
 .the-window:has(.vjs-has-started) .maybehide {
   display: flex;
   flex-direction: column;
 }
 
 .performer-tag.image,
-.movie-tag.image {
+.group-tag.image {
   background-position: center;
   background-repeat: no-repeat;
   background-size: cover;
@@ -266,6 +219,16 @@ a:visited {
   width: 100%;
 }
 
+.under-player {
+  .studio-logo, .scene-header {
+    display: none;
+  }
+  .scene-tabs {
+    width: 100%;
+    flex: unset;
+    max-width: unset;
+  }
+}
 .operation-container {
   .operation-item {
     min-width: 240px;
@@ -589,7 +552,7 @@ textarea.scene-description {
   border: transparent!important;
 }
 .btn-clear:hover {
-  background-color: #20202083;
+  background-color: #202020;
 }
 .btn-clear:active {
   background-color: #454545!important;
@@ -605,6 +568,7 @@ textarea.scene-description {
     display: none;
   }
 }
+
 .under-player {
   width: 100%;
   position: relative;
@@ -747,19 +711,19 @@ textarea.scene-description {
   max-width: 100%;
 }
 
-.movie-image {
+.group-image {
   max-width: 100%;
 }
 
-.movie-table {
+.group-table {
   width: 100%;
 
-  .movie-row {
+  .group-row {
     align-items: center;
     margin-bottom: 0.25rem;
   }
 
-  .movie-scene-number-header {
+  .group-scene-number-header {
     color: $text-muted;
     font-size: 0.8em;
     padding-bottom: 0;
@@ -767,7 +731,7 @@ textarea.scene-description {
   }
 }
 
-.movie-table.no-movies .movie-table-header {
+.group-table.no-groups .group-table-header {
   display: none;
 }
 
@@ -1344,5 +1308,4 @@ input[type="range"].blue-slider {
     width: 100%;
     word-break: break-all;
   }
-  
 }

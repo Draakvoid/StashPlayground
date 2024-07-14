@@ -1,0 +1,6 @@
+{
+  "dependencies": {
+    "react-tilt": "^1.0.2",
+    "vanilla-tilt": "^1.8.1"
+  }
+}
