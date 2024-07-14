@@ -178,23 +178,6 @@ export const PerformerCardAlt: React.FC<IPerformerCardProps> = ({
     );
   }
 
-  function maybeRenderMoviesPopoverButton() {
-    if (!performer.movie_count) return;
-
-    return (
-      <PopoverCountButton
-        className="movie-count"
-        type="movie"
-        count={performer.movie_count}
-        url={NavUtils.makePerformerMoviesUrl(
-          performer,
-          extraCriteria?.performer,
-          extraCriteria?.movies
-        )}
-      />
-    );
-  }
-
   function maybeRenderPopoverButtonGroup() {
     if (
       performer.scene_count ||
@@ -209,7 +192,6 @@ export const PerformerCardAlt: React.FC<IPerformerCardProps> = ({
           <hr />
           <ButtonGroup className="card-popovers">
             {maybeRenderScenesPopoverButton()}
-            {maybeRenderMoviesPopoverButton()}
             {maybeRenderImagesPopoverButton()}
             {maybeRenderGalleriesPopoverButton()}
             {maybeRenderTagPopoverButton()}
@@ -253,7 +235,7 @@ export const PerformerCardAlt: React.FC<IPerformerCardProps> = ({
         },
         tags: {
           modifier: GQL.CriterionModifier.Includes,
-          value: ["1560"] // insert your alt image tag id # here ex: ["1736"]
+          value: ["1"] // insert your alt image tag id # here ex: ["1560"]
         }
       }
     }})

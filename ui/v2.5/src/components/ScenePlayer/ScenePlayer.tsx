@@ -516,7 +516,6 @@ export const ScenePlayer: React.FC<IScenePlayerProps> = ({
       }
       setTime(this.currentTime());
     }
-
     function moveButtons() {
       let ssbutton = (document.querySelector('.ssbutton'));
       let nmbutton = (document.querySelector('.nmbutton'));
@@ -524,7 +523,6 @@ export const ScenePlayer: React.FC<IScenePlayerProps> = ({
       duration?.appendChild(ssbutton!);
       duration?.appendChild(nmbutton!);
     }
-
     player.on("play", onplay);
     player.on("play", moveButtons)
     player.on("pause", pause);

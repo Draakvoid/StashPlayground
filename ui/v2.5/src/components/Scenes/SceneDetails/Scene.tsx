@@ -1,4 +1,4 @@
-import { Tab, Nav, Dropdown, Button, ButtonGroup, Toast, Modal } from "react-bootstrap";
+import { Tab, Nav, Dropdown, Button, ButtonGroup, Modal } from "react-bootstrap";
 import React, {
   useEffect,
   useState,
@@ -19,7 +19,7 @@ import {
   useSceneResetO,
   useSceneGenerateScreenshot,
   useSceneUpdate,
-  queryFindScenes,  
+  queryFindScenes,
   queryFindScenesByID,
 } from "src/core/StashService";
 
@@ -43,21 +43,19 @@ import {
   faEllipsisV,
   faChevronRight,
   faChevronLeft,
-  faArrowsLeftRightToLine,
   faLightbulb,
+  faArrowsLeftRightToLine,
   faImage,
   faX,
   faPlay,
   faDownload,
   faArrowLeft,
-  faUsersViewfinder,
+  faCamera,
   faMapPin,
   faLocationDot,
 } from "@fortawesome/free-solid-svg-icons";
 import { lazyComponent } from "src/utils/lazyComponent";
 import PerformerPill from "./PerformerPill";
-import { VideoJsPlayer } from "video.js";
-import { SceneMarkerForm } from "./SceneMarkerForm";
 
 const SubmitStashBoxDraft = lazyComponent(
   () => import("src/components/Dialogs/SubmitDraft")
@@ -78,7 +76,7 @@ const SceneMarkersPanel = lazyComponent(() => import("./SceneMarkersPanel"));
 const SceneFileInfoPanel = lazyComponent(() => import("./SceneFileInfoPanel"));
 const SceneDetailPanel = lazyComponent(() => import("./SceneDetailPanel"));
 const SceneHistoryPanel = lazyComponent(() => import("./SceneHistoryPanel"));
-const SceneMoviePanel = lazyComponent(() => import("./SceneMoviePanel"));
+const SceneGroupPanel = lazyComponent(() => import("./SceneMoviePanel"));
 const SceneGalleriesPanel = lazyComponent(
   () => import("./SceneGalleriesPanel")
 );
@@ -98,6 +96,7 @@ import TextUtils from "src/utils/text";
 import cx from "classnames";
 import { sortPerformers } from "src/core/performers";
 import { HoverPopover } from "src/components/Shared/HoverPopover";
+import { SceneMarkerForm } from "./SceneMarkerForm";
 
 interface Oprops {
   scene: GQL.SceneDataFragment
@@ -174,8 +173,6 @@ export const ScenePreview: React.FC<IScenePreviewProps> = ({
   video,
   isPortrait,
   soundActive,
-  vttPath,
-  onScrubberClick,
 }) => {
   const videoEl = useRef<HTMLVideoElement>(null);
 
@@ -304,31 +301,9 @@ const ScenePage: React.FC<IProps> = ({
 
   // set up hotkeys
   useEffect(() => {
-    Mousetrap.bind("a", () => setActiveTabKey("scene-details-panel"));
-    Mousetrap.bind("q", () => setActiveTabKey("scene-queue-panel"));
-    Mousetrap.bind("e", () => setActiveTabKey("scene-edit-panel"));
-    Mousetrap.bind("k", () => setActiveTabKey("scene-markers-panel"));
-    Mousetrap.bind("i", () => setActiveTabKey("scene-file-info-panel"));
-    Mousetrap.bind("h", () => setActiveTabKey("scene-history-panel"));
-    Mousetrap.bind("o", () => {
-      onIncrementClick();
-    });
-    Mousetrap.bind("p n", () => onQueueNext());
-    Mousetrap.bind("p p", () => onQueuePrevious());
-    Mousetrap.bind("p r", () => onQueueRandom());
     Mousetrap.bind(",", () => setCollapsed(!collapsed));
 
     return () => {
-      Mousetrap.unbind("a");
-      Mousetrap.unbind("q");
-      Mousetrap.unbind("e");
-      Mousetrap.unbind("k");
-      Mousetrap.unbind("i");
-      Mousetrap.unbind("h");
-      Mousetrap.unbind("o");
-      Mousetrap.unbind("p n");
-      Mousetrap.unbind("p p");
-      Mousetrap.unbind("p r");
       Mousetrap.unbind(",");
     };
   });
@@ -436,7 +411,6 @@ const ScenePage: React.FC<IProps> = ({
       );
     }
   }
-
   const downloadStream = (url: string) => {
     const link = document.createElement('a');
     link.style.display = 'none';
@@ -505,20 +479,20 @@ const ScenePage: React.FC<IProps> = ({
           <FormattedMessage
             id="actions.delete_entity"
             values={{ entityType: intl.formatMessage({ id: "scene" }) }}
-          />
-        </Dropdown.Item>
-        <Dropdown.Item
-          key="download"
-          className="bg-secondary text-white"
-          onClick={() => {
-            const directStream = scene.sceneStreams.find(stream => stream.label === "Direct stream");
-            if (directStream) {
-              downloadStream(directStream.url);
-            }
-          }}
-        >
-          <FormattedMessage
-            id="actions.download"
+            />
+          </Dropdown.Item>
+          <Dropdown.Item
+            key="download"
+            className="bg-secondary text-white"
+            onClick={() => {
+              const directStream = scene.sceneStreams.find(stream => stream.label === "Direct stream");
+              if (directStream) {
+                downloadStream(directStream.url);
+              }
+            }}
+          >
+            <FormattedMessage
+              id="actions.download"
             values={{ entityType: intl.formatMessage({ id: "scene" }) }}
           />
         </Dropdown.Item>
@@ -554,9 +528,9 @@ const ScenePage: React.FC<IProps> = ({
           </Nav.Item>
           {scene.movies.length > 0 ? (
             <Nav.Item>
-              <Nav.Link eventKey="scene-movie-panel">
+              <Nav.Link eventKey="scene-group-panel">
                 <FormattedMessage
-                  id="countables.movies"
+                  id="countables.groups"
                   values={{ count: scene.movies.length }}
                 />
               </Nav.Link>
@@ -646,8 +620,8 @@ const ScenePage: React.FC<IProps> = ({
             isVisible={activeTabKey === "scene-markers-panel"}
           />
         </Tab.Pane>
-        <Tab.Pane eventKey="scene-movie-panel">
-          <SceneMoviePanel scene={scene} />
+        <Tab.Pane eventKey="scene-group-panel">
+          <SceneGroupPanel scene={scene} />
         </Tab.Pane>
         {scene.galleries.length >= 1 && (
           <Tab.Pane eventKey="scene-galleries-panel">
@@ -669,6 +643,7 @@ const ScenePage: React.FC<IProps> = ({
             scene={scene}
             onSubmit={onSave}
             onDelete={() => setIsDeleteAlertOpen(true)}
+            setEditMode={()=> {}}
           />
         </Tab.Pane>
         <Tab.Pane eventKey="scene-history-panel">
@@ -677,10 +652,6 @@ const ScenePage: React.FC<IProps> = ({
       </Tab.Content>
     </Tab.Container>
   );
-
-  function getCollapseButtonIcon() {
-    return collapsed ? faChevronRight : faChevronLeft;
-  }
 
   const title = objectTitle(scene);
 
@@ -712,11 +683,6 @@ const ScenePage: React.FC<IProps> = ({
         </div>
         {renderTabs()}
       </div>
-      {/* <div className="scene-divider d-none d-xl-block">
-        <Button onClick={() => setCollapsed(!collapsed)}>
-          <Icon className="fa-fw" icon={getCollapseButtonIcon()} />
-        </Button>
-      </div> */}
       <SubmitStashBoxDraft
         type="scene"
         boxes={boxes}
@@ -743,7 +709,6 @@ const UtilityBar: React.FC<UBarProps> = ({
   const [incrementO] = useSceneIncrementO(scene.id);
   const [decrementO] = useSceneDecrementO(scene.id);
   const [resetO] = useSceneResetO(scene.id);
-
   const downloadStream = (url: string) => {
     const link = document.createElement('a');
     link.style.display = 'none';
@@ -753,10 +718,7 @@ const UtilityBar: React.FC<UBarProps> = ({
     link.click();
     document.body.removeChild(link);
   };
-
   const [organizedLoading, setOrganizedLoading] = useState(false);
-
-  const [activeTabKey, setActiveTabKey] = useState("scene-details-panel");
   const [hidePlugins, setHidePlugins] = useState<boolean>(true);
   const [toolbarExpand, setToolbarExpand] = useState<boolean>(false);
   const [isGalleryOpen, setGalleryOpen] = useState<boolean>(false)
@@ -801,13 +763,12 @@ const UtilityBar: React.FC<UBarProps> = ({
       );
     }
   }
-  
   const renderOperations = () => (
-    <Dropdown>
+    <Dropdown className="h-fc">
       <Dropdown.Toggle
         variant="secondary"
         id="operation-menu"
-        className="minimal"
+        className="minimal h-fc"
         title={intl.formatMessage({ id: "operations" })}
       >
         <Icon icon={faEllipsisV} />
@@ -860,20 +821,20 @@ const UtilityBar: React.FC<UBarProps> = ({
           <FormattedMessage
             id="actions.delete_entity"
             values={{ entityType: intl.formatMessage({ id: "scene" }) }}
-          />
-        </Dropdown.Item>
-        <Dropdown.Item
-          key="download"
-          className="bg-secondary text-white"
-          onClick={() => {
-            const directStream = scene.sceneStreams.find(stream => stream.label === "Direct stream");
-            if (directStream) {
-              downloadStream(directStream.url);
-            }
-          }}
-        >
-          <FormattedMessage
-            id="actions.download"
+            />
+          </Dropdown.Item>
+          <Dropdown.Item
+            key="download"
+            className="bg-secondary text-white"
+            onClick={() => {
+              const directStream = scene.sceneStreams.find(stream => stream.label === "Direct stream");
+              if (directStream) {
+                downloadStream(directStream.url);
+              }
+            }}
+          >
+            <FormattedMessage
+              id="actions.download"
             values={{ entityType: intl.formatMessage({ id: "scene" }) }}
           />
         </Dropdown.Item>
@@ -931,7 +892,7 @@ const UtilityBar: React.FC<UBarProps> = ({
   }
 
   const galleriesimages = scene.galleries.map((gallery) => {
-    const { data } = GQL.useFindImagesQuery({
+    const {data} = GQL.useFindImagesQuery({
       variables: {
         filter: {
           per_page: -1,
@@ -939,12 +900,11 @@ const UtilityBar: React.FC<UBarProps> = ({
         image_filter: {
           galleries: {
             modifier: GQL.CriterionModifier.Includes,
-            value: [gallery.id],
-          },
-        },
-      },
-    });
-  
+            value: [gallery.id]
+          }
+        }
+      }
+    })
     const images = data?.findImages.images ?? [];
     const showGalleryLightbox = useGalleryLightbox(gallery.id);
   
@@ -962,83 +922,81 @@ const UtilityBar: React.FC<UBarProps> = ({
       </div>
     );
   });  
-  
   const renderButtons = () => (
     <ButtonGroup className={`ml-auto ubar ${hidePlugins ? "hideplugins" : ""} ${toolbarExpand ? "toolbarexpanded" : ""}`}>
-      {maybeRenderSceneGenerateDialog()}
-      <Nav.Item className="ml-auto">
-        <ExternalPlayerButton scene={scene} />
-      </Nav.Item>
-      <Nav.Item className="ml-auto">
-        <OCounterButton
-          value={scene.o_counter || 0}
-          onIncrement={onIncrementClick}
-          onDecrement={onDecrementClick}
-          onReset={onResetClick}
-        />
-      </Nav.Item>
+    {maybeRenderSceneGenerateDialog()}
+    <Nav.Item className="ml-auto">
+      <ExternalPlayerButton scene={scene} />
+    </Nav.Item>
+    <Nav.Item className="ml-auto">
+      <OCounterButton
+        value={scene.o_counter || 0}
+        onIncrement={onIncrementClick}
+        onDecrement={onDecrementClick}
+        onReset={onResetClick}
+      />
+    </Nav.Item>
+    <Nav.Item>
+      <Button 
+      className="btn-clear"
+      onClick={() => setToolbarExpand(!toolbarExpand)}
+      >
+        <Icon icon={toolbarExpand ? faChevronLeft : faChevronRight} />
+      </Button>
+    </Nav.Item>
+    {toolbarExpand && scene.galleries.length != 0 ? 
       <Nav.Item>
-        <Button
-          className="btn-clear"
-          onClick={() => setToolbarExpand(!toolbarExpand)}
+      <Button 
+      className="btn-clear"
+      onClick={() => setGalleryOpen(!isGalleryOpen)}
+      >
+        <Icon icon={faImage} />
+      </Button>
+      </Nav.Item> : ""
+    }
+    {isGalleryOpen ? <>
+    <div className="scenepage-gallery">
+      <Button
+        className="btn-clear gclose"
+        onClick={() => setGalleryOpen(false)}
         >
-          <Icon icon={toolbarExpand ? faChevronLeft : faChevronRight} />
-        </Button>
-      </Nav.Item>
-      {toolbarExpand && scene.galleries.length !== 0 && (
-        <Nav.Item>
-          <Button
-            className="btn-clear"
-            onClick={() => setGalleryOpen(!isGalleryOpen)}
-          >
-            <Icon icon={faImage} />
-          </Button>
-        </Nav.Item>
-      )}
-      {isGalleryOpen && (
-        <div className="scenepage-gallery">
-          <Button
-            className="btn-clear gclose"
-            onClick={() => setGalleryOpen(false)}
-          >
-            <Icon icon={faX} />
-          </Button>
-          <div className="imgsection">
-            {galleriesimages}
-          </div>
-          <div className="aftersgfade"></div>
-        </div>
-      )}
-      <Nav.Item>
-        <Button
-          className="btn-clear"
-          onClick={() => setHidePlugins(!hidePlugins)}
-        >
-          <Icon icon={faLightbulb} />
-        </Button>
-      </Nav.Item>
-      <Nav.Item>
-        <OrganizedButton
-          loading={false} // Replace with your organizedLoading state
-          organized={scene.organized}
-          onClick={onOrganizedClick}
-        />
-      </Nav.Item>
-      <Nav.Item>
-        <Button
-          className="btn-clear"
-          onClick={() => setEditMode()}
-        >
-          <FormattedMessage id="actions.edit" />
-        </Button>
-      </Nav.Item>
-      <Nav.Item>{renderOperations()}</Nav.Item>
-    </ButtonGroup>
-  );
-
-  return <>{renderButtons()}</>;
+        <Icon icon={faX} />
+      </Button>
+      <div className="imgsection">
+      {galleriesimages}
+      </div>
+      <div className="aftersgfade"></div>
+    </div>
+    
+    </> : ""}
+    <Nav.Item>
+      <Button 
+      className="btn-clear"
+      onClick={() => setHidePlugins(!hidePlugins)}
+      >
+        <Icon icon={faLightbulb} />
+      </Button>
+    </Nav.Item>
+    <Nav.Item>
+      <OrganizedButton
+        loading={organizedLoading}
+        organized={scene.organized}
+        onClick={onOrganizedClick}
+      />
+    </Nav.Item>
+    <Nav.Item>
+      <Button
+      className="btn-clear"
+      onClick={() => setEditMode()}
+      >
+        <FormattedMessage id="actions.edit"/>
+      </Button>
+    </Nav.Item>
+    <Nav.Item>{renderOperations()}</Nav.Item>
+  </ButtonGroup>
+  )
+  return <>{renderButtons()}</>
 };
-
 interface barProps {
   scene: GQL.SceneDataFragment
 }
@@ -1224,7 +1182,6 @@ scene,
   </>
   return render
 }
-
 interface MDProps {
   scene: GQL.SceneDataFragment;
   onCancel: () => void;
@@ -1249,7 +1206,6 @@ const NewMarkerDialog: React.FC<MDProps> = ({
   </Modal>
   </>
 };
-
 const SceneLoader: React.FC<RouteComponentProps<ISceneParams>> = ({
   location,
   history,
@@ -1259,7 +1215,6 @@ const SceneLoader: React.FC<RouteComponentProps<ISceneParams>> = ({
   const { configuration } = useContext(ConfigurationContext);
   const { data, loading, error } = useFindScene(id);
   const [fakeAutoPlay, setFakeAutoPlay] = useState(true);
-
   const [scene, setScene] = useState<GQL.SceneDataFragment>();
   const file = useMemo(
     () => (scene?.files.length! > 0 ? scene?.files[0] : undefined),
@@ -1307,7 +1262,6 @@ const SceneLoader: React.FC<RouteComponentProps<ISceneParams>> = ({
   const initialTimestamp = useMemo(() => {
     return Number.parseInt(queryParams.get("t") ?? "0", 10);
   }, [queryParams]);
-
   const [cheeseKey, setKey] = useState(0);
   const [queueTotal, setQueueTotal] = useState(0);
   const [queueStart, setQueueStart] = useState(1);
@@ -1365,14 +1319,6 @@ const SceneLoader: React.FC<RouteComponentProps<ISceneParams>> = ({
     }
   }, [sceneQueue]);
 
-  useEffect(() => {
-    let ssbutton = (document.querySelector('.ssbutton'));
-    let nmbutton = (document.querySelector('.nmbutton'));
-    let duration = (document.querySelector('.vjs-duration'));
-    duration?.appendChild(ssbutton!);
-    duration?.appendChild(nmbutton!);
-  }, [play])
-
   async function onQueueLessScenes() {
     if (!sceneQueue.query || queueStart <= 1) {
       return;
@@ -1395,7 +1341,6 @@ const SceneLoader: React.FC<RouteComponentProps<ISceneParams>> = ({
   const queueHasMoreScenes = useMemo(() => {
     return queueStart + queueScenes.length - 1 < queueTotal;
   }, [queueStart, queueScenes, queueTotal]);
-
 
   async function onQueueMoreScenes() {
     if (!sceneQueue.query || !queueHasMoreScenes) {
@@ -1525,7 +1470,6 @@ const SceneLoader: React.FC<RouteComponentProps<ISceneParams>> = ({
     if (error) return <ErrorMessage error={error.message} />;
     return <ErrorMessage error={`No scene found with id ${id}.`} />;
   }
-  
   function maybeRenderPerformers() {
     return scene!.performers.length != 0 ? (
       <div className="d-flex flex-wrap justify-content-start align-content-start" style={{
@@ -1534,7 +1478,6 @@ const SceneLoader: React.FC<RouteComponentProps<ISceneParams>> = ({
       }} key={scene!.id}><PerformerButtons scene={scene!}/></div>
     ) : ("")
   }
-
   async function onSave(input: GQL.SceneCreateInput) {
     await updateScene({
       variables: {
@@ -1621,33 +1564,35 @@ const SceneLoader: React.FC<RouteComponentProps<ISceneParams>> = ({
     {markerCar}
   </div>
 
-return (
-  <div className="the-window">
-    <div className="d-flex flex-row afterwindow">
-      <ScenePage 
-        scene={scene} 
-        setTimestamp={setTimestamp}
-        queueScenes={queueScenes}
-        queueStart={queueStart}
-        onDelete={onDelete}
-        onQueueNext={() => queueNext(autoPlayOnSelected)}
-        onQueuePrevious={() => queuePrevious(autoPlayOnSelected)}
-        onQueueRandom={() => queueRandom(autoPlayOnSelected)}
-        onQueueSceneClicked={onQueueSceneClicked}
-        continuePlaylist={continuePlaylist}
-        queueHasMoreScenes={queueHasMoreScenes}
-        onQueueLessScenes={onQueueLessScenes}
-        onQueueMoreScenes={onQueueMoreScenes}
-        collapsed={collapsed}
-        setCollapsed={setCollapsed}
-        setContinuePlaylist={setContinuePlaylist}
-        >
-      </ScenePage>
-      <div className={`the-vert h-fc h-100`}>
-        <div className="topScene">
-          {leftDeets}
-          <div className="scene-player-container">
-            <ScenePlayer
+
+  return (
+    <div className="the-window">
+      <div className="d-flex flex-row afterwindow">
+        <ScenePage 
+          scene={scene} 
+          setTimestamp={setTimestamp}
+          queueScenes={queueScenes}
+          queueStart={queueStart}
+          onDelete={onDelete}
+          onQueueNext={() => queueNext(autoPlayOnSelected)}
+          onQueuePrevious={() => queuePrevious(autoPlayOnSelected)}
+          onQueueRandom={() => queueRandom(autoPlayOnSelected)}
+          onQueueSceneClicked={onQueueSceneClicked}
+          continuePlaylist={continuePlaylist}
+          queueHasMoreScenes={queueHasMoreScenes}
+          onQueueLessScenes={onQueueLessScenes}
+          onQueueMoreScenes={onQueueMoreScenes}
+          collapsed={collapsed}
+          setCollapsed={setCollapsed}
+          setContinuePlaylist={setContinuePlaylist}
+          >
+
+        </ScenePage>
+        <div className={`the-vert h-fc h-100`}>
+          <div className="topScene">
+            {leftDeets}
+            <div className="scene-player-container">
+              <ScenePlayer
               key={cheeseKey}
               play={play}
               scene={scene}
@@ -1660,28 +1605,28 @@ return (
               onNext={() => queueNext(true)}
               onPrevious={() => queuePrevious(true)}
               />
-          </div>
-          <div className="tsfloat">
+            </div>
+            <div className="tsfloat">
             <ScenePreview
-              image={scene.paths.screenshot ?? ""}
-              video={scene.paths.preview ?? ""}
-              isPortrait={false}
-              soundActive={false}
-              />
+                  image={scene.paths.screenshot ?? ""}
+                  video={scene.paths.preview ?? ""}
+                  isPortrait={false}
+                  soundActive={false}
+                  />
+            </div>
           </div>
-        </div>
-        <div className="d-flex flex-row under-player">
-          {!editMode ? 
-            <div className="barsordeets">
+          <div className="d-flex flex-row under-player">
+            {!editMode ? 
+              <div className="barsordeets">
                 <div className="cheeseReset" key={cheeseKey}>
                   <Button 
                   className="btn-clear"
                   onClick={() => {
                     if (Number.parseInt(queryParams.get("t") ?? "0", 10)) history.push(`/scenes/${scene.id}/`)
-                      autoplay=false;
-                      console.info("autoplay false")
-                      setFakeAutoPlay(false);
-                      setKey(cheeseKey + 1); 
+                    autoplay=false;
+                    console.info("autoplay false")
+                    setFakeAutoPlay(false);
+                    setKey(cheeseKey + 1); 
                   }}
                   >
                     <Icon icon={faArrowLeft}/>
@@ -1698,7 +1643,7 @@ return (
                     canvas.toBlob((blob) => {window.open(URL.createObjectURL(blob!), '_blank')})
                   }}
                   >
-                    <Icon icon={faImage}/>
+                    <Icon icon={faCamera}/>
                   </Button>
                   <Button 
                   className="btn-clear nmbutton"
@@ -1710,52 +1655,48 @@ return (
                   </Button>
                   {markerModal ? <NewMarkerDialog onCancel={() => setMarkerModal(false)} scene={scene}/> : ""}
                 </div>
-              <div className="dadeets">
-                {scene.date ? <span className="dadate mt-3">{scene.date!}</span> : ""}
-                {scene.details ? <span className="dadetails mt-5">{scene.details!}</span>: ""}
-                <PerformerPill performers={scene.performers}/>
-                {scene.tags.length !== 0 ? (
-                  <div className="daTags mt-5">
-                    {scene.tags.map((tag) => (
-                      <a href={`/tags/${tag.id}`} className="daTagsTag">
-                        {tag.name}
-                      </a>
-                    ))}
-                  </div>
-                ) : null}
+                <div className="dadeets">
+                  {scene.date ? <span className="dadate mt-3">{scene.date!}</span> : ""}
+                  {scene.details ? <span className="dadetails mt-5">{scene.details!}</span>: ""}
+                    <PerformerPill performers={scene.performers}/>
+                  {scene.tags.length != 0 ? <div className="daTags mt-5">
+                    {scene.tags.map((tag) => <a href={`/tags/${tag.id}`} className="daTagsTag">
+                      {tag.name}
+                    </a>)}
+                  </div>: ""}
+                </div>
+                <div className="dabars">
+                  <NextBars scene={scene}/>
+                </div>
               </div>
-              <div className="dabars">
-                <NextBars scene={scene}/>
-              </div>
-            </div>
-          : 
-          <ScenePage 
-          scene={scene} 
-          setTimestamp={setTimestamp}
-          queueScenes={queueScenes}
-          queueStart={queueStart}
-          onDelete={onDelete}
-          onQueueNext={() => queueNext(autoPlayOnSelected)}
-          onQueuePrevious={() => queuePrevious(autoPlayOnSelected)}
-          onQueueRandom={() => queueRandom(autoPlayOnSelected)}
-          onQueueSceneClicked={onQueueSceneClicked}
-          continuePlaylist={continuePlaylist}
-          queueHasMoreScenes={queueHasMoreScenes}
-          onQueueLessScenes={onQueueLessScenes}
-          onQueueMoreScenes={onQueueMoreScenes}
-          collapsed={false}
-          editFirst={true}
-          setCollapsed={setCollapsed}
-          setContinuePlaylist={setContinuePlaylist}
-          >
-
-        </ScenePage>
-          }
+            : 
+            <ScenePage 
+            scene={scene} 
+            setTimestamp={setTimestamp}
+            queueScenes={queueScenes}
+            queueStart={queueStart}
+            onDelete={onDelete}
+            onQueueNext={() => queueNext(autoPlayOnSelected)}
+            onQueuePrevious={() => queuePrevious(autoPlayOnSelected)}
+            onQueueRandom={() => queueRandom(autoPlayOnSelected)}
+            onQueueSceneClicked={onQueueSceneClicked}
+            continuePlaylist={continuePlaylist}
+            queueHasMoreScenes={queueHasMoreScenes}
+            onQueueLessScenes={onQueueLessScenes}
+            onQueueMoreScenes={onQueueMoreScenes}
+            collapsed={false}
+            editFirst={true}
+            setCollapsed={setCollapsed}
+            setContinuePlaylist={setContinuePlaylist}
+            >
+  
+          </ScenePage>
+            }
+          </div>
         </div>
       </div>
     </div>
-  </div>
-);
+  );
 };
 
 export default SceneLoader;

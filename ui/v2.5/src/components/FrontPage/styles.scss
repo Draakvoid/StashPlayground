@@ -80,8 +80,8 @@
   -o-animation: cardLoadingAnimation 2s infinite ease-in-out;
   animation: cardLoadingAnimation 2s infinite ease-in-out;
   background-clip: border-box;
-  background-color: #30404d;
-  border: 1px solid rgba(0, 0, 0, 0.13);
+  background-color: $active;
+  border: 1px solid $active;
   border-radius: 3px;
   box-shadow: 0 0 0 1px #10161a66, 0 0 #10161a00, 0 0 #10161a00;
   display: flex;
@@ -111,7 +111,7 @@
   }
 }
 
-.movie-skeleton {
+.group-skeleton {
   max-width: 240px;
   min-height: 540px;
   min-width: 240px;
@@ -313,7 +313,7 @@
     width: 20rem;
   }
 
-  .slick-list .movie-card.card {
+  .slick-list .group-card.card {
     width: 16rem;
   }
 
@@ -430,7 +430,7 @@
 
 .slick-dots {
   bottom: -25px;
-  display: block;
+  display: none !important;
   list-style: none;
   margin: 0;
   padding: 0;

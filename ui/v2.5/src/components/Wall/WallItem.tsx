@@ -158,7 +158,6 @@ export const WallItem = <T extends WallItemType>({
         return type as never;
     }
   }, [type, data]);
-
   const linkSrc = useMemo(() => {
     switch (type) {
       case "scene":
@@ -176,7 +175,6 @@ export const WallItem = <T extends WallItemType>({
         return type;
     }
   }, [type, data, sceneQueue, index]);
-
   const title = useMemo(() => {
     switch (type) {
       case "scene":
@@ -186,14 +184,17 @@ export const WallItem = <T extends WallItemType>({
         const sceneMarker = data as GQL.SceneMarkerDataFragment;
         const newTitle = markerTitle(sceneMarker);
         const seconds = TextUtils.secondsToTimestamp(sceneMarker.seconds);
-        return newTitle ? `${newTitle} - ${seconds}` : seconds;
+        if (newTitle) {
+          return `${newTitle} - ${seconds}`;
+        } else {
+          return seconds;
+        }
       case "image":
         return "";
       default:
         return type;
     }
   }, [type, data]);
-
   const tags = useMemo(() => {
     if (type === "sceneMarker") {
       const sceneMarker = data as GQL.SceneMarkerDataFragment;
@@ -227,17 +228,8 @@ export const WallItem = <T extends WallItemType>({
     clickHandler?.(e, data);
   };
 
-  const handleDownload = (url: string) => {
-    const link = document.createElement("a");
-    link.href = url;
-    link.download = url.split("/").pop() || "download";
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-  };
-
   const renderText = () => {
-    if (!showTextContainer) return null;
+    if (!showTextContainer) return;
 
     return (
       <div className="wall-item-text">
@@ -251,27 +243,6 @@ export const WallItem = <T extends WallItemType>({
     );
   };
 
-  const renderDownloadButton = () => {
-    if (type === "sceneMarker") {
-      const sceneMarker = data as GQL.SceneMarkerDataFragment;
-      return (
-        <button
-          className="download-button"
-          onClick={() => handleDownload(sceneMarker.stream)}
-        >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            viewBox="0 0 24 24"
-            fill="currentColor"
-          >
-            <path d="M12 16c.55 0 1-.45 1-1V5c0-.55-.45-1-1-1s-1 .45-1 1v10c0 .55.45 1 1 1zm4.29-2.29c.39-.39.39-1.02 0-1.41-.39-.39-1.02-.39-1.41 0L13 14.17V9c0-.55-.45-1-1-1s-1 .45-1 1v5.17l-1.88-1.88c-.39-.39-1.02-.39-1.41 0-.39.39-.39 1.02 0 1.41l3.29 3.29c.19.19.44.29.71.29s.51-.1.71-.29l3.29-3.29zM18 18H6c-.55 0-1 .45-1 1s.45 1 1 1h12c.55 0 1-.45 1-1s-.45-1-1-1z"/>
-          </svg>
-        </button>
-      );
-    }
-    return null;
-  };
-
   return (
     <div className="wall-item">
       <div className={`wall-item-container ${className}`} ref={itemEl}>
@@ -279,7 +250,6 @@ export const WallItem = <T extends WallItemType>({
           <Preview previews={previews} config={config} active={active} />
           {renderText()}
         </Link>
-        {renderDownloadButton()}
       </div>
     </div>
   );

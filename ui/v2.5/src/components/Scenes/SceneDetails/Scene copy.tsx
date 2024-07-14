@@ -1,4 +1,4 @@
-import { Tab, Nav, Dropdown, Button } from "react-bootstrap";
+import { Tab, Nav, Dropdown, Button, ButtonGroup } from "react-bootstrap";
 import React, {
   useEffect,
   useState,
@@ -7,7 +7,7 @@ import React, {
   useRef,
   useLayoutEffect,
 } from "react";
-import { FormattedDate, FormattedMessage, useIntl } from "react-intl";
+import { FormattedMessage, useIntl } from "react-intl";
 import { Link, RouteComponentProps } from "react-router-dom";
 import { Helmet } from "react-helmet";
 import * as GQL from "src/core/generated-graphql";
@@ -15,11 +15,12 @@ import {
   mutateMetadataScan,
   useFindScene,
   useSceneIncrementO,
+  useSceneDecrementO,
+  useSceneResetO,
   useSceneGenerateScreenshot,
   useSceneUpdate,
   queryFindScenes,
   queryFindScenesByID,
-  useSceneIncrementPlayCount,
 } from "src/core/StashService";
 
 import { SceneEditPanel } from "./SceneEditPanel";
@@ -31,30 +32,22 @@ import { useToast } from "src/hooks/Toast";
 import SceneQueue, { QueuedScene } from "src/models/sceneQueue";
 import { ListFilterModel } from "src/models/list-filter/filter";
 import Mousetrap from "mousetrap";
+import { OCounterButton } from "./OCounterButton";
 import { OrganizedButton } from "./OrganizedButton";
 import { ConfigurationContext } from "src/hooks/Config";
-import { getPlayerPosition} from "src/components/ScenePlayer/util";
+import { getPlayerPosition } from "src/components/ScenePlayer/util";
 import {
   faEllipsisV,
   faChevronRight,
   faChevronLeft,
-  faDownload,
 } from "@fortawesome/free-solid-svg-icons";
-import { objectPath, objectTitle } from "src/core/files";
-import { RatingSystem } from "src/components/Shared/Rating/RatingSystem";
-import TextUtils from "src/utils/text";
-import {
-  OCounterButton,
-  ViewCountButton,
-} from "src/components/Shared/CountButton";
-import { useRatingKeybinds } from "src/hooks/keybinds";
 import { lazyComponent } from "src/utils/lazyComponent";
-import cx from "classnames";
-import { TruncatedText } from "src/components/Shared/TruncatedText";
-import ScenePlayer from "src/components/ScenePlayer/ScenePlayer";
 
 const SubmitStashBoxDraft = lazyComponent(
   () => import("src/components/Dialogs/SubmitDraft")
+);
+const ScenePlayer = lazyComponent(
+  () => import("src/components/ScenePlayer/ScenePlayer")
 );
 
 const GalleryViewer = lazyComponent(
@@ -80,54 +73,7 @@ const GenerateDialog = lazyComponent(
 const SceneVideoFilterPanel = lazyComponent(
   () => import("./SceneVideoFilterPanel")
 );
-
-const VideoFrameRateResolution: React.FC<{
-  width?: number;
-  height?: number;
-  frameRate?: number;
-}> = ({ width, height, frameRate }) => {
-  const intl = useIntl();
-
-  const resolution = useMemo(() => {
-    if (width && height) {
-      const r = TextUtils.resolution(width, height);
-      return (
-        <span className="resolution" data-value={r}>
-          {r}
-        </span>
-      );
-    }
-    return undefined;
-  }, [width, height]);
-    
-  const frameRateDisplay = useMemo(() => {
-    if (frameRate) {
-      return (
-        <span className="frame-rate" data-value={frameRate}>
-          <FormattedMessage
-            id="frames_per_second"
-            values={{ value: intl.formatNumber(frameRate ?? 0) }}
-          />
-        </span>
-      );
-    }
-    return undefined;
-  }, [intl, frameRate]);
-
-  const divider = useMemo(() => {
-    return resolution && frameRateDisplay ? (
-      <span className="divider"> | </span>
-    ) : undefined;
-  }, [resolution, frameRateDisplay]);
-
-  return (
-    <span>
-      {frameRateDisplay}
-      {divider}
-      {resolution}
-    </span>
-  );
-};
+import { objectPath, objectTitle } from "src/core/files";
 
 interface IProps {
   scene: GQL.SceneDataFragment;
@@ -180,16 +126,8 @@ const ScenePage: React.FC<IProps> = ({
   const boxes = configuration?.general?.stashBoxes ?? [];
 
   const [incrementO] = useSceneIncrementO(scene.id);
-
-  const [incrementPlay] = useSceneIncrementPlayCount();
-
-  function incrementPlayCount() {
-    incrementPlay({
-      variables: {
-        id: scene.id,
-      },
-    });
-  }
+  const [decrementO] = useSceneDecrementO(scene.id);
+  const [resetO] = useSceneResetO(scene.id);
 
   const [organizedLoading, setOrganizedLoading] = useState(false);
 
@@ -198,7 +136,7 @@ const ScenePage: React.FC<IProps> = ({
   const [isDeleteAlertOpen, setIsDeleteAlertOpen] = useState<boolean>(false);
   const [isGenerateDialogOpen, setIsGenerateDialogOpen] = useState(false);
 
-  const onIncrementOClick = async () => {
+  const onIncrementClick = async () => {
     try {
       await incrementO();
     } catch (e) {
@@ -206,22 +144,13 @@ const ScenePage: React.FC<IProps> = ({
     }
   };
 
-  function setRating(v: number | null) {
-    updateScene({
-      variables: {
-        input: {
-          id: scene.id,
-          rating100: v,
-        },
-      },
-    });
-  }
-
-  useRatingKeybinds(
-    true,
-    configuration?.ui.ratingSystemOptions?.type,
-    setRating
-  );
+  const onDecrementClick = async () => {
+    try {
+      await decrementO();
+    } catch (e) {
+      Toast.error(e);
+    }
+  };
 
   // set up hotkeys
   useEffect(() => {
@@ -232,7 +161,7 @@ const ScenePage: React.FC<IProps> = ({
     Mousetrap.bind("i", () => setActiveTabKey("scene-file-info-panel"));
     Mousetrap.bind("h", () => setActiveTabKey("scene-history-panel"));
     Mousetrap.bind("o", () => {
-      onIncrementOClick();
+      onIncrementClick();
     });
     Mousetrap.bind("p n", () => onQueueNext());
     Mousetrap.bind("p p", () => onQueuePrevious());
@@ -286,6 +215,14 @@ const ScenePage: React.FC<IProps> = ({
       Toast.error(e);
     } finally {
       setOrganizedLoading(false);
+    }
+  };
+
+  const onResetClick = async () => {
+    try {
+      await resetO();
+    } catch (e) {
+      Toast.error(e);
     }
   };
 
@@ -350,16 +287,6 @@ const ScenePage: React.FC<IProps> = ({
     }
   }
 
-  const downloadStream = (url: string) => {
-    const link = document.createElement('a');
-    link.style.display = 'none';
-    link.href = url;
-    link.setAttribute('download', '');
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-  };
-
   const renderOperations = () => (
     <Dropdown>
       <Dropdown.Toggle
@@ -420,25 +347,9 @@ const ScenePage: React.FC<IProps> = ({
             values={{ entityType: intl.formatMessage({ id: "scene" }) }}
           />
         </Dropdown.Item>
-        <Dropdown.Item
-          key="download"
-          className="bg-secondary text-white"
-          onClick={() => {
-            const directStream = scene.sceneStreams.find(stream => stream.label === "Direct stream");
-            if (directStream) {
-              downloadStream(directStream.url);
-            }
-          }}
-        >
-          <FormattedMessage
-            id="actions.download"
-            values={{ entityType: intl.formatMessage({ id: "scene" }) }}
-          />
-        </Dropdown.Item>
       </Dropdown.Menu>
     </Dropdown>
   );
-  
 
   const renderTabs = () => (
     <Tab.Container
@@ -509,6 +420,27 @@ const ScenePage: React.FC<IProps> = ({
               <FormattedMessage id="actions.edit" />
             </Nav.Link>
           </Nav.Item>
+          <ButtonGroup className="ml-auto">
+            <Nav.Item className="ml-auto">
+              <ExternalPlayerButton scene={scene} />
+            </Nav.Item>
+            <Nav.Item className="ml-auto">
+              <OCounterButton
+                value={scene.o_counter || 0}
+                onIncrement={onIncrementClick}
+                onDecrement={onDecrementClick}
+                onReset={onResetClick}
+              />
+            </Nav.Item>
+            <Nav.Item>
+              <OrganizedButton
+                loading={organizedLoading}
+                organized={scene.organized}
+                onClick={onOrganizedClick}
+              />
+            </Nav.Item>
+            <Nav.Item>{renderOperations()}</Nav.Item>
+          </ButtonGroup>
         </Nav>
       </div>
 
@@ -562,6 +494,7 @@ const ScenePage: React.FC<IProps> = ({
             scene={scene}
             onSubmit={onSave}
             onDelete={() => setIsDeleteAlertOpen(true)}
+            setEditMode={()=> {}}
           />
         </Tab.Pane>
         <Tab.Pane eventKey="scene-history-panel">
@@ -577,11 +510,6 @@ const ScenePage: React.FC<IProps> = ({
 
   const title = objectTitle(scene);
 
-  const file = useMemo(
-    () => (scene.files.length > 0 ? scene.files[0] : undefined),
-    [scene]
-  );
-
   return (
     <>
       <Helmet>
@@ -594,76 +522,19 @@ const ScenePage: React.FC<IProps> = ({
           collapsed ? "collapsed" : ""
         }`}
       >
-        <div>
-          <div className="scene-header-container">
-            {scene.studio && (
-              <h1 className="text-center scene-studio-image">
-                <Link to={`/studios/${scene.studio.id}`}>
-                  <img
-                    src={scene.studio.image_path ?? ""}
-                    alt={`${scene.studio.name} logo`}
-                    className="studio-logo"
-                  />
-                </Link>
-              </h1>
-            )}
-            <h3 className={cx("scene-header", { "no-studio": !scene.studio })}>
-              <TruncatedText lineCount={2} text={title} />
-            </h3>
-          </div>
-
-          <div className="scene-subheader">
-            <span className="date" data-value={scene.date}>
-              {!!scene.date && (
-                <FormattedDate
-                  value={scene.date}
-                  format="long"
-                  timeZone="utc"
+        <div className="d-none d-xl-block">
+          {scene.studio && (
+            <h1 className="mt-3 text-center">
+              <Link to={`/studios/${scene.studio.id}`}>
+                <img
+                  src={scene.studio.image_path ?? ""}
+                  alt={`${scene.studio.name} logo`}
+                  className="studio-logo"
                 />
-              )}
-            </span>
-            <VideoFrameRateResolution
-              width={file?.width}
-              height={file?.height}
-              frameRate={file?.frame_rate}
-            />
-          </div>
-
-          <div className="scene-toolbar">
-            <span className="scene-toolbar-group">
-              <RatingSystem
-                value={scene.rating100}
-                onSetRating={setRating}
-                clickToRate
-                withoutContext
-              />
-            </span>
-            <span className="scene-toolbar-group">
-              <span>
-                <ExternalPlayerButton scene={scene} />
-              </span>
-              <span>
-                <ViewCountButton
-                  value={scene.play_count ?? 0}
-                  onIncrement={() => incrementPlayCount()}
-                />
-              </span>
-              <span>
-                <OCounterButton
-                  value={scene.o_counter ?? 0}
-                  onIncrement={() => onIncrementOClick()}
-                />
-              </span>
-              <span>
-                <OrganizedButton
-                  loading={organizedLoading}
-                  organized={scene.organized}
-                  onClick={onOrganizedClick}
-                />
-              </span>
-              <span>{renderOperations()}</span>
-            </span>
-          </div>
+              </Link>
+            </h1>
+          )}
+          <h3 className="scene-header">{title}</h3>
         </div>
         {renderTabs()}
       </div>
@@ -962,6 +833,7 @@ const SceneLoader: React.FC<RouteComponentProps<ISceneParams>> = ({
       <div className={`scene-player-container ${collapsed ? "expanded" : ""}`}>
         <ScenePlayer
           key="ScenePlayer"
+          play={false}
           scene={scene}
           hideScrubberOverride={hideScrubber}
           autoplay={autoplay}
@@ -974,6 +846,7 @@ const SceneLoader: React.FC<RouteComponentProps<ISceneParams>> = ({
         />
       </div>
     </div>
-  );  
-}
-  export default SceneLoader;
+  );
+};
+
+export default SceneLoader;

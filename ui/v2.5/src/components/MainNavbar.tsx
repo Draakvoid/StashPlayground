@@ -1,4 +1,10 @@
-import React, { useEffect, useRef, useState, useCallback } from "react";
+import React, {
+  useEffect,
+  useRef,
+  useState,
+  useCallback,
+  useMemo,
+} from "react";
 import {
   defineMessages,
   FormattedMessage,
@@ -31,9 +37,11 @@ import {
   faTimes,
   faUser,
   faVideo,
+  faHome,
 } from "@fortawesome/free-solid-svg-icons";
 import { baseURL } from "src/core/createClient";
 import { PatchComponent } from "src/patch";
+import { SearchBox } from "./SearchBox";
 
 interface IMenuItem {
   name: string;
@@ -44,6 +52,14 @@ interface IMenuItem {
   userCreatable?: boolean;
 }
 const messages = defineMessages({
+  home: {
+    id: "home",
+    defaultMessage: "Home",
+  },
+  recommendations: {
+    id: "recommendations",
+    defaultMessage: "Recommendations"
+  },
   scenes: {
     id: "scenes",
     defaultMessage: "Scenes",
@@ -52,9 +68,9 @@ const messages = defineMessages({
     id: "images",
     defaultMessage: "Images",
   },
-  movies: {
-    id: "movies",
-    defaultMessage: "Movies",
+  groups: {
+    id: "groups",
+    defaultMessage: "Groups",
   },
   markers: {
     id: "markers",
@@ -85,12 +101,27 @@ const messages = defineMessages({
     defaultMessage: "Donate",
   },
   statistics: {
-    id: "statistics",
-    defaultMessage: "Statistics",
+    id: "statistics_short",
+    defaultMessage: "Stats",
   },
 });
 
 const allMenuItems: IMenuItem[] = [
+  {
+    name: "home",
+    message: messages.home,
+    href: "/",
+    icon: faHome,
+    hotkey: "g hx",
+    userCreatable: false,
+  },
+  {
+    name: "recommendations",
+    message: messages.recommendations,
+    href: "/recommendations",
+    icon: faPlayCircle,
+    hotkey: "g hr",
+  },
   {
     name: "scenes",
     message: messages.scenes,
@@ -107,9 +138,9 @@ const allMenuItems: IMenuItem[] = [
     hotkey: "g i",
   },
   {
-    name: "movies",
-    message: messages.movies,
-    href: "/movies",
+    name: "groups",
+    message: messages.groups,
+    href: "/groups",
     icon: faFilm,
     hotkey: "g v",
     userCreatable: true,
@@ -153,6 +184,13 @@ const allMenuItems: IMenuItem[] = [
     hotkey: "g t",
     userCreatable: true,
   },
+  { name: "stats", 
+    message: messages.statistics,
+    href: "/stats",
+    icon: faChartColumn,
+    hotkey: "i",
+    userCreatable: true,
+  }
 ];
 
 const newPathsList = allMenuItems
@@ -179,20 +217,26 @@ export const MainNavbar: React.FC = () => {
   const { configuration, loading } = React.useContext(ConfigurationContext);
   const { openManual } = React.useContext(ManualStateContext);
 
-  // Show all menu items by default, unless config says otherwise
-  const [menuItems, setMenuItems] = useState<IMenuItem[]>(allMenuItems);
-
   const [expanded, setExpanded] = useState(false);
 
-  useEffect(() => {
-    const iCfg = configuration?.interface;
-    if (iCfg?.menuItems) {
-      setMenuItems(
-        allMenuItems.filter((menuItem) =>
-          iCfg.menuItems!.includes(menuItem.name)
-        )
-      );
+  // Show all menu items by default, unless config says otherwise
+  const menuItems = useMemo(() => {
+    let cfgMenuItems = configuration?.interface.menuItems;
+    if (!cfgMenuItems) {
+      return allMenuItems;
     }
+
+    // translate old movies menu item to groups
+    cfgMenuItems = cfgMenuItems.map((item) => {
+      if (item === "movies") {
+        return "groups";
+      }
+      return item;
+    });
+
+    return allMenuItems.filter((menuItem) =>
+      cfgMenuItems!.includes(menuItem.name)
+    );
   }, [configuration]);
 
   // react-bootstrap typing bug
@@ -242,30 +286,6 @@ export const MainNavbar: React.FC = () => {
     }
   }
 
-  // set up hotkeys
-  useEffect(() => {
-    Mousetrap.bind("?", () => openManual());
-    Mousetrap.bind("g z", () => goto("/settings"));
-
-    menuItems.forEach((item) =>
-      Mousetrap.bind(item.hotkey, () => goto(item.href))
-    );
-
-    if (newPath) {
-      Mousetrap.bind("n", () => history.push(String(newPath)));
-    }
-
-    return () => {
-      Mousetrap.unbind("?");
-      Mousetrap.unbind("g z");
-      menuItems.forEach((item) => Mousetrap.unbind(item.hotkey));
-
-      if (newPath) {
-        Mousetrap.unbind("n");
-      }
-    };
-  });
-
   function maybeRenderLogout() {
     if (SessionUtils.isLoggedIn()) {
       return (
@@ -285,35 +305,6 @@ export const MainNavbar: React.FC = () => {
   function renderUtilityButtons() {
     return (
       <>
-        <Nav.Link
-          className="nav-utility"
-          href="https://opencollective.com/stashapp"
-          target="_blank"
-          onClick={handleDismiss}
-        >
-          <Button
-            className="minimal donate"
-            title={intl.formatMessage({ id: "donate" })}
-          >
-            <Icon icon={faHeart} />
-            <span className="d-none d-sm-inline">
-              {intl.formatMessage(messages.donate)}
-            </span>
-          </Button>
-        </Nav.Link>
-        <NavLink
-          className="nav-utility"
-          exact
-          to="/stats"
-          onClick={handleDismiss}
-        >
-          <Button
-            className="minimal d-flex align-items-center h-100"
-            title={intl.formatMessage({ id: "statistics" })}
-          >
-            <Icon icon={faChartColumn} />
-          </Button>
-        </NavLink>
         <NavLink
           className="nav-utility"
           exact
@@ -322,13 +313,6 @@ export const MainNavbar: React.FC = () => {
         >
           <SettingsButton />
         </NavLink>
-        <Button
-          className="nav-utility minimal"
-          onClick={() => openManual()}
-          title={intl.formatMessage({ id: "help" })}
-        >
-          <Icon icon={faQuestionCircle} />
-        </Button>
         {maybeRenderLogout()}
       </>
     );
@@ -379,12 +363,8 @@ export const MainNavbar: React.FC = () => {
           </Fade>
         </Navbar.Collapse>
 
-        <Navbar.Brand as="div" onClick={handleDismiss}>
-          <Link to="/">
-            <Button className="minimal brand-link d-inline-block">Stash</Button>
-          </Link>
-        </Navbar.Brand>
-
+        <SearchBox />
+        
         <Nav className="navbar-buttons flex-row ml-auto order-xl-2">
           {!!newPath && (
             <div className="mr-2">

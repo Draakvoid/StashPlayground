@@ -1,4 +1,4 @@
-import React, { MutableRefObject, useRef, useState, forwardRef } from "react";
+import React, { MutableRefObject, useRef, useState } from "react";
 import { Card, Form } from "react-bootstrap";
 import { Link } from "react-router-dom";
 import cx from "classnames";
@@ -66,7 +66,7 @@ export const useContainerDimensions = <T extends HTMLElement = HTMLDivElement>(
   return [target, dimension];
 };
 
-export const GridCard = forwardRef<HTMLDivElement, ICardProps>((props, ref) => {
+export const GridCard: React.FC<ICardProps> = (props: ICardProps) => {
   function handleImageClick(event: React.MouseEvent<HTMLElement, MouseEvent>) {
     const { shiftKey } = event;
 
@@ -154,7 +154,6 @@ export const GridCard = forwardRef<HTMLDivElement, ICardProps>((props, ref) => {
 
   return (
     <Card
-      ref={ref}
       className={cx(props.className, "grid-card")}
       onClick={handleImageClick}
       onDragStart={handleDrag}
@@ -193,4 +192,4 @@ export const GridCard = forwardRef<HTMLDivElement, ICardProps>((props, ref) => {
       {props.popovers}
     </Card>
   );
-});
+};

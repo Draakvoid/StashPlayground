@@ -55,8 +55,7 @@ export function maybeRenderAltImageHead(performerId: string): string | null {
         },
         tags: {
           modifier: GQL.CriterionModifier.Includes,
-          value: ["1561"], // insert your alt image tag id # here ex: ["1736"]
-          // value: ["3"]
+          value: ["2"], // insert your alt image tag id # here ex: ["1561"]
         },
       },
     },
@@ -204,22 +203,6 @@ export const PerformerCardAltHead: React.FC<IPerformerCardProps> = ({
     );
   }
 
-  function maybeRenderMoviesPopoverButton() {
-    if (!performer.movie_count) return;
-
-    return (
-      <PopoverCountButton
-        className="movie-count"
-        type="movie"
-        count={performer.movie_count}
-        url={NavUtils.makePerformerMoviesUrl(
-          performer,
-          extraCriteria?.performer,
-          extraCriteria?.movies
-        )}
-      />
-    );
-  }
 
   function maybeRenderPopoverButtonGroup() {
     if (
@@ -235,7 +218,6 @@ export const PerformerCardAltHead: React.FC<IPerformerCardProps> = ({
           <hr />
           <ButtonGroup className="card-popovers">
             {maybeRenderScenesPopoverButton()}
-            {maybeRenderMoviesPopoverButton()}
             {maybeRenderImagesPopoverButton()}
             {maybeRenderGalleriesPopoverButton()}
             {maybeRenderTagPopoverButton()}

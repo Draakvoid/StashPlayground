@@ -50,6 +50,7 @@ import { PluginRoutes } from "./plugins";
 // import plugin_api to run code
 import "./pluginApi";
 import { ConnectionMonitor } from "./ConnectionMonitor";
+import { PatchFunction } from "./patch";
 
 const Performers = lazyComponent(
   () => import("./components/Performers/Performers")
@@ -57,6 +58,9 @@ const Performers = lazyComponent(
 const FrontPage = lazyComponent(
   () => import("./components/FrontPage/FrontPage")
 );
+const RecPage = lazyComponent(
+  () => import("./components/Recommendations/Recommendations")
+)
 const Scenes = lazyComponent(() => import("./components/Scenes/Scenes"));
 const Settings = lazyComponent(() => import("./components/Settings/Settings"));
 const Stats = lazyComponent(() => import("./components/Stats"));
@@ -65,7 +69,7 @@ const Galleries = lazyComponent(
   () => import("./components/Galleries/Galleries")
 );
 
-const Movies = lazyComponent(() => import("./components/Movies/Movies"));
+const Groups = lazyComponent(() => import("./components/Movies/Movies"));
 const Tags = lazyComponent(() => import("./components/Tags/Tags"));
 const Images = lazyComponent(() => import("./components/Images/Images"));
 const Setup = lazyComponent(() => import("./components/Setup/Setup"));
@@ -143,6 +147,13 @@ function sortPlugins(plugins: PluginList) {
 
   return sorted;
 }
+
+const AppContainer: React.FC<React.PropsWithChildren<{}>> = PatchFunction(
+  "App",
+  (props: React.PropsWithChildren<{}>) => {
+    return <>{props.children}</>;
+  }
+) as React.FC;
 
 export const App: React.FC = () => {
   const config = useConfiguration();
@@ -298,13 +309,14 @@ export const App: React.FC = () => {
         <Suspense fallback={<LoadingIndicator />}>
           <Switch>
             <Route exact path="/" component={FrontPage} />
+            <Route path="/recommendations" component={RecPage} />
             <Route path="/scenes" component={Scenes} />
             <Route path="/images" component={Images} />
             <Route path="/galleries" component={Galleries} />
             <Route path="/performers" component={Performers} />
             <Route path="/tags" component={Tags} />
             <Route path="/studios" component={Studios} />
-            <Route path="/movies" component={Movies} />
+            <Route path="/groups" component={Groups} />
             <Route path="/stats" component={Stats} />
             <Route path="/settings" component={Settings} />
             <Route
@@ -357,41 +369,43 @@ export const App: React.FC = () => {
   const titleProps = makeTitleProps();
 
   return (
-    <ErrorBoundary>
-      {messages ? (
-        <IntlProvider
-          locale={language}
-          messages={messages}
-          formats={intlFormats}
-        >
-          <ConfigurationProvider
-            configuration={config.data?.configuration}
-            loading={config.loading}
+    <AppContainer>
+      <ErrorBoundary>
+        {messages ? (
+          <IntlProvider
+            locale={language}
+            messages={messages}
+            formats={intlFormats}
           >
-            {maybeRenderReleaseNotes()}
-            <ToastProvider>
-              <ConnectionMonitor />
-              <Suspense fallback={<LoadingIndicator />}>
-                <LightboxProvider>
-                  <ManualProvider>
-                    <InteractiveProvider>
-                      <Helmet {...titleProps} />
-                      {maybeRenderNavbar()}
-                      <div
-                        className={`main container-fluid ${
-                          appleRendering ? "apple" : ""
-                        }`}
-                      >
-                        {renderContent()}
-                      </div>
-                    </InteractiveProvider>
-                  </ManualProvider>
-                </LightboxProvider>
-              </Suspense>
-            </ToastProvider>
-          </ConfigurationProvider>
-        </IntlProvider>
-      ) : null}
-    </ErrorBoundary>
+            <ConfigurationProvider
+              configuration={config.data?.configuration}
+              loading={config.loading}
+            >
+              {maybeRenderReleaseNotes()}
+              <ToastProvider>
+                <ConnectionMonitor />
+                <Suspense fallback={<LoadingIndicator />}>
+                  <LightboxProvider>
+                    <ManualProvider>
+                      <InteractiveProvider>
+                        <Helmet {...titleProps} />
+                        {maybeRenderNavbar()}
+                        <div
+                          className={`main container-fluid ${
+                            appleRendering ? "apple" : ""
+                          }`}
+                        >
+                          {renderContent()}
+                        </div>
+                      </InteractiveProvider>
+                    </ManualProvider>
+                  </LightboxProvider>
+                </Suspense>
+              </ToastProvider>
+            </ConfigurationProvider>
+          </IntlProvider>
+        ) : null}
+      </ErrorBoundary>
+    </AppContainer>
   );
 };
