@@ -362,8 +362,13 @@ export const MainNavbar: React.FC = () => {
             </>
           </Fade>
         </Navbar.Collapse>
-
+        <Navbar.Brand as="div" onClick={handleDismiss}>
+          <Link to="/">
+            <Button className="minimal brand-link d-inline-block">Stash</Button>
+          </Link>
+        </Navbar.Brand>
         <SearchBox />
+        
         
         <Nav className="navbar-buttons flex-row ml-auto order-xl-2">
           {!!newPath && (
