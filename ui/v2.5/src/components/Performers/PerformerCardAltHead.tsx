@@ -55,7 +55,7 @@ export function maybeRenderAltImageHead(performerId: string): string | null {
         },
         tags: {
           modifier: GQL.CriterionModifier.Includes,
-          value: ["2"], // insert your alt image tag id # here ex: ["1561"]
+          value: ["1561"], // insert your alt image tag id # here ex: ["1561"]
         },
       },
     },
