@@ -586,7 +586,7 @@ const PerformerPage: React.FC<IProps> = ({ performer, tabKey }) => {
       <Helmet>
         <title>{performer.name}</title>
       </Helmet>
-
+  
       <div className={headerClassName}>
         {maybeRenderHeaderBackgroundImage()}
         <div className="detail-container">
@@ -601,23 +601,25 @@ const PerformerPage: React.FC<IProps> = ({ performer, tabKey }) => {
           </div>
           <div className="row">
             <div className="performer-head col">
-              <h2>
-                <span className="performer-name">{performer.name}</span>
-                {performer.disambiguation && (
-                  <span className="performer-disambiguation">
-                    {` (${performer.disambiguation})`}
-                  </span>
-                )}
-                {maybeRenderShowCollapseButton()}
-                {renderClickableIcons()}
-                <Button
-                  className="minimal expand-collapse-edit edit-bar-toggle mr-2"
-                  onClick={toggleEditBar}
-                >
-                  <Icon className="fa-fw" icon={faPenToSquare} />
-                </Button>
+              <div className="performer-header">
+                <div className="performer-name-container">
+                  <span className="performer-name">{performer.name}</span>
+                  {performer.disambiguation && (
+                    <span className="performer-disambiguation">
+                      {` (${performer.disambiguation})`}
+                    </span>
+                  )}
+                  {maybeRenderShowCollapseButton()}
+                  {renderClickableIcons()}
+                  <Button
+                    className="minimal expand-collapse-edit edit-bar-toggle mr-2"
+                    onClick={toggleEditBar}
+                  >
+                    <Icon className="fa-fw" icon={faPenToSquare} />
+                  </Button>
+                </div>
                 {maybeRenderEditPanel()}
-              </h2>
+              </div>
               {maybeRenderAliases()}
               <RatingSystem
                 value={performer.rating100}
@@ -626,7 +628,6 @@ const PerformerPage: React.FC<IProps> = ({ performer, tabKey }) => {
                 withoutContext
               />
               {maybeRenderDetails()}
-              
             </div>
           </div>
         </div>
@@ -638,8 +639,8 @@ const PerformerPage: React.FC<IProps> = ({ performer, tabKey }) => {
         </div>
       </div>
     </div>
-  );
-};
+  );  
+  };
 
 const PerformerLoader: React.FC<RouteComponentProps<IPerformerParams>> = ({
   location,
