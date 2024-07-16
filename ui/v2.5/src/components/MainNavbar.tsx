@@ -1,16 +1,5 @@
-import React, {
-  useEffect,
-  useRef,
-  useState,
-  useCallback,
-  useMemo,
-} from "react";
-import {
-  defineMessages,
-  FormattedMessage,
-  MessageDescriptor,
-  useIntl,
-} from "react-intl";
+import React, { useEffect, useRef, useState, useCallback, useMemo } from "react";
+import { defineMessages, FormattedMessage, MessageDescriptor, useIntl } from "react-intl";
 import { Nav, Navbar, Button, Fade } from "react-bootstrap";
 import { IconDefinition } from "@fortawesome/fontawesome-svg-core";
 import { LinkContainer } from "react-router-bootstrap";
@@ -364,12 +353,13 @@ export const MainNavbar: React.FC = () => {
         </Navbar.Collapse>
         <Navbar.Brand as="div" onClick={handleDismiss}>
           <Link to="/">
-            <Button className="minimal brand-link d-inline-block">Stash</Button>
+            <Button className="minimal brand-link d-inline-block">
+              <Icon icon={faHome} className="mr-2" />
+              Home
+            </Button>
           </Link>
         </Navbar.Brand>
         <SearchBox />
-        
-        
         <Nav className="navbar-buttons flex-row ml-auto order-xl-2">
           {!!newPath && (
             <div className="mr-2">
