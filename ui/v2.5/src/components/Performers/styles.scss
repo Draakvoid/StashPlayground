@@ -1,3 +1,22 @@
+#performer-page .performer-tabs-container {
+  display: block;
+  visibility: visible;
+  height: auto;
+}
+
+#performer-page .nav-tabs {
+  display: flex;
+  margin-bottom: 1rem;
+}
+
+#performer-page .tab-content {
+  display: block;
+  visibility: visible;
+  height: auto;
+  overflow: visible;
+}
+
+
 #performer-page {
   .performer-image-container {
     .btn {
