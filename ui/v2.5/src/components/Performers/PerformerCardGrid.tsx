@@ -1,6 +1,6 @@
 import React from "react";
 import * as GQL from "src/core/generated-graphql";
-import { IPerformerCardExtraCriteria, PerformerCardTilt } from "./PerformerCardTilt";
+import { IPerformerCardExtraCriteria, PerformerCard } from "./PerformerCard";
 import { useContainerDimensions } from "../Shared/GridCard/GridCard";
 
 interface IPerformerCardGrid {
@@ -21,7 +21,7 @@ export const PerformerCardGrid: React.FC<IPerformerCardGrid> = ({
   return (
     <div className="row justify-content-center" ref={componentRef}>
       {performers.map((p) => (
-        <PerformerCardTilt
+        <PerformerCard
           key={p.id}
           containerWidth={width}
           performer={p}
