@@ -21,6 +21,7 @@ import { EditPerformersDialog } from "./EditPerformersDialog";
 import { cmToImperial, cmToInches, kgToLbs } from "src/utils/units";
 import TextUtils from "src/utils/text";
 import { PerformerCardGrid } from "./PerformerCardGrid";
+import { PerformerCardCard } from "./PerformerCardCard";
 import { View } from "../List/views";
 
 const PerformerItemList = makeItemList({
@@ -282,6 +283,17 @@ export const PerformerList: React.FC<IPerformerList> = ({
       if (filter.displayMode === DisplayMode.Tagger) {
         return (
           <PerformerTagger performers={result.data.findPerformers.performers} />
+        );
+      }
+      if (filter.displayMode === DisplayMode.Card) {
+        return (
+          <PerformerCardCard
+            performers={result.data.findPerformers.performers}
+            zoomIndex={filter.zoomIndex}
+            selectedIds={selectedIds}
+            onSelectChange={onSelectChange}
+            extraCriteria={extraCriteria}
+          />
         );
       }
     }

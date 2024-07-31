@@ -11,6 +11,7 @@ import { DisplayMode } from "src/models/list-filter/types";
 import { useIntl } from "react-intl";
 import { Icon } from "../Shared/Icon";
 import {
+  faIdCard,
   faList,
   faSquare,
   faTags,
@@ -84,25 +85,30 @@ export const ListViewOptions: React.FC<IListViewOptionsProps> = ({
           return faSquare;
         case DisplayMode.Tagger:
           return faTags;
+        case DisplayMode.Card:
+          return faIdCard
       }
     }
     function getLabel(option: DisplayMode) {
       let displayModeId = "unknown";
       switch (option) {
         case DisplayMode.Grid:
-          displayModeId = "grid";
+          displayModeId = "Grid";
           break;
         case DisplayMode.List:
-          displayModeId = "list";
+          displayModeId = "List";
           break;
         case DisplayMode.Wall:
-          displayModeId = "wall";
+          displayModeId = "Wall";
           break;
         case DisplayMode.Tagger:
-          displayModeId = "tagger";
+          displayModeId = "Tagger";
+          break;
+        case DisplayMode.Card:
+          displayModeId = "Card";
           break;
       }
-      return intl.formatMessage({ id: `display_mode.${displayModeId}` });
+      return intl.formatMessage({ id: `${displayModeId}` });
     }
 
     if (displayModeOptions.length < 2) {

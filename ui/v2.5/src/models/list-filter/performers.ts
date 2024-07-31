@@ -55,6 +55,7 @@ const displayModeOptions = [
   DisplayMode.Grid,
   DisplayMode.List,
   DisplayMode.Tagger,
+  DisplayMode.Card
 ];
 
 const numberCriteria: CriterionType[] = [
