@@ -774,54 +774,12 @@ const UtilityBar: React.FC<UBarProps> = ({
         <Icon icon={faEllipsisV} />
       </Dropdown.Toggle>
       <Dropdown.Menu className="bg-secondary text-white">
-        {!!scene.files.length && (
-          <Dropdown.Item
-            key="rescan"
-            className="bg-secondary text-white"
-            onClick={() => onRescan()}
-          >
-            <FormattedMessage id="actions.rescan" />
-          </Dropdown.Item>
-        )}
         <Dropdown.Item
           key="generate"
           className="bg-secondary text-white"
           onClick={() => setIsGenerateDialogOpen(true)}
         >
           <FormattedMessage id="actions.generate" />
-        </Dropdown.Item>
-        <Dropdown.Item
-          key="generate-screenshot"
-          className="bg-secondary text-white"
-          onClick={() => onGenerateScreenshot(getPlayerPosition())}
-        >
-          <FormattedMessage id="actions.generate_thumb_from_current" />
-        </Dropdown.Item>
-        <Dropdown.Item
-          key="generate-default"
-          className="bg-secondary text-white"
-          onClick={() => onGenerateScreenshot()}
-        >
-          <FormattedMessage id="actions.generate_thumb_default" />
-        </Dropdown.Item>
-        {boxes.length > 0 && (
-          <Dropdown.Item
-            key="submit"
-            className="bg-secondary text-white"
-            onClick={() => setShowDraftModal(true)}
-          >
-            <FormattedMessage id="actions.submit_stash_box" />
-          </Dropdown.Item>
-        )}
-        <Dropdown.Item
-          key="delete-scene"
-          className="bg-secondary text-white"
-          onClick={() => setIsDeleteAlertOpen(true)}
-        >
-          <FormattedMessage
-            id="actions.delete_entity"
-            values={{ entityType: intl.formatMessage({ id: "scene" }) }}
-            />
           </Dropdown.Item>
           <Dropdown.Item
             key="download"
