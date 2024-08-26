@@ -5,7 +5,7 @@ import { IconDefinition } from "@fortawesome/fontawesome-svg-core";
 import { LinkContainer } from "react-router-bootstrap";
 import { Link, NavLink, useLocation, useHistory } from "react-router-dom";
 import Mousetrap from "mousetrap";
-
+import { setupOmniBox } from "src/stash-omnisearch";
 import SessionUtils from "src/utils/session";
 import { Icon } from "src/components/Shared/Icon";
 import { ConfigurationContext } from "src/hooks/Config";
@@ -347,7 +347,7 @@ export const MainNavbar: React.FC = () => {
         <Navbar.Collapse className="bg-dark order-sm-1">
           <Fade in={!loading}>
             <>
-              <MainNavbarMenuItems>
+              {/* <MainNavbarMenuItems>
                 {menuItems.map(({ href, icon, message }) => (
                   <Nav.Link
                     eventKey={href}
@@ -364,9 +364,9 @@ export const MainNavbar: React.FC = () => {
                         <span>{intl.formatMessage(message)}</span>
                       </Button>
                     </LinkContainer>
-                  </Nav.Link>
-                ))}
-              </MainNavbarMenuItems>
+                  </Nav.Link> */}
+                {/* ))} */}
+              {/* </MainNavbarMenuItems> */}
               <Nav>
                 <MainNavbarUtilityItems>
                   {renderUtilityButtons()}
@@ -383,7 +383,7 @@ export const MainNavbar: React.FC = () => {
             </Button>
           </Link>
         </Navbar.Brand>
-        <SearchBox />
+        {/* <SearchBox /> */}
         <Nav className="navbar-buttons flex-row ml-auto order-xl-2">
           {!!newPath && (
             <div className="mr-2">
