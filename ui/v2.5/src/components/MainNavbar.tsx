@@ -27,6 +27,7 @@ import {
   faUser,
   faVideo,
   faHome,
+  faBox,
 } from "@fortawesome/free-solid-svg-icons";
 import { baseURL } from "src/core/createClient";
 import { PatchComponent } from "src/patch";
@@ -207,6 +208,8 @@ export const MainNavbar: React.FC = () => {
   const { openManual } = React.useContext(ManualStateContext);
 
   const [expanded, setExpanded] = useState(false);
+  const [isVisible, setIsVisible] = useState(true); // New state for visibility
+
 
   // Show all menu items by default, unless config says otherwise
   const menuItems = useMemo(() => {
@@ -266,6 +269,27 @@ export const MainNavbar: React.FC = () => {
     [history]
   );
 
+  useEffect(() => {
+    let lastScrollTop = 0;
+    const handleScroll = () => {
+      const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+      if (scrollTop > lastScrollTop) {
+        // Scrolling down
+        setIsVisible(false);
+      } else {
+        // Scrolling up
+        setIsVisible(true);
+      }
+      lastScrollTop = scrollTop <= 0 ? 0 : scrollTop; // For Mobile or negative scrolling
+    };
+
+    window.addEventListener("scroll", handleScroll);
+
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+    };
+  }, []);
+
   const pathname = location.pathname.replace(/\/$/, "");
   let newPath = newPathsList.includes(pathname) ? `${pathname}/new` : null;
   if (newPath !== null) {
@@ -314,7 +338,7 @@ export const MainNavbar: React.FC = () => {
         fixed="top"
         variant="dark"
         bg="dark"
-        className="top-nav"
+        className={`top-nav${isVisible ? ' visible' : ' hidden'}`} // Apply visibility classes
         expand="xl"
         expanded={expanded}
         onToggle={setExpanded}
@@ -354,8 +378,8 @@ export const MainNavbar: React.FC = () => {
         <Navbar.Brand as="div" onClick={handleDismiss}>
           <Link to="/">
             <Button className="minimal brand-link d-inline-block">
-              <Icon icon={faHome} className="mr-2" />
-              Home
+              <Icon icon={faBox} className="mr-2" />
+              Stash
             </Button>
           </Link>
         </Navbar.Brand>

@@ -26,7 +26,7 @@ import * as yup from "yup";
 import Mousetrap from "mousetrap";
 import MousetrapPause from "mousetrap-pause";
 import { ErrorBoundary } from "./components/ErrorBoundary";
-import { MainNavbar } from "./components/MainNavbar";
+import  {MainNavbar}  from "./components/MainNavbar";
 import { PageNotFound } from "./components/PageNotFound";
 import * as GQL from "./core/generated-graphql";
 import { makeTitleProps } from "./hooks/title";
