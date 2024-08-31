@@ -5,7 +5,6 @@ import { IconDefinition } from "@fortawesome/fontawesome-svg-core";
 import { LinkContainer } from "react-router-bootstrap";
 import { Link, NavLink, useLocation, useHistory } from "react-router-dom";
 import Mousetrap from "mousetrap";
-import { setupOmniBox } from "src/stash-omnisearch";
 import SessionUtils from "src/utils/session";
 import { Icon } from "src/components/Shared/Icon";
 import { ConfigurationContext } from "src/hooks/Config";
@@ -331,77 +330,50 @@ export const MainNavbar: React.FC = () => {
     );
   }
 
-  return (
-    <>
-      <Navbar
-        collapseOnSelect
-        fixed="top"
-        variant="dark"
-        bg="dark"
-        className={`top-nav${isVisible ? ' visible' : ' hidden'}`} // Apply visibility classes
-        expand="xl"
-        expanded={expanded}
-        onToggle={setExpanded}
-        ref={navbarRef}
-      >
-        <Navbar.Collapse className="bg-dark order-sm-1">
-          <Fade in={!loading}>
-            <>
-              {/* <MainNavbarMenuItems>
-                {menuItems.map(({ href, icon, message }) => (
-                  <Nav.Link
-                    eventKey={href}
-                    as="div"
-                    key={href}
-                    className="col-4 col-sm-3 col-md-2 col-lg-auto"
-                  >
-                    <LinkContainer activeClassName="active" exact to={href}>
-                      <Button className="minimal p-4 p-xl-2 d-flex d-xl-inline-block flex-column justify-content-between align-items-center">
-                        <Icon
-                          {...{ icon }}
-                          className="nav-menu-icon d-block d-xl-inline mb-2 mb-xl-0"
-                        />
-                        <span>{intl.formatMessage(message)}</span>
-                      </Button>
-                    </LinkContainer>
-                  </Nav.Link> */}
-                {/* ))} */}
-              {/* </MainNavbarMenuItems> */}
-              <Nav>
-                <MainNavbarUtilityItems>
-                  {renderUtilityButtons()}
-                </MainNavbarUtilityItems>
-              </Nav>
-            </>
-          </Fade>
-        </Navbar.Collapse>
-        <Navbar.Brand as="div" onClick={handleDismiss}>
-          <Link to="/">
-            <Button className="minimal brand-link d-inline-block">
-              <Icon icon={faBox} className="mr-2" />
-              Stash
-            </Button>
-          </Link>
-        </Navbar.Brand>
-        {/* <SearchBox /> */}
-        <Nav className="navbar-buttons flex-row ml-auto order-xl-2">
-          {!!newPath && (
-            <div className="mr-2">
-              <Link to={newPath}>
-                <Button variant="primary">
-                  <FormattedMessage id="new" defaultMessage="New" />
-                </Button>
-              </Link>
-            </div>
-          )}
-          <MainNavbarUtilityItems>
-            {renderUtilityButtons()}
-          </MainNavbarUtilityItems>
-          <Navbar.Toggle className="nav-menu-toggle ml-sm-2">
-            <Icon icon={expanded ? faTimes : faBars} />
-          </Navbar.Toggle>
-        </Nav>
-      </Navbar>
-    </>
-  );
+return (
+  <>
+    <Navbar
+      collapseOnSelect
+      fixed="top"
+      variant="dark"
+      bg="dark"
+      className={`top-nav${isVisible ? ' visible' : ' hidden'}`} // Apply visibility classes
+      expand="xl"
+      expanded={expanded}
+      onToggle={setExpanded}
+      ref={navbarRef}
+    >
+      <Navbar.Brand as="div" onClick={handleDismiss}>
+        <Link to="/">
+          <Button className="minimal brand-link d-inline-block">
+            <Icon icon={faBox} className="mr-2" />
+            Stash
+          </Button>
+        </Link>
+      </Navbar.Brand>
+
+      <div className="search-container">
+        <SearchBox/>
+      </div>
+
+      <Nav className="navbar-buttons flex-row ml-auto order-xl-2">
+        {!!newPath && (
+          <div className="mr-2">
+            <Link to={newPath}>
+              <Button variant="primary">
+                <FormattedMessage id="new" defaultMessage="New" />
+              </Button>
+            </Link>
+          </div>
+        )}
+        <MainNavbarUtilityItems>
+          {renderUtilityButtons()}
+        </MainNavbarUtilityItems>
+        <Navbar.Toggle className="nav-menu-toggle ml-sm-2">
+          <Icon icon={expanded ? faTimes : faBars} />
+        </Navbar.Toggle>
+      </Nav>
+    </Navbar>
+  </>
+);
 };

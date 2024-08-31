@@ -114,41 +114,105 @@ export const SearchBox: React.FC<SBProps> = ({
         console.info("Studios Searched...")
 
     }
-    function getSearchResults() {
-            getSceneResults()
-            getTagResults()
-            getPerfResults()
-            getStudioResults()
-            useEffect(() => {
-                Mousetrap.bind('enter', (e) => {
-                    if (searchTerm == "") return
-                    goToFirstResult();
-                    (document.getElementById("SearchBox") as HTMLInputElement).blur();
-                    (document.getElementById("SearchBox") as HTMLInputElement).value = "";
-                    setSearch("");
-                })
-            })
-            const fuse = new Fuse<SearchResult>(searchResults, { keys: ['ShortName'], shouldSort: true, threshold: 0.4, });
-            const fuseSearched = fuse.search(searchTerm).map(({item}) => item).slice(0,15).map((sResult) => {
-                if (sResult.TypeData.__typename == "Performer") return <PerformerCard performer={sResult.TypeData} />
-                if (sResult.TypeData.__typename == "Tag") return <TagCard tag={sResult.TypeData} zoomIndex={4}/>
-                if (sResult.TypeData.__typename == "Scene") return <SceneCard scene={sResult.TypeData}/>
-                if (sResult.TypeData.__typename == "Studio") return <StudioCard studio={sResult.TypeData}/>
-            })
-            function goToFirstResult() {
-                const firstResult = fuse.search(searchTerm)[0].item
-                history.push(`/${
-                    firstResult.TypeData.__typename == "Tag" ? "tags" :
-                    firstResult.TypeData.__typename == "Performer" ? "performers" :
-                    firstResult.TypeData.__typename == "Scene" ? "scenes" :
-                    firstResult.TypeData.__typename == "Studio" ? "studios" :
-                    ""
-                }/${firstResult.TypeData.id}`)
+    function getGalleryResults() {
+        const {data, loading} = GQL.useFindGalleriesQuery({
+            variables: {
+                filter: {
+                    per_page: searchTerm != "" ? 40 : 0,
+                    q: searchTerm
+                }
             }
-            return <div className="d-flex flex-row flex-wrap">
-                {fuseSearched}
-            </div>
+        })
+        if (!loading && searchTerm != "" && data?.findGalleries.count != 0) data!.findGalleries.galleries.map((gallery) => searchResults.push({ShortName: gallery.title!, TypeData: gallery }))
+        console.info("Galleries Searched...")
+
     }
+    function getSearchResults() {
+        getSceneResults();
+        getTagResults();
+        getPerfResults();
+        getStudioResults();
+    
+        useEffect(() => {
+            Mousetrap.bind('enter', (e) => {
+                if (searchTerm === "") return;
+                goToFirstResult();
+                (document.getElementById("SearchBox") as HTMLInputElement).blur();
+                (document.getElementById("SearchBox") as HTMLInputElement).value = "";
+                setSearch("");
+            });
+        });
+    
+        const fuse = new Fuse<SearchResult>(searchResults, {
+            keys: ['ShortName'],
+            shouldSort: true,
+            threshold: 0.4,
+        });
+    
+        const fuseSearched = fuse.search(searchTerm).map(({ item }) => item);
+    
+        // Categorize results
+        const performers = fuseSearched.filter(sResult => sResult.TypeData.__typename === "Performer");
+        const tags = fuseSearched.filter(sResult => sResult.TypeData.__typename === "Tag");
+        const scenes = fuseSearched.filter(sResult => sResult.TypeData.__typename === "Scene");
+        const studios = fuseSearched.filter(sResult => sResult.TypeData.__typename === "Studio");
+    
+        function goToFirstResult() {
+            const firstResult = fuse.search(searchTerm)[0].item;
+            history.push(`/${
+                firstResult.TypeData.__typename === "Tag" ? "tags" :
+                firstResult.TypeData.__typename === "Performer" ? "performers" :
+                firstResult.TypeData.__typename === "Scene" ? "scenes" :
+                firstResult.TypeData.__typename === "Studio" ? "studios" :
+                ""
+            }/${firstResult.TypeData.id}`);
+        }
+    
+        return (
+            <div className="search-results-grid">
+                {performers.length > 0 && (
+                    <div className="category">
+                        <h5>Performers</h5>
+                        <div className="category-grid">
+                            {performers.map(sResult => (
+                                <PerformerCard key={sResult.TypeData.id} performer={sResult.TypeData as GQL.PerformerDataFragment} />
+                            ))}
+                        </div>
+                    </div>
+                )}
+                {tags.length > 0 && (
+                    <div className="category">
+                        <h5>Tags</h5>
+                        <div className="category-grid">
+                            {tags.map(sResult => (
+                                <TagCard key={sResult.TypeData.id} tag={sResult.TypeData as GQL.TagDataFragment} zoomIndex={4} />
+                            ))}
+                        </div>
+                    </div>
+                )}
+                {scenes.length > 0 && (
+                    <div className="category">
+                        <h5>Scenes</h5>
+                        <div className="category-grid">
+                            {scenes.map(sResult => (
+                                <SceneCard key={sResult.TypeData.id} scene={sResult.TypeData as GQL.SlimSceneDataFragment} />
+                            ))}
+                        </div>
+                    </div>
+                )}
+                {studios.length > 0 && (
+                    <div className="category">
+                        <h5>Studios</h5>
+                        <div className="category-grid">
+                            {studios.map(sResult => (
+                                <StudioCard key={sResult.TypeData.id} studio={sResult.TypeData as GQL.StudioDataFragment} />
+                            ))}
+                        </div>
+                    </div>
+                )}
+            </div>
+        );
+    }    
     const SB = <div className="d-flex flex-row SearchBox">
         <FormControl
             ref={queryRef}
