@@ -96,7 +96,7 @@ dd {
 }
 
 .search-results.Searching {
-  display: block; /* Show when searching */
+  display: block; /* Show when searching */  
 }
 
 .search-container {
@@ -133,7 +133,7 @@ dd {
     right: 1rem;
   }
   width: 80vw;
-  background-color: #fff; // Change to white for a clean look
+  background-color: #4a494943; // Change to white for a clean look
   position: absolute;
   top: 3rem;
   left: 50%;
@@ -145,55 +145,26 @@ dd {
   overflow-y: scroll;
 }
 
-.search-results-grid {
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-}
-
-.category {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-
 .category h5 {
   margin-bottom: 0;
 }
+.category-link {
+  display: block;
+  font-weight: bold;
+  color: #007bff; /* Adjust as needed */
+  text-decoration: none;
+  padding: 8px 0;
+}
 
+.category-link:hover {
+  text-decoration: underline;
+}
 .category-grid {
   display: flex;
   overflow-x: auto;
   gap: 10px;
   padding-bottom: 10px;
 }
-
-.category-grid::-webkit-scrollbar {
-  height: 8px;
-}
-
-.category-grid::-webkit-scrollbar-thumb {
-  background-color: #888;
-  border-radius: 4px;
-}
-
-.category-grid::-webkit-scrollbar-track {
-  background-color: #f1f1f1;
-}
-
-.category-grid > * {
-  flex: 0 0 auto;
-  width: calc(50% - 10px); /* Assuming you want two cards per row */
-}
-
-/* Ensure categories can scroll horizontally */
-.category-grid {
-  display: flex;
-  overflow-x: auto; /* Allow horizontal scrolling */
-  gap: 10px;
-  padding-bottom: 10px;
-}
-
 .category-grid::-webkit-scrollbar {
   height: 8px;
 }
@@ -210,8 +181,8 @@ dd {
 /* Fix to ensure cards within category-grid are scrollable horizontally */
 .category-grid > * {
   flex: 0 0 auto;
-  width: 150px; /* Decreased width for a smaller card size */
-  height: 225px; /* Decreased height for a smaller card size */
+  width: 200px; /* Fixed width for all cards */
+  height: 300px; /* Fixed height for all cards */
 }
 
 /* Specific styling for performers and galleries categories */
@@ -222,7 +193,7 @@ dd {
 
 .galleries-category .category-grid > * {
   width: 150px; /* Adjust size for gallery cards */
-  height: 225px; /* Adjust size for gallery cards */
+  height: 375px; /* Adjust size for gallery cards */
 }
 
 /* General styles for the search results grid */
@@ -243,14 +214,7 @@ dd {
   display: flex;
   flex-direction: column;
   gap: 10px;
-}
-
-.category-grid {
-  display: flex;
-  overflow-x: auto; /* Allow horizontal scrolling */
-  gap: 10px;
-  padding-bottom: 10px;
-  white-space: nowrap; /* Prevent items from wrapping to the next line */
+  overflow-x: auto;
 }
 
 .category-grid::-webkit-scrollbar {
@@ -258,18 +222,14 @@ dd {
 }
 
 .category-grid::-webkit-scrollbar-thumb {
-  background-color: #888;
+  visibility: hidden;
+  background-color: transparent;
   border-radius: 4px;
 }
 
 .category-grid::-webkit-scrollbar-track {
-  background-color: #f1f1f1;
-}
-
-.category-grid > * {
-  flex: 0 0 auto;
-  width: 200px; /* Fixed width for all cards */
-  height: 300px; /* Fixed height for all cards */
+  visibility: hidden;
+  background-color: transparent;
 }
 
 /* Additional styling for individual categories */
