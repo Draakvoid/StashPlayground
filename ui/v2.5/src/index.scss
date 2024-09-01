@@ -90,6 +90,84 @@ dd {
 // img, video, video-js {
 //   filter: blur(10px)
 // }
+
+/// New Navbar Edits
+/* Ensure navbar is a flex container and aligns items properly */
+.top-nav {
+  display: flex;
+  justify-content: space-between; /* Space out items */
+  align-items: center; /* Vertically center items */
+  position: relative; /* For positioning the search-container */
+}
+
+/* Search container styling */
+.search-container {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  max-width: 600px; /* Adjust to desired max-width */
+  width: 100%;
+}
+
+/* Ensure search box takes full width within its container */
+.searchbox {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+}
+
+.searchbox-input {
+  width: 100%;
+}
+.search-box-input {
+  width: 300%; /* Adjust this value to your desired length */
+}
+
+.search-container {
+  display: flex;
+  align-items: center; /* Center items vertically within the container */
+}
+
+.search-box-input {
+  border-radius: 50px; /* Makes the search box round */
+  padding: 10px 20px; /* Adjust padding to make the search box longer */
+  height: 40px; /* Adjust height for a pill shape */
+  border: none; /* Remove the default border */
+}
+
+.search-clear {
+  visibility: hidden; // Clear Search Button is hidden
+  border-radius: 50%; /* Makes the clear button round */
+  height: 30px; /* Adjust size as needed */
+  width: 30px; /* Adjust size as needed */
+  padding: 0; /* Remove default padding */
+  margin-left: -50px; /* Adjust margin to align with search box */
+  border-color: transparent;
+  background-color: transparent;
+}
+.search-box-input {
+  width: 300%; /* Adjusted length */
+  border-radius: 50px; /* Rounded corners */
+  padding: 0.5rem 1rem; /* Padding for pill shape */
+  border: 2px solid white; /* White border */
+  background-color: #333; /* Background color */
+  color: white; /* Text color */
+}
+
+.search-box-input::placeholder {
+  color: white; /* Placeholder text color */
+}
+
+.search-box-input:focus {
+  outline: none; /* Remove default blue outline */
+  border-color: white; /* Maintain white border when focused */
+  box-shadow: none; /* Remove any additional box shadow */
+}
+
+// .search-results {
+//   border-radius: 0 0 50px 50px; /* Round bottom corners of the results */
+// }
+
 .search-results {
   display: none; /* Hide by default */
   /* Other styles... */

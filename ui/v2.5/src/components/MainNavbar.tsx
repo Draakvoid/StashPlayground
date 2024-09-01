@@ -329,52 +329,48 @@ export const MainNavbar: React.FC = () => {
       </>
     );
   }
+return (
+    <Navbar
+      collapseOnSelect
+      fixed="top"
+      variant="dark"
+      bg="dark"
+      className={`top-nav${isVisible ? ' visible' : ' hidden'}`}
+      expand="xl"
+      expanded={expanded}
+      onToggle={setExpanded}
+      ref={navbarRef}
+    >
+      <Navbar.Brand as="div" onClick={handleDismiss}>
+        <Link to="/">
+          <Button className="minimal brand-link d-inline-block">
+            <Icon icon={faBox} className="mr-2" />
+            Stash
+          </Button>
+        </Link>
+      </Navbar.Brand>
 
-  return (
-    <>
-      <Navbar
-        collapseOnSelect
-        fixed="top"
-        variant="dark"
-        bg="dark"
-        className={`top-nav${isVisible ? ' visible' : ' hidden'}`} // Apply visibility classes
-        expand="xl"
-        expanded={expanded}
-        onToggle={setExpanded}
-        ref={navbarRef}
-        style={{ display: 'flex', justifyContent: 'space-between' }} // Add flex display and space-between
-      >
-        <Navbar.Brand as="div" onClick={handleDismiss}>
-          <Link to="/">
-            <Button className="minimal brand-link d-inline-block">
-              <Icon icon={faBox} className="mr-2" />
-              Stash
-            </Button>
-          </Link>
-        </Navbar.Brand>
-  
-        <div className="search-container">
-          <SearchBox />
-        </div>
-  
-        <Nav className="navbar-buttons flex-row ml-auto order-xl-2">
-          {!!newPath && (
-            <div className="mr-2">
-              <Link to={newPath}>
-                <Button variant="primary">
-                  <FormattedMessage id="new" defaultMessage="New" />
-                </Button>
-              </Link>
-            </div>
-          )}
-          <MainNavbarUtilityItems>
-            {renderUtilityButtons()}
-          </MainNavbarUtilityItems>
-          <Navbar.Toggle className="nav-menu-toggle ml-sm-2">
-            <Icon icon={expanded ? faTimes : faBars} />
-          </Navbar.Toggle>
-        </Nav>
-      </Navbar>
-    </>
-  );  
+      <div className="search-container">
+        <SearchBox />
+      </div>
+
+      <Nav className="navbar-buttons flex-row ml-auto order-xl-2">
+        {!!newPath && (
+          <div className="mr-2">
+            <Link to={newPath}>
+              <Button variant="primary">
+                <FormattedMessage id="new" defaultMessage="New" />
+              </Button>
+            </Link>
+          </div>
+        )}
+        <MainNavbarUtilityItems>
+          {renderUtilityButtons()}
+        </MainNavbarUtilityItems>
+        <Navbar.Toggle className="nav-menu-toggle ml-sm-2">
+          <Icon icon={expanded ? faTimes : faBars} />
+        </Navbar.Toggle>
+      </Nav>
+    </Navbar>
+  );
 };
