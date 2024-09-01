@@ -1,5 +1,5 @@
 import { Button, ButtonGroup, OverlayTrigger, Tooltip } from "react-bootstrap";
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState } from "react";
 import * as GQL from "src/core/generated-graphql";
 import { GridCard, calculateCardWidth } from "../Shared/GridCard/GridCard";
 import { HoverPopover } from "../Shared/HoverPopover";
@@ -15,7 +15,6 @@ import { galleryTitle } from "src/core/galleries";
 import ScreenUtils from "src/utils/screen";
 import { StudioOverlay } from "../Shared/GridCard/StudioOverlay";
 import { Link } from "react-router-dom";
-import {Tilt} from "react-tilt"; // Import Tilt.js library
 
 interface IProps {
   gallery: GQL.SlimGalleryDataFragment;
@@ -28,18 +27,6 @@ interface IProps {
 
 export const GalleryCard: React.FC<IProps> = (props) => {
   const [cardWidth, setCardWidth] = useState<number>();
-  const tiltRef = useRef(null); // Create a ref for the tilt effect
-  const defaultOptions = {
-    reverse: false, // reverse the tilt direction
-    max: 10, // max tilt rotation (degrees)
-    perspective: 1000, // Transform perspective, the lower the more extreme the tilt gets.
-    scale: 1.1, // 2 = 200%, 1.5 = 150%, etc..
-    speed: 100, // Speed of the enter/exit transition
-    transition: true, // Set a transition on enter/exit.
-    axis: null, // What axis should be disabled. Can be X or Y.
-    reset: true, // If the tilt effect has to be reset on exit.
-    easing: "cubic-bezier(.03,.98,.52,.99)", // Easing on enter/exit.
-  };
 
   useEffect(() => {
     if (
@@ -174,44 +161,42 @@ export const GalleryCard: React.FC<IProps> = (props) => {
 
   return (
     <a href={`/galleries/${props.gallery.id}`}>
-      <Tilt options={defaultOptions} ref={tiltRef}>
-        <GridCard
-          className={`gallery-card zoom-${props.zoomIndex}`}
-          url={`/galleries/${props.gallery.id}`}
-          width={cardWidth}
-          title={<></>}
-          linkClassName="gallery-card-header"
-          image={
-            <>
-              {props.gallery.cover ? (
-                <img
-                  loading="lazy"
-                  className="gallery-card-image"
-                  alt={props.gallery.title ?? ""}
-                  src={`${props.gallery.cover.paths.thumbnail}`}
-                />
-              ) : undefined}
-              <RatingBanner rating={props.gallery.rating100} />
-            </>
-          }
-          // overlays={<StudioOverlay studio={props.gallery.studio} />}
-          details={
-            <div className="gallery-card__details">
-              <span>{props.gallery.studio?.name}</span>
-              <h5>{galleryTitle(props.gallery)}</h5>
-              <TruncatedText
-                className="gallery-card__description"
-                text={props.gallery.details}
-                lineCount={3}
-              />
-            </div>
-          }
-          popovers={maybeRenderPopoverButtonGroup()}
-          selected={props.selected}
-          selecting={props.selecting}
-          onSelectedChanged={props.onSelectedChanged}
-        />
-      </Tilt>
+    <GridCard
+      className={`gallery-card zoom-${props.zoomIndex}`}
+      url={`/galleries/${props.gallery.id}`}
+      width={cardWidth}
+      title={<></>}
+      linkClassName="gallery-card-header"
+      image={
+        <>
+          {props.gallery.cover ? (
+            <img
+              loading="lazy"
+              className="gallery-card-image"
+              alt={props.gallery.title ?? ""}
+              src={`${props.gallery.cover.paths.thumbnail}`}
+            />
+          ) : undefined}
+          <RatingBanner rating={props.gallery.rating100} />
+        </>
+      }
+      // overlays={<StudioOverlay studio={props.gallery.studio} />}
+      details={
+        <div className="gallery-card__details">
+          <span>{props.gallery.studio?.name}</span>
+          <h5>{galleryTitle(props.gallery)}</h5>
+          <TruncatedText
+            className="gallery-card__description"
+            text={props.gallery.details}
+            lineCount={3}
+          />
+        </div>
+      }
+      popovers={maybeRenderPopoverButtonGroup()}
+      selected={props.selected}
+      selecting={props.selecting}
+      onSelectedChanged={props.onSelectedChanged}
+    />
     </a>
   );
 };

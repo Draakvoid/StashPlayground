@@ -416,3 +416,27 @@ $galleryTabWidth: 450px;
     word-break: break-all;
   }
 }
+.gallery-card {
+  color: #fff !important;
+  max-width: 350px; // Set a max width for the gallery card
+  max-height: 450px; // Set a max height for the gallery card
+
+  &.card {
+    overflow: hidden;
+    padding: 0;
+    padding-bottom: 1rem;
+    width: min-content !important;
+    
+    @media (max-width: 576px) {
+      width: 100%;
+    }
+  }
+
+  .thumbnail-section {
+    margin-bottom: 1rem;
+    width: max-content;
+    height: 240px;
+  }
+
+  // Other styles...
+}

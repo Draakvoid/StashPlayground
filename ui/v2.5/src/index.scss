@@ -90,6 +90,15 @@ dd {
 // img, video, video-js {
 //   filter: blur(10px)
 // }
+.search-results {
+  display: none; /* Hide by default */
+  /* Other styles... */
+}
+
+.search-results.Searching {
+  display: block; /* Show when searching */
+}
+
 .search-container {
   flex: 1;
   display: flex;
@@ -138,71 +147,156 @@ dd {
 
 .search-results-grid {
   display: flex;
-  flex-wrap: wrap;
+  flex-direction: column;
   gap: 20px;
-  justify-content: center;
 }
 
 .category {
-  flex: 1 1 calc(50% - 20px);
-  text-align: center;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
 }
 
 .category h5 {
-  color: #333;
-  font-size: 1.2rem;
-  margin-bottom: 10px;
-  font-weight: 600;
+  margin-bottom: 0;
 }
 
 .category-grid {
   display: flex;
+  overflow-x: auto;
+  gap: 10px;
+  padding-bottom: 10px;
+}
+
+.category-grid::-webkit-scrollbar {
+  height: 8px;
+}
+
+.category-grid::-webkit-scrollbar-thumb {
+  background-color: #888;
+  border-radius: 4px;
+}
+
+.category-grid::-webkit-scrollbar-track {
+  background-color: #f1f1f1;
+}
+
+.category-grid > * {
+  flex: 0 0 auto;
+  width: calc(50% - 10px); /* Assuming you want two cards per row */
+}
+
+/* Ensure categories can scroll horizontally */
+.category-grid {
+  display: flex;
+  overflow-x: auto; /* Allow horizontal scrolling */
+  gap: 10px;
+  padding-bottom: 10px;
+}
+
+.category-grid::-webkit-scrollbar {
+  height: 8px;
+}
+
+.category-grid::-webkit-scrollbar-thumb {
+  background-color: #888;
+  border-radius: 4px;
+}
+
+.category-grid::-webkit-scrollbar-track {
+  background-color: #f1f1f1;
+}
+
+/* Fix to ensure cards within category-grid are scrollable horizontally */
+.category-grid > * {
+  flex: 0 0 auto;
+  width: 150px; /* Decreased width for a smaller card size */
+  height: 225px; /* Decreased height for a smaller card size */
+}
+
+/* Specific styling for performers and galleries categories */
+.performers-category .category-grid > * {
+  width: 150px; /* Adjust size for performer cards */
+  height: 375px; /* Adjust size for performer cards */
+}
+
+.galleries-category .category-grid > * {
+  width: 150px; /* Adjust size for gallery cards */
+  height: 225px; /* Adjust size for gallery cards */
+}
+
+/* General styles for the search results grid */
+.search-results-grid {
+  display: grid;
+  grid-template-areas:
+    "performers scenes"
+    "galleries studios"
+    "tags tags";
+  gap: 20px;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: auto auto auto;
+  width: 100%;
+  overflow: hidden;
+}
+
+.category {
+  display: flex;
   flex-direction: column;
-  align-items: center;
   gap: 10px;
 }
 
-.grid-card {
+.category-grid {
+  display: flex;
+  overflow-x: auto; /* Allow horizontal scrolling */
+  gap: 10px;
+  padding-bottom: 10px;
+  white-space: nowrap; /* Prevent items from wrapping to the next line */
+}
+
+.category-grid::-webkit-scrollbar {
+  height: 8px;
+}
+
+.category-grid::-webkit-scrollbar-thumb {
+  background-color: #888;
+  border-radius: 4px;
+}
+
+.category-grid::-webkit-scrollbar-track {
+  background-color: #f1f1f1;
+}
+
+.category-grid > * {
+  flex: 0 0 auto;
+  width: 200px; /* Fixed width for all cards */
+  height: 300px; /* Fixed height for all cards */
+}
+
+/* Additional styling for individual categories */
+.performers-category {
+  grid-area: performers;
+}
+
+.galleries-category {
+  grid-area: galleries;
+}
+
+.scenes-category {
+  grid-area: scenes;
+}
+
+.studios-category {
+  grid-area: studios;
+}
+
+.tags-category {
+  grid-area: tags;
+  justify-self: center;
   width: 100%;
-  max-width: 250px;
-  border-radius: 10px;
-  overflow: hidden;
-  background-color: #f9f9f9;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  transition: transform 0.3s;
-  
-  &:hover {
-    transform: translateY(-10px);
-  }
+  display: flex;
+  justify-content: center;
 }
 
-.grid-card img {
-  width: 100%;
-  object-fit: cover;
-}
-
-.grid-card .card-section {
-  padding: 10px;
-  text-align: center;
-}
-
-.grid-card .card-section h6 {
-  margin: 0;
-  font-size: 1rem;
-  color: #333;
-}
-
-.grid-card .card-section a {
-  display: inline-block;
-  margin-top: 5px;
-  font-size: 0.9rem;
-  color: #007aff;
-  text-decoration: none;
-}
-
-.grid-card .card-section a:hover {
-  text-decoration: underline;
-}
 
 //
 .ssbutton, .nmbutton {

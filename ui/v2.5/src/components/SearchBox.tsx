@@ -12,8 +12,10 @@ import { PerformerCard } from "./Performers/PerformerCard";
 import { TagCard } from "./Tags/TagCard";
 import { SceneCard } from "./Scenes/SceneCard";
 import { StudioCard } from "./Studios/StudioCard";
+import { GalleryCard } from "./Galleries/GalleryCard";
 import Mousetrap from "mousetrap";
 import { useHistory } from "react-router-dom";
+import Gallery from "react-photo-gallery";
 interface SBProps {
 
 }
@@ -23,8 +25,9 @@ export const SearchBox: React.FC<SBProps> = ({
     const [searchTerm, setSearch] = useState("")
     const [queryRef, setQueryFocus] = useFocus();
     const [queryClearShowing, setQueryClearShowing] = useState(false);
+    const [showResults, setShowResults] = useState(false);
     const history = useHistory();
-    type SearchResult = { ShortName: string; TypeData: GQL.SlimSceneDataFragment | GQL.PerformerDataFragment | GQL.TagDataFragment | GQL.StudioDataFragment };
+    type SearchResult = { ShortName: string; TypeData: GQL.SlimSceneDataFragment | GQL.PerformerDataFragment | GQL.TagDataFragment | GQL.StudioDataFragment |GQL.SlimGalleryDataFragment };
     var searchResults:SearchResult[] = []
     useEffect(() => {
         Mousetrap.bind('shift+s', (e) => {
@@ -51,6 +54,9 @@ export const SearchBox: React.FC<SBProps> = ({
     function onChangeQuery(event: React.FormEvent<HTMLInputElement>) {
         setSearch(event.currentTarget.value)
         searchResults = []
+    }
+    function onSearchBoxClick() {
+        setShowResults(true); // Show results when search box is clicked
     }
     function onClearQuery() {
         if (queryRef.current) queryRef.current.value = "";
@@ -120,18 +126,24 @@ export const SearchBox: React.FC<SBProps> = ({
                 filter: {
                     per_page: searchTerm != "" ? 40 : 0,
                     q: searchTerm
+                },
+                gallery_filter: {
+                    title: {
+                        modifier: GQL.CriterionModifier.NotNull,
+                        value: ""
+                    }
                 }
             }
         })
-        if (!loading && searchTerm != "" && data?.findGalleries.count != 0) data!.findGalleries.galleries.map((gallery) => searchResults.push({ShortName: gallery.title!, TypeData: gallery }))
+        if (!loading && searchTerm != "" && data?.findGalleries.count != 0) data!.findGalleries.galleries.map((gallery) => searchResults.push({ShortName: gallery.title!, TypeData: gallery }))  
         console.info("Galleries Searched...")
-
     }
     function getSearchResults() {
         getSceneResults();
         getTagResults();
         getPerfResults();
         getStudioResults();
+        getGalleryResults();
     
         useEffect(() => {
             Mousetrap.bind('enter', (e) => {
@@ -156,6 +168,7 @@ export const SearchBox: React.FC<SBProps> = ({
         const tags = fuseSearched.filter(sResult => sResult.TypeData.__typename === "Tag");
         const scenes = fuseSearched.filter(sResult => sResult.TypeData.__typename === "Scene");
         const studios = fuseSearched.filter(sResult => sResult.TypeData.__typename === "Studio");
+        const galleries = fuseSearched.filter(sResult => sResult.TypeData.__typename === "Gallery");
     
         function goToFirstResult() {
             const firstResult = fuse.search(searchTerm)[0].item;
@@ -164,53 +177,93 @@ export const SearchBox: React.FC<SBProps> = ({
                 firstResult.TypeData.__typename === "Performer" ? "performers" :
                 firstResult.TypeData.__typename === "Scene" ? "scenes" :
                 firstResult.TypeData.__typename === "Studio" ? "studios" :
+                firstResult.TypeData.__typename === "Gallery" ? "galleries" :
                 ""
             }/${firstResult.TypeData.id}`);
         }
     
         return (
             <div className="search-results-grid">
-                {performers.length > 0 && (
-                    <div className="category">
-                        <h5>Performers</h5>
-                        <div className="category-grid">
-                            {performers.map(sResult => (
-                                <PerformerCard key={sResult.TypeData.id} performer={sResult.TypeData as GQL.PerformerDataFragment} />
-                            ))}
-                        </div>
+                {performers.length > 0 ? (
+                    <div className="performers-category category">
+                    <h5>Performers</h5>
+                    <div className="category-grid">
+                        {performers.slice(0, 3).map(sResult => (
+                        <PerformerCard key={sResult.TypeData.id} performer={sResult.TypeData as GQL.PerformerDataFragment} />
+                        ))}
+                    </div>
+                    </div>
+                ) : (
+                    <div className="performers-category category">
+                    <h5>Performers</h5>
+                    <div className="no-results">No results found...</div>
                     </div>
                 )}
-                {tags.length > 0 && (
-                    <div className="category">
-                        <h5>Tags</h5>
-                        <div className="category-grid">
-                            {tags.map(sResult => (
-                                <TagCard key={sResult.TypeData.id} tag={sResult.TypeData as GQL.TagDataFragment} zoomIndex={4} />
-                            ))}
-                        </div>
+                
+                {galleries.length > 0 ? (
+                    <div className="galleries-category category">
+                    <h5>Galleries</h5>
+                    <div className="category-grid">
+                        {galleries.slice(0, 3).map(sResult => (
+                        <GalleryCard key={sResult.TypeData.id} gallery={sResult.TypeData as GQL.SlimGalleryDataFragment} zoomIndex={4} />
+                        ))}
+                    </div>
+                    </div>
+                ) : (
+                    <div className="galleries-category category">
+                    <h5>Galleries</h5>
+                    <div className="no-results">No results found...</div>
                     </div>
                 )}
-                {scenes.length > 0 && (
-                    <div className="category">
-                        <h5>Scenes</h5>
-                        <div className="category-grid">
-                            {scenes.map(sResult => (
-                                <SceneCard key={sResult.TypeData.id} scene={sResult.TypeData as GQL.SlimSceneDataFragment} />
-                            ))}
-                        </div>
+
+                {scenes.length > 0 ? (
+                    <div className="scenes-category category">
+                    <h5>Scenes</h5>
+                    <div className="category-grid">
+                        {scenes.slice(0, 3).map(sResult => (
+                        <SceneCard key={sResult.TypeData.id} scene={sResult.TypeData as GQL.SlimSceneDataFragment} />
+                        ))}
+                    </div>
+                    </div>
+                ) : (
+                    <div className="scenes-category category">
+                    <h5>Scenes</h5>
+                    <div className="no-results">No results found...</div>
                     </div>
                 )}
-                {studios.length > 0 && (
-                    <div className="category">
-                        <h5>Studios</h5>
-                        <div className="category-grid">
-                            {studios.map(sResult => (
-                                <StudioCard key={sResult.TypeData.id} studio={sResult.TypeData as GQL.StudioDataFragment} />
-                            ))}
-                        </div>
+
+                {studios.length > 0 ? (
+                    <div className="studios-category category">
+                    <h5>Studios</h5>
+                    <div className="category-grid">
+                        {studios.slice(0, 3).map(sResult => (
+                        <StudioCard key={sResult.TypeData.id} studio={sResult.TypeData as GQL.StudioDataFragment} />
+                        ))}
+                    </div>
+                    </div>
+                ) : (
+                    <div className="studios-category category">
+                    <h5>Studios</h5>
+                    <div className="no-results">No results found...</div>
                     </div>
                 )}
-            </div>
+
+                {tags.length > 0 ? (
+                    <div className="tags-category category">
+                    <h5>Tags</h5>
+                    <div className="category-grid">
+                        {tags.slice(0, 3).map(sResult => (
+                        <TagCard key={sResult.TypeData.id} tag={sResult.TypeData as GQL.TagDataFragment} zoomIndex={4} />
+                        ))}
+                    </div>
+                    </div>
+                ) : (
+                    <div className="tags-category category">
+                    <h5>Tags</h5>
+                    <div className="no-results">No results found...</div>
+                    </div>
+                )}
+                </div>
         );
     }    
     const SB = <div className="d-flex flex-row SearchBox">
