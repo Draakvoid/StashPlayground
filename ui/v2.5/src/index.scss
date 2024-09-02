@@ -97,7 +97,7 @@ dd {
   display: flex;
   justify-content: space-between; /* Space out items */
   align-items: center; /* Vertically center items */
-  position: relative; /* For positioning the search-container */
+  // position: relative; /* For positioning the search-container */
 }
 
 /* Search container styling */
@@ -321,10 +321,25 @@ dd {
 
 .scenes-category {
   grid-area: scenes;
+  .scene-card .card-section {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    height: min-content;
+}
+.card-popovers.btn-group{
+  position: relative;
+}
 }
 
 .studios-category {
   grid-area: studios;
+  .studio-card-image {
+    max-height: 150px;
+    object-fit: contain;
+    vertical-align: middle;
+    width: 175px;
+}
 }
 
 .tags-category {
