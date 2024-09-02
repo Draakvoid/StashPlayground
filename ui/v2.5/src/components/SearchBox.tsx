@@ -13,6 +13,7 @@ import { TagCard } from "./Tags/TagCard";
 import { SceneCard } from "./Scenes/SceneCard";
 import { StudioCard } from "./Studios/StudioCard";
 import { GalleryCard } from "./Galleries/GalleryCard";
+import { GroupCard } from "./Movies/MovieCard";
 import Mousetrap from "mousetrap";
 import { useHistory } from "react-router-dom";
 import Gallery from "react-photo-gallery";
@@ -24,7 +25,8 @@ const categories = [
     { id: "scenes", label: "Scenes", route: "/scenes" },
     { id: "galleries", label: "Galleries", route: "/galleries" },
     { id: "studios", label: "Studios", route: "/studios" },
-    { id: "tags", label: "Tags", route: "/tags" }
+    { id: "tags", label: "Tags", route: "/tags" },
+    { id: "groups", label: "Movies", route: "/groups" },
   ];
 
 export const SearchBox: React.FC<SBProps> = ({
@@ -35,7 +37,7 @@ export const SearchBox: React.FC<SBProps> = ({
     const [queryClearShowing, setQueryClearShowing] = useState(false);
     const [showResults, setShowResults] = useState(false);
     const history = useHistory();
-    type SearchResult = { ShortName: string; TypeData: GQL.SlimSceneDataFragment | GQL.PerformerDataFragment | GQL.TagDataFragment | GQL.StudioDataFragment |GQL.SlimGalleryDataFragment };
+    type SearchResult = { ShortName: string; TypeData: GQL.SlimSceneDataFragment | GQL.PerformerDataFragment | GQL.TagDataFragment | GQL.StudioDataFragment |GQL.SlimGalleryDataFragment | GQL.MovieDataFragment };
     var searchResults:SearchResult[] = []
     useEffect(() => {
         Mousetrap.bind('shift+s', (e) => {
@@ -146,12 +148,31 @@ export const SearchBox: React.FC<SBProps> = ({
         if (!loading && searchTerm != "" && data?.findGalleries.count != 0) data!.findGalleries.galleries.map((gallery) => searchResults.push({ShortName: gallery.title!, TypeData: gallery }))  
         console.info("Galleries Searched...")
     }
+    function getMovieResults() {
+        const {data, loading} = GQL.useFindMoviesQuery({
+            variables: {
+                filter: {
+                    per_page: searchTerm != "" ? 40 : 0,
+                    q: searchTerm
+                },
+                movie_filter: {
+                    name: {
+                        modifier: GQL.CriterionModifier.NotNull,
+                        value: ""
+                    }
+                }
+            }
+        })
+        if (!loading && searchTerm != "" && data?.findMovies.count != 0) data!.findMovies.movies.map((movies) => searchResults.push({ShortName: movies.name!, TypeData: movies }))  
+        console.info("Movies Searched...")
+    }
     function getSearchResults() {
         getSceneResults();
         getTagResults();
         getPerfResults();
         getStudioResults();
         getGalleryResults();
+        getMovieResults();
     
         useEffect(() => {
             Mousetrap.bind('enter', (e) => {
@@ -177,6 +198,7 @@ export const SearchBox: React.FC<SBProps> = ({
         const scenes = fuseSearched.filter(sResult => sResult.TypeData.__typename === "Scene");
         const studios = fuseSearched.filter(sResult => sResult.TypeData.__typename === "Studio");
         const galleries = fuseSearched.filter(sResult => sResult.TypeData.__typename === "Gallery");
+        const movies = fuseSearched.filter(sResult => sResult.TypeData.__typename === "Movie");
     
         function goToFirstResult() {
             const firstResult = fuse.search(searchTerm)[0].item;
@@ -186,6 +208,7 @@ export const SearchBox: React.FC<SBProps> = ({
                 firstResult.TypeData.__typename === "Scene" ? "scenes" :
                 firstResult.TypeData.__typename === "Studio" ? "studios" :
                 firstResult.TypeData.__typename === "Gallery" ? "galleries" :
+                firstResult.TypeData.__typename === "Movie" ? "movies" :
                 ""
             }/${firstResult.TypeData.id}`);
         }
@@ -287,6 +310,25 @@ export const SearchBox: React.FC<SBProps> = ({
                         <div className="tags-category category">
                             <Link to="/tags" className="category-link">
                                 <h5>Tags</h5>
+                            </Link>
+                            <div className="no-results">No results found...</div>
+                        </div>
+                    )}
+                    {movies.length > 0 ? (
+                        <div className="movies-category category">
+                            <Link to="/groups" className="category-link">
+                                <h5>Movies</h5>
+                            </Link>
+                            <div className="category-grid">
+                                {movies.slice(0, 9).map(sResult => (
+                                    <GroupCard key={sResult.TypeData.id} group={sResult.TypeData as GQL.MovieDataFragment} />
+                                ))}
+                            </div>
+                        </div>
+                    ) : (
+                        <div className="Movies-category category">
+                            <Link to="/groups" className="category-link">
+                                <h5>Movies</h5>
                             </Link>
                             <div className="no-results">No results found...</div>
                         </div>

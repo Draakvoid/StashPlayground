@@ -279,8 +279,8 @@ dd {
   display: grid;
   grid-template-areas:
     "performers scenes"
-    "galleries studios"
-    "tags tags";
+    "galleries movies"
+    "tags studios";
   gap: 20px;
   grid-template-columns: 1fr 1fr;
   grid-template-rows: auto auto auto;
@@ -318,6 +318,11 @@ dd {
 .galleries-category {
   grid-area: galleries;
 }
+
+.movies-category {
+  grid-area: movies;
+}
+
 
 .scenes-category {
   grid-area: scenes;
