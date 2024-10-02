@@ -6,7 +6,6 @@ import { Icon } from "../Shared/Icon";
 import { StringListInput } from "../Shared/StringListInput";
 import { PatchComponent } from "src/patch";
 import { useSettings, useSettingsOptional } from "./context";
-import { NumberField } from "src/utils/form";
 
 interface ISetting {
   id?: string;
@@ -485,8 +484,9 @@ export const NumberSetting: React.FC<INumberSetting> = PatchComponent(
       <ModalSetting<number>
         {...props}
         renderField={(value, setValue) => (
-          <NumberField
+          <Form.Control
             className="text-input"
+            type="number"
             value={value ?? 0}
             onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
               setValue(Number.parseInt(e.currentTarget.value || "0", 10))

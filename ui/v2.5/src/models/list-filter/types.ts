@@ -16,6 +16,7 @@ export enum DisplayMode {
   List,
   Wall,
   Tagger,
+  Card,
 }
 
 export interface ILabeledId {
@@ -147,11 +148,7 @@ export type CriterionType =
   | "performers"
   | "studios"
   | "scenes"
-  | "groups"
-  | "containing_groups"
-  | "containing_group_count"
-  | "sub_groups"
-  | "sub_group_count"
+  | "movies"
   | "galleries"
   | "birth_year"
   | "age"
@@ -178,7 +175,7 @@ export type CriterionType =
   | "gallery_count"
   | "performer_count"
   | "studio_count"
-  | "group_count"
+  | "movie_count"
   | "death_year"
   | "url"
   | "interactive"

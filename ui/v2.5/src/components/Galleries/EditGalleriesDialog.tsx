@@ -211,7 +211,6 @@ export const EditGalleriesDialog: React.FC<IListOperationProps> = (
         existingIds={existingIds ?? []}
         ids={ids ?? []}
         mode={mode}
-        menuPortalTarget={document.body}
       />
     );
   }
@@ -274,7 +273,6 @@ export const EditGalleriesDialog: React.FC<IListOperationProps> = (
                 }
                 ids={studioId ? [studioId] : []}
                 isDisabled={isUpdating}
-                menuPortalTarget={document.body}
               />
             </Col>
           </Form.Group>

@@ -162,7 +162,7 @@
 #tasks-panel {
   @media (min-width: 576px) and (min-height: 600px) {
     .tasks-panel-queue {
-      background-color: #202b33;
+      background-color: $bg-color;
       margin-top: -1rem;
       padding-bottom: 0.25rem;
       padding-top: 1rem;
@@ -228,7 +228,6 @@
 .scraper-table {
   display: block;
   margin-bottom: 16px;
-  max-height: 300px;
   overflow: auto;
   width: 100%;
 
@@ -248,19 +247,12 @@
 
   ul {
     margin-bottom: 0;
-    max-height: 100px;
-    overflow: auto;
     padding-left: 0;
   }
 
   li {
     list-style: none;
   }
-}
-
-.scraper-toolbar {
-  display: flex;
-  justify-content: space-between;
 }
 
 .job-table.card {

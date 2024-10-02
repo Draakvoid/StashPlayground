@@ -6,20 +6,16 @@ import * as GQL from "src/core/generated-graphql";
 import { sortPerformers } from "src/core/performers";
 import { HoverPopover } from "./HoverPopover";
 import { Icon } from "./Icon";
-import { PerformerLink, PerformerLinkType } from "./TagLink";
+import { PerformerLink } from "./TagLink";
 
 interface IProps {
   performers: Pick<
     GQL.Performer,
     "id" | "name" | "image_path" | "disambiguation" | "gender"
   >[];
-  linkType?: PerformerLinkType;
 }
 
-export const PerformerPopoverButton: React.FC<IProps> = ({
-  performers,
-  linkType,
-}) => {
+export const PerformerPopoverButton: React.FC<IProps> = ({ performers }) => {
   const sorted = sortPerformers(performers);
   const popoverContent = sorted.map((performer) => (
     <div className="performer-tag-container row" key={performer.id}>
@@ -37,7 +33,6 @@ export const PerformerPopoverButton: React.FC<IProps> = ({
         key={performer.id}
         performer={performer}
         className="d-block"
-        linkType={linkType}
       />
     </div>
   ));

@@ -237,13 +237,13 @@ export const TagCard: React.FC<IProps> = ({
   }
 
   function maybeRenderGroupsPopoverButton() {
-    if (!tag.group_count) return;
+    if (!tag.movie_count) return;
 
     return (
       <PopoverCountButton
         className="group-count"
         type="group"
-        count={tag.group_count}
+        count={tag.movie_count}
         url={NavUtils.makeTagGroupsUrl(tag)}
       />
     );
@@ -290,7 +290,11 @@ export const TagCard: React.FC<IProps> = ({
           {maybeRenderChildren()}
         </>
       }
-      overlays={<>{renderFavoriteIcon()}</>}
+      overlays={
+        <>
+        {renderFavoriteIcon()}
+        </>
+      }
       popovers={maybeRenderPopoverButtonGroup()}
       selected={selected}
       selecting={selecting}

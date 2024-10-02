@@ -10,7 +10,6 @@ interface ISceneCardsGrid {
   selectedIds: Set<string>;
   zoomIndex: number;
   onSelectChange: (id: string, selected: boolean, shiftKey: boolean) => void;
-  fromGroupId?: string;
 }
 
 export const SceneCardsGrid: React.FC<ISceneCardsGrid> = ({
@@ -19,7 +18,6 @@ export const SceneCardsGrid: React.FC<ISceneCardsGrid> = ({
   selectedIds,
   zoomIndex,
   onSelectChange,
-  fromGroupId,
 }) => {
   const [componentRef, { width }] = useContainerDimensions();
   return (
@@ -37,7 +35,6 @@ export const SceneCardsGrid: React.FC<ISceneCardsGrid> = ({
           onSelectedChanged={(selected: boolean, shiftKey: boolean) =>
             onSelectChange(scene.id, selected, shiftKey)
           }
-          fromGroupId={fromGroupId}
         />
       ))}
     </div>

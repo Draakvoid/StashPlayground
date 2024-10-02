@@ -4,7 +4,6 @@ import { defineMessages, MessageDescriptor, useIntl } from "react-intl";
 import { FilterSelect, SelectObject } from "src/components/Shared/Select";
 import { Criterion } from "src/models/list-filter/criteria/criterion";
 import { IHierarchicalLabelValue } from "src/models/list-filter/types";
-import { NumberField } from "src/utils/form";
 
 interface IHierarchicalLabelValueFilterProps {
   criterion: Criterion<IHierarchicalLabelValue>;
@@ -23,8 +22,7 @@ export const HierarchicalLabelValueFilter: React.FC<
     inputType !== "studios" &&
     inputType !== "tags" &&
     inputType !== "scene_tags" &&
-    inputType !== "performer_tags" &&
-    inputType !== "groups"
+    inputType !== "performer_tags"
   ) {
     return null;
   }
@@ -55,30 +53,21 @@ export const HierarchicalLabelValueFilter: React.FC<
     if (inputType === "studios") {
       return "include-sub-studios";
     }
-    if (inputType === "groups") {
-      return "include-sub-groups";
-    }
     if (type === "children") {
       return "include-parent-tags";
     }
-    console.log(inputType);
     return "include-sub-tags";
   }
 
   function criterionOptionTypeToIncludeUIString(): MessageDescriptor {
-    let id: string;
-    if (inputType === "studios") {
-      id = "include_sub_studios";
-    } else if (inputType === "groups") {
-      id = "include-sub-groups";
-    } else if (type === "children") {
-      id = "include_parent_tags";
-    } else {
-      id = "include_sub_tags";
-    }
-
+    const optionType =
+      inputType === "studios"
+        ? "include_sub_studios"
+        : type === "children"
+        ? "include_parent_tags"
+        : "include_sub_tags";
     return {
-      id,
+      id: optionType,
     };
   }
 
@@ -105,8 +94,9 @@ export const HierarchicalLabelValueFilter: React.FC<
 
       {criterion.value.depth !== 0 && (
         <Form.Group>
-          <NumberField
+          <Form.Control
             className="btn-secondary"
+            type="number"
             placeholder={intl.formatMessage(messages.studio_depth)}
             onChange={(e) =>
               onDepthChanged(e.target.value ? parseInt(e.target.value, 10) : -1)

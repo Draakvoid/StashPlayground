@@ -1,9 +1,4 @@
-import {
-  CriterionOption,
-  ILabeledIdCriterion,
-  ILabeledIdCriterionOption,
-} from "./criterion";
-import { CriterionModifier } from "src/core/generated-graphql";
+import { ILabeledIdCriterion, ILabeledIdCriterionOption } from "./criterion";
 
 const inputType = "scenes";
 
@@ -18,27 +13,5 @@ export const ScenesCriterionOption = new ILabeledIdCriterionOption(
 export class ScenesCriterion extends ILabeledIdCriterion {
   constructor() {
     super(ScenesCriterionOption);
-  }
-}
-
-const modifierOptions = [
-  CriterionModifier.Includes,
-  CriterionModifier.Excludes,
-];
-
-const defaultModifier = CriterionModifier.Includes;
-
-export const MarkersScenesCriterionOption = new CriterionOption({
-  messageID: "scenes",
-  type: "scenes",
-  modifierOptions,
-  defaultModifier,
-  inputType,
-  makeCriterion: () => new MarkersScenesCriterion(),
-});
-
-export class MarkersScenesCriterion extends ILabeledIdCriterion {
-  constructor() {
-    super(MarkersScenesCriterionOption);
   }
 }

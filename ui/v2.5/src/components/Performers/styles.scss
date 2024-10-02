@@ -1,3 +1,22 @@
+#performer-page .performer-tabs-container {
+  display: block;
+  visibility: visible;
+  height: auto;
+}
+
+#performer-page .nav-tabs {
+  display: flex;
+  margin-bottom: 1rem;
+}
+
+#performer-page .tab-content {
+  display: block;
+  visibility: visible;
+  height: auto;
+  overflow: visible;
+}
+
+
 #performer-page {
   .performer-image-container {
     .btn {
@@ -50,7 +69,17 @@
     width: 100%;
   }
 }
-
+.perfbuttondiv:hover .alt-hidden {
+  opacity: 1!important;
+}
+.perfbuttondiv:hover .performer {
+  opacity: 0;
+}
+.alt-hidden {
+  opacity: 0;
+  position: absolute;
+  left: 2rem;
+}
 .performer-card {
   width: 20rem;
 
@@ -150,7 +179,6 @@
   color: #f38cac;
 }
 
-.fa-transgender,
 .fa-transgender-alt {
   color: #c8a2c8;
 }
@@ -199,50 +227,24 @@
   }
 }
 
-.performer-select-value .performer-disambiguation {
-  color: initial;
-}
+.performer-select {
+  .performer-disambiguation {
+    white-space: pre;
+  }
 
-.performer-select-option {
-  .performer-select-row {
-    align-items: center;
-    display: flex;
-    width: 100%;
+  .performer-select-value .performer-disambiguation {
+    color: initial;
+  }
 
-    .performer-select-image {
-      margin-right: 0.4em;
-      max-height: 50px;
-      max-width: 50px;
-    }
+  .alias {
+    font-weight: bold;
+    white-space: pre;
+  }
 
-    .performer-select-details {
-      display: flex;
-      flex-direction: column;
-      justify-content: flex-start;
-      max-height: 4.1rem;
-      overflow: hidden;
-
-      .performer-select-name {
-        flex-shrink: 0;
-        white-space: pre-wrap;
-        word-break: break-all;
-
-        .performer-select-alias {
-          font-size: 0.8rem;
-          font-weight: bold;
-        }
-      }
-
-      .performer-select-disambiguation,
-      .performer-select-birthdate {
-        color: $text-muted;
-        flex-shrink: 0;
-        font-size: 0.9rem;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        white-space: nowrap;
-      }
-    }
+  .performer-select-image {
+    margin-right: 0.5em;
+    max-height: 50px;
+    max-width: 50px;
   }
 }
 

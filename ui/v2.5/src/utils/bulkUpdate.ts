@@ -1,6 +1,5 @@
 import * as GQL from "src/core/generated-graphql";
 import isEqual from "lodash-es/isEqual";
-import { IHasID } from "./data";
 
 interface IHasRating {
   rating100?: GQL.Maybe<number> | undefined;
@@ -20,6 +19,10 @@ export function getAggregateRating(state: IHasRating[]) {
   });
 
   return ret;
+}
+
+interface IHasID {
+  id: string;
 }
 
 interface IHasStudio {
@@ -45,11 +48,8 @@ export function getAggregateStudioId(state: IHasStudio[]) {
   return ret;
 }
 
-export function getAggregateIds<T>(
-  sortedLists: T[][],
-  isEqualFn: (a: T[], b: T[]) => boolean = isEqual
-) {
-  let ret: T[] = [];
+export function getAggregateIds(sortedLists: string[][]) {
+  let ret: string[] = [];
   let first = true;
 
   sortedLists.forEach((l) => {
@@ -57,7 +57,7 @@ export function getAggregateIds<T>(
       ret = l;
       first = false;
     } else {
-      if (!isEqualFn(ret, l)) {
+      if (!isEqual(ret, l)) {
         ret = [];
       }
     }
@@ -82,12 +82,12 @@ export function getAggregateTagIds(state: { tags: IHasID[] }[]) {
 }
 
 interface IGroup {
-  group: IHasID;
+  movie: IHasID;
 }
 
-export function getAggregateGroupIds(state: { groups: IGroup[] }[]) {
+export function getAggregateGroupIds(state: { movies: IGroup[] }[]) {
   const sortedLists = state.map((o) =>
-    o.groups.map((oo) => oo.group.id).sort()
+    o.movies.map((oo) => oo.movie.id).sort()
   );
   return getAggregateIds(sortedLists);
 }

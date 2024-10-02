@@ -27,10 +27,6 @@ export class StashIDCriterion extends Criterion<IStashIDValue> {
     });
   }
 
-  public cloneValues() {
-    this.value = { ...this.value };
-  }
-
   public get value(): IStashIDValue {
     return this._value;
   }

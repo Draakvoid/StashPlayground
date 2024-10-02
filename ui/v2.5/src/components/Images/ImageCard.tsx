@@ -100,12 +100,7 @@ export const ImageCard: React.FC<IImageCardProps> = (
   function maybeRenderPerformerPopoverButton() {
     if (props.image.performers.length <= 0) return;
 
-    return (
-      <PerformerPopoverButton
-        performers={props.image.performers}
-        linkType="image"
-      />
-    );
+    return <PerformerPopoverButton performers={props.image.performers} />;
   }
 
   function maybeRenderOCounter() {

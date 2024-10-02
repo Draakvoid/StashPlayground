@@ -25,8 +25,8 @@ export const GenderCriterionOption = new CriterionOption({
 });
 
 export class GenderCriterion extends MultiStringCriterion {
-  constructor(value: string[] = []) {
-    super(GenderCriterionOption, value);
+  constructor() {
+    super(GenderCriterionOption);
   }
 
   public toCriterionInput(): GenderCriterionInput {

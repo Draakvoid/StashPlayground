@@ -4,10 +4,8 @@ import { faTimes } from "@fortawesome/free-solid-svg-icons";
 import { useIntl } from "react-intl";
 import { Icon } from "./Icon";
 import useFocus from "src/utils/focus";
-import cx from "classnames";
 
 interface IClearableInput {
-  className?: string;
   value: string;
   setValue: (value: string) => void;
   focus?: ReturnType<typeof useFocus>;
@@ -15,7 +13,6 @@ interface IClearableInput {
 }
 
 export const ClearableInput: React.FC<IClearableInput> = ({
-  className,
   value,
   setValue,
   focus,
@@ -40,7 +37,7 @@ export const ClearableInput: React.FC<IClearableInput> = ({
   }
 
   return (
-    <div className={cx("clearable-input-group", className)}>
+    <div className="clearable-input-group">
       <FormControl
         ref={queryRef}
         placeholder={placeholder}

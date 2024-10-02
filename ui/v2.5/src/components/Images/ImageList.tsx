@@ -11,7 +11,11 @@ import { useHistory } from "react-router-dom";
 import Mousetrap from "mousetrap";
 import * as GQL from "src/core/generated-graphql";
 import { queryFindImages, useFindImages } from "src/core/StashService";
-import { ItemList, ItemListContext, showWhenSelected } from "../List/ItemList";
+import {
+  makeItemList,
+  IItemListOperation,
+  showWhenSelected,
+} from "../List/ItemList";
 import { useLightbox } from "src/hooks/Lightbox/hooks";
 import { ListFilterModel } from "src/models/list-filter/filter";
 import { DisplayMode } from "src/models/list-filter/types";
@@ -27,7 +31,6 @@ import TextUtils from "src/utils/text";
 import { ConfigurationContext } from "src/hooks/Config";
 import { ImageGridCard } from "./ImageGridCard";
 import { View } from "../List/views";
-import { IItemListOperation } from "../List/FilteredListToolbar";
 
 interface IImageWallProps {
   images: GQL.SlimImageDataFragment[];
@@ -219,49 +222,51 @@ const ImageListImages: React.FC<IImageListImages> = ({
   return <></>;
 };
 
-function getItems(result: GQL.FindImagesQueryResult) {
-  return result?.data?.findImages?.images ?? [];
-}
+const ImageItemList = makeItemList({
+  filterMode: GQL.FilterMode.Images,
+  useResult: useFindImages,
+  getItems(result: GQL.FindImagesQueryResult) {
+    return result?.data?.findImages?.images ?? [];
+  },
+  getCount(result: GQL.FindImagesQueryResult) {
+    return result?.data?.findImages?.count ?? 0;
+  },
+  renderMetadataByline(result: GQL.FindImagesQueryResult) {
+    const megapixels = result?.data?.findImages?.megapixels;
+    const size = result?.data?.findImages?.filesize;
+    const filesize = size ? TextUtils.fileSize(size) : undefined;
 
-function getCount(result: GQL.FindImagesQueryResult) {
-  return result?.data?.findImages?.count ?? 0;
-}
+    if (!megapixels && !size) {
+      return;
+    }
 
-function renderMetadataByline(result: GQL.FindImagesQueryResult) {
-  const megapixels = result?.data?.findImages?.megapixels;
-  const size = result?.data?.findImages?.filesize;
-  const filesize = size ? TextUtils.fileSize(size) : undefined;
+    const separator = megapixels && size ? " - " : "";
 
-  if (!megapixels && !size) {
-    return;
-  }
-
-  const separator = megapixels && size ? " - " : "";
-
-  return (
-    <span className="images-stats">
-      &nbsp;(
-      {megapixels ? (
-        <span className="images-megapixels">
-          <FormattedNumber value={megapixels} /> Megapixels
-        </span>
-      ) : undefined}
-      {separator}
-      {size && filesize ? (
-        <span className="images-size">
-          <FormattedNumber
-            value={filesize.size}
-            maximumFractionDigits={TextUtils.fileSizeFractionalDigits(
-              filesize.unit
-            )}
-          />
-          {` ${TextUtils.formatFileSizeUnit(filesize.unit)}`}
-        </span>
-      ) : undefined}
-      )
-    </span>
-  );
-}
+    return (
+      <span className="images-stats">
+        &nbsp;(
+        {megapixels ? (
+          <span className="images-megapixels">
+            <FormattedNumber value={megapixels} /> Megapixels
+          </span>
+        ) : undefined}
+        {separator}
+        {size && filesize ? (
+          <span className="images-size">
+            <FormattedNumber
+              value={filesize.size}
+              maximumFractionDigits={TextUtils.fileSizeFractionalDigits(
+                filesize.unit
+              )}
+            />
+            {` ${TextUtils.formatFileSizeUnit(filesize.unit)}`}
+          </span>
+        ) : undefined}
+        )
+      </span>
+    );
+  },
+});
 
 interface IImageList {
   filterHook?: (filter: ListFilterModel) => ListFilterModel;
@@ -283,8 +288,6 @@ export const ImageList: React.FC<IImageList> = ({
   const [isExportDialogOpen, setIsExportDialogOpen] = useState(false);
   const [isExportAll, setIsExportAll] = useState(false);
   const [slideshowRunning, setSlideshowRunning] = useState<boolean>(false);
-
-  const filterMode = GQL.FilterMode.Images;
 
   const otherOperations = [
     ...(extraOperations ?? []),
@@ -412,26 +415,17 @@ export const ImageList: React.FC<IImageList> = ({
   }
 
   return (
-    <ItemListContext
-      filterMode={filterMode}
-      useResult={useFindImages}
-      getItems={getItems}
-      getCount={getCount}
-      alterQuery={alterQuery}
+    <ImageItemList
+      zoomable
+      selectable
       filterHook={filterHook}
       view={view}
-      selectable
-    >
-      <ItemList
-        zoomable
-        view={view}
-        otherOperations={otherOperations}
-        addKeybinds={addKeybinds}
-        renderContent={renderContent}
-        renderEditDialog={renderEditDialog}
-        renderDeleteDialog={renderDeleteDialog}
-        renderMetadataByline={renderMetadataByline}
-      />
-    </ItemListContext>
+      alterQuery={alterQuery}
+      otherOperations={otherOperations}
+      addKeybinds={addKeybinds}
+      renderContent={renderContent}
+      renderEditDialog={renderEditDialog}
+      renderDeleteDialog={renderDeleteDialog}
+    />
   );
 };

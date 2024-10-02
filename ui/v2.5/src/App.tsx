@@ -26,7 +26,7 @@ import * as yup from "yup";
 import Mousetrap from "mousetrap";
 import MousetrapPause from "mousetrap-pause";
 import { ErrorBoundary } from "./components/ErrorBoundary";
-import { MainNavbar } from "./components/MainNavbar";
+import  {MainNavbar}  from "./components/MainNavbar";
 import { PageNotFound } from "./components/PageNotFound";
 import * as GQL from "./core/generated-graphql";
 import { makeTitleProps } from "./hooks/title";
@@ -58,6 +58,9 @@ const Performers = lazyComponent(
 const FrontPage = lazyComponent(
   () => import("./components/FrontPage/FrontPage")
 );
+const RecPage = lazyComponent(
+  () => import("./components/Recommendations/Recommendations")
+)
 const Scenes = lazyComponent(() => import("./components/Scenes/Scenes"));
 const Settings = lazyComponent(() => import("./components/Settings/Settings"));
 const Stats = lazyComponent(() => import("./components/Stats"));
@@ -66,7 +69,7 @@ const Galleries = lazyComponent(
   () => import("./components/Galleries/Galleries")
 );
 
-const Groups = lazyComponent(() => import("./components/Groups/Groups"));
+const Groups = lazyComponent(() => import("./components/Movies/Movies"));
 const Tags = lazyComponent(() => import("./components/Tags/Tags"));
 const Images = lazyComponent(() => import("./components/Images/Images"));
 const Setup = lazyComponent(() => import("./components/Setup/Setup"));
@@ -306,6 +309,7 @@ export const App: React.FC = () => {
         <Suspense fallback={<LoadingIndicator />}>
           <Switch>
             <Route exact path="/" component={FrontPage} />
+            <Route path="/recommendations" component={RecPage} />
             <Route path="/scenes" component={Scenes} />
             <Route path="/images" component={Images} />
             <Route path="/galleries" component={Galleries} />

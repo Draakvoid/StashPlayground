@@ -7,15 +7,13 @@ import { View } from "src/components/List/views";
 interface IStudioImagesPanel {
   active: boolean;
   studio: GQL.StudioDataFragment;
-  showChildStudioContent?: boolean;
 }
 
 export const StudioImagesPanel: React.FC<IStudioImagesPanel> = ({
   active,
   studio,
-  showChildStudioContent,
 }) => {
-  const filterHook = useStudioFilterHook(studio, showChildStudioContent);
+  const filterHook = useStudioFilterHook(studio);
   return (
     <ImageList
       filterHook={filterHook}

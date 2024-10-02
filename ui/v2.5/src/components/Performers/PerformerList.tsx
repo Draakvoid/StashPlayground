@@ -1,15 +1,11 @@
-import cloneDeep from "lodash-es/cloneDeep";
 import React, { useState } from "react";
 import { useIntl } from "react-intl";
 import { useHistory } from "react-router-dom";
 import Mousetrap from "mousetrap";
+import cloneDeep from "lodash-es/cloneDeep";
 import * as GQL from "src/core/generated-graphql";
-import {
-  queryFindPerformers,
-  useFindPerformers,
-  usePerformersDestroy,
-} from "src/core/StashService";
-import { ItemList, ItemListContext, showWhenSelected } from "../List/ItemList";
+import { queryFindPerformers, useFindPerformers, usePerformersDestroy } from "src/core/StashService";
+import { makeItemList, showWhenSelected } from "../List/ItemList";
 import { ListFilterModel } from "src/models/list-filter/filter";
 import { DisplayMode } from "src/models/list-filter/types";
 import { PerformerTagger } from "../Tagger/performers/PerformerTagger";
@@ -21,15 +17,20 @@ import { EditPerformersDialog } from "./EditPerformersDialog";
 import { cmToImperial, cmToInches, kgToLbs } from "src/utils/units";
 import TextUtils from "src/utils/text";
 import { PerformerCardGrid } from "./PerformerCardGrid";
+import { PerformerCardCard } from "./PerformerCardCard";
 import { View } from "../List/views";
+import './DisplaymodeStyles.scss';  // Import the CSS file
 
-function getItems(result: GQL.FindPerformersQueryResult) {
-  return result?.data?.findPerformers?.performers ?? [];
-}
-
-function getCount(result: GQL.FindPerformersQueryResult) {
-  return result?.data?.findPerformers?.count ?? 0;
-}
+const PerformerItemList = makeItemList({
+  filterMode: GQL.FilterMode.Performers,
+  useResult: useFindPerformers,
+  getItems(result: GQL.FindPerformersQueryResult) {
+    return result?.data?.findPerformers?.performers ?? [];
+  },
+  getCount(result: GQL.FindPerformersQueryResult) {
+    return result?.data?.findPerformers?.count ?? 0;
+  },
+});
 
 export const FormatHeight = (height?: number | null) => {
   const intl = useIntl();
@@ -64,10 +65,7 @@ export const FormatHeight = (height?: number | null) => {
   );
 };
 
-export const FormatAge = (
-  birthdate?: string | null,
-  deathdate?: string | null
-) => {
+export const FormatAge = (birthdate?: string | null, deathdate?: string | null) => {
   if (!birthdate) {
     return "";
   }
@@ -172,8 +170,6 @@ export const PerformerList: React.FC<IPerformerList> = ({
   const [isExportDialogOpen, setIsExportDialogOpen] = useState(false);
   const [isExportAll, setIsExportAll] = useState(false);
 
-  const filterMode = GQL.FilterMode.Performers;
-
   const otherOperations = [
     {
       text: intl.formatMessage({ id: "actions.open_random" }),
@@ -190,10 +186,7 @@ export const PerformerList: React.FC<IPerformerList> = ({
     },
   ];
 
-  function addKeybinds(
-    result: GQL.FindPerformersQueryResult,
-    filter: ListFilterModel
-  ) {
+  function addKeybinds(result: GQL.FindPerformersQueryResult, filter: ListFilterModel) {
     Mousetrap.bind("p r", () => {
       openRandom(result, filter);
     });
@@ -203,10 +196,7 @@ export const PerformerList: React.FC<IPerformerList> = ({
     };
   }
 
-  async function openRandom(
-    result: GQL.FindPerformersQueryResult,
-    filter: ListFilterModel
-  ) {
+  async function openRandom(result: GQL.FindPerformersQueryResult, filter: ListFilterModel) {
     if (result.data?.findPerformers) {
       const { count } = result.data.findPerformers;
       const index = Math.floor(Math.random() * count);
@@ -258,6 +248,8 @@ export const PerformerList: React.FC<IPerformerList> = ({
     function renderPerformers() {
       if (!result.data?.findPerformers) return;
 
+      const performerListClass = filter.displayMode === DisplayMode.Card ? "card-mode" : "";
+
       if (filter.displayMode === DisplayMode.Grid) {
         return (
           <PerformerCardGrid
@@ -281,6 +273,19 @@ export const PerformerList: React.FC<IPerformerList> = ({
       if (filter.displayMode === DisplayMode.Tagger) {
         return (
           <PerformerTagger performers={result.data.findPerformers.performers} />
+        );
+      }
+      if (filter.displayMode === DisplayMode.Card) {
+        return (
+          <div className={`performer-list ${performerListClass}`}>
+            <PerformerCardCard
+              performers={result.data.findPerformers.performers}
+              zoomIndex={filter.zoomIndex}
+              selectedIds={selectedIds}
+              onSelectChange={onSelectChange}
+              extraCriteria={extraCriteria}
+            />
+          </div>
         );
       }
     }
@@ -318,24 +323,16 @@ export const PerformerList: React.FC<IPerformerList> = ({
   }
 
   return (
-    <ItemListContext
-      filterMode={filterMode}
-      useResult={useFindPerformers}
-      getItems={getItems}
-      getCount={getCount}
-      alterQuery={alterQuery}
+    <PerformerItemList
+      selectable
       filterHook={filterHook}
       view={view}
-      selectable
-    >
-      <ItemList
-        view={view}
-        otherOperations={otherOperations}
-        addKeybinds={addKeybinds}
-        renderContent={renderContent}
-        renderEditDialog={renderEditDialog}
-        renderDeleteDialog={renderDeleteDialog}
-      />
-    </ItemListContext>
+      alterQuery={alterQuery}
+      otherOperations={otherOperations}
+      addKeybinds={addKeybinds}
+      renderContent={renderContent}
+      renderEditDialog={renderEditDialog}
+      renderDeleteDialog={renderDeleteDialog}
+    />
   );
 };

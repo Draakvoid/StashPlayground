@@ -80,7 +80,6 @@ const ImagePage: React.FC<IProps> = ({ image }) => {
 
     await mutateMetadataScan({
       paths: [objectPath(image)],
-      rescan: true,
     });
 
     Toast.success(
@@ -147,12 +146,6 @@ const ImagePage: React.FC<IProps> = ({ image }) => {
     });
   }
 
-  useRatingKeybinds(
-    true,
-    configuration?.ui.ratingSystemOptions?.type,
-    setRating
-  );
-
   function onDeleteDialogClosed(deleted: boolean) {
     setIsDeleteAlertOpen(false);
     if (deleted) {
@@ -193,7 +186,7 @@ const ImagePage: React.FC<IProps> = ({ image }) => {
             onClick={() => setIsDeleteAlertOpen(true)}
           >
             <FormattedMessage
-              id="actions.delete"
+              id="actions.delete_entity"
               values={{ entityType: intl.formatMessage({ id: "image" }) }}
             />
           </Dropdown.Item>
@@ -255,23 +248,6 @@ const ImagePage: React.FC<IProps> = ({ image }) => {
       </Tab.Container>
     );
   }
-
-  // set up hotkeys
-  useEffect(() => {
-    Mousetrap.bind("a", () => setActiveTabKey("image-details-panel"));
-    Mousetrap.bind("e", () => setActiveTabKey("image-edit-panel"));
-    Mousetrap.bind("f", () => setActiveTabKey("image-file-info-panel"));
-    Mousetrap.bind("o", () => {
-      onIncrementClick();
-    });
-
-    return () => {
-      Mousetrap.unbind("a");
-      Mousetrap.unbind("e");
-      Mousetrap.unbind("f");
-      Mousetrap.unbind("o");
-    };
-  });
 
   const file = useMemo(
     () => (image.files.length > 0 ? image.files[0] : undefined),

@@ -1,14 +1,13 @@
 import {
   faChevronDown,
   faChevronRight,
-  faChevronUp,
 } from "@fortawesome/free-solid-svg-icons";
 import React, { useState } from "react";
 import { Button, Collapse } from "react-bootstrap";
 import { Icon } from "./Icon";
 
 interface IProps {
-  text: React.ReactNode;
+  text: string;
 }
 
 export const CollapseButton: React.FC<React.PropsWithChildren<IProps>> = (
@@ -29,23 +28,5 @@ export const CollapseButton: React.FC<React.PropsWithChildren<IProps>> = (
         <div>{props.children}</div>
       </Collapse>
     </div>
-  );
-};
-
-export const ExpandCollapseButton: React.FC<{
-  collapsed: boolean;
-  setCollapsed: (collapsed: boolean) => void;
-}> = ({ collapsed, setCollapsed }) => {
-  const buttonIcon = collapsed ? faChevronDown : faChevronUp;
-
-  return (
-    <span className="detail-expand-collapse">
-      <Button
-        className="minimal expand-collapse"
-        onClick={() => setCollapsed(!collapsed)}
-      >
-        <Icon className="fa-fw" icon={buttonIcon} />
-      </Button>
-    </span>
   );
 };

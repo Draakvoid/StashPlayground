@@ -14,7 +14,10 @@ import cx from "classnames";
 
 import { useToast } from "src/hooks/Toast";
 import { useDebounce } from "src/hooks/debounce";
-import { IHasID } from "src/utils/data";
+
+interface IHasID {
+  id: string;
+}
 
 export type Option<T> = { value: string; object: T };
 

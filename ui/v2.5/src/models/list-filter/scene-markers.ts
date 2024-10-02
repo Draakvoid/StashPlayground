@@ -1,5 +1,4 @@
 import { PerformersCriterionOption } from "./criteria/performers";
-import { MarkersScenesCriterionOption } from "./criteria/scenes";
 import { SceneTagsCriterionOption, TagsCriterionOption } from "./criteria/tags";
 import { ListFilterOptions } from "./filter-options";
 import { DisplayMode } from "./types";
@@ -19,7 +18,6 @@ const sortByOptions = [
 const displayModeOptions = [DisplayMode.Wall];
 const criterionOptions = [
   TagsCriterionOption,
-  MarkersScenesCriterionOption,
   SceneTagsCriterionOption,
   PerformersCriterionOption,
   createMandatoryTimestampCriterionOption("created_at"),

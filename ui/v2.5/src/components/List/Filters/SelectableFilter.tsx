@@ -24,8 +24,6 @@ import { CriterionModifier } from "src/core/generated-graphql";
 import { keyboardClickHandler } from "src/utils/keyboard";
 import { useDebounce } from "src/hooks/debounce";
 import useFocus from "src/utils/focus";
-import ScreenUtils from "src/utils/screen";
-import { NumberField } from "src/utils/form";
 
 interface ISelectedItem {
   item: ILabeledId;
@@ -237,10 +235,7 @@ export const ObjectsFilter = <
     setDisplayQuery("");
 
     // focus the input box
-    // don't do this on touch devices, as it's annoying
-    if (!ScreenUtils.isTouch()) {
-      setInputFocus();
-    }
+    setInputFocus();
   }
 
   const onUnselect = useCallback(
@@ -362,8 +357,9 @@ export const HierarchicalObjectsFilter = <
 
       {criterion.value.depth !== 0 && (
         <Form.Group>
-          <NumberField
+          <Form.Control
             className="btn-secondary"
+            type="number"
             placeholder={intl.formatMessage(messages.studio_depth)}
             onChange={(e) =>
               onDepthChanged(e.target.value ? parseInt(e.target.value, 10) : -1)

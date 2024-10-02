@@ -89,14 +89,6 @@ export abstract class Criterion<V extends CriterionValue> {
     this.value = value;
   }
 
-  public clone() {
-    const ret = Object.assign(Object.create(Object.getPrototypeOf(this)), this);
-    ret.cloneValues();
-    return ret;
-  }
-
-  protected cloneValues() {}
-
   public static getModifierLabel(intl: IntlShape, modifier: CriterionModifier) {
     const modifierMessageID = modifierMessageIDs[modifier];
 
@@ -259,14 +251,6 @@ export class ILabeledIdCriterionOption extends CriterionOption {
 }
 
 export class ILabeledIdCriterion extends Criterion<ILabeledId[]> {
-  constructor(type: CriterionOption, value: ILabeledId[] = []) {
-    super(type, value);
-  }
-
-  public cloneValues() {
-    this.value = this.value.map((v) => ({ ...v }));
-  }
-
   protected getLabelValue(_intl: IntlShape): string {
     return this.value.map((v) => v.label).join(", ");
   }
@@ -288,26 +272,21 @@ export class ILabeledIdCriterion extends Criterion<ILabeledId[]> {
 
     return this.value.length > 0;
   }
+
+  constructor(type: CriterionOption) {
+    super(type, []);
+  }
 }
 
 export class IHierarchicalLabeledIdCriterion extends Criterion<IHierarchicalLabelValue> {
-  constructor(
-    type: CriterionOption,
-    value: IHierarchicalLabelValue = {
+  constructor(type: CriterionOption) {
+    const value: IHierarchicalLabelValue = {
       items: [],
       excluded: [],
       depth: 0,
-    }
-  ) {
-    super(type, value);
-  }
-
-  public cloneValues() {
-    this.value = {
-      ...this.value,
-      items: this.value.items.map((v) => ({ ...v })),
-      excluded: this.value.excluded.map((v) => ({ ...v })),
     };
+
+    super(type, value);
   }
 
   override get modifier(): CriterionModifier {
@@ -319,7 +298,6 @@ export class IHierarchicalLabeledIdCriterion extends Criterion<IHierarchicalLabe
     // excluded only makes sense for includes and includes all
     // so reset it for other modifiers
     if (
-      this.value &&
       value !== CriterionModifier.Includes &&
       value !== CriterionModifier.IncludesAll
     ) {
@@ -522,13 +500,9 @@ export class StringCriterion extends Criterion<string> {
   }
 }
 
-export abstract class MultiStringCriterion extends Criterion<string[]> {
-  constructor(type: CriterionOption, value: string[] = []) {
-    super(type, value);
-  }
-
-  public cloneValues() {
-    this.value = this.value.slice();
+export class MultiStringCriterion extends Criterion<string[]> {
+  constructor(type: CriterionOption) {
+    super(type, []);
   }
 
   protected getLabelValue(_intl: IntlShape) {
@@ -699,14 +673,6 @@ export function createMandatoryNumberCriterionOption(
 }
 
 export class NumberCriterion extends Criterion<INumberValue> {
-  constructor(type: CriterionOption) {
-    super(type, { value: undefined, value2: undefined });
-  }
-
-  public cloneValues() {
-    this.value = { ...this.value };
-  }
-
   public get value(): INumberValue {
     return this._value;
   }
@@ -765,6 +731,10 @@ export class NumberCriterion extends Criterion<INumberValue> {
 
     return true;
   }
+
+  constructor(type: CriterionOption) {
+    super(type, { value: undefined, value2: undefined });
+  }
 }
 
 export class DurationCriterionOption extends MandatoryNumberCriterionOption {
@@ -783,10 +753,6 @@ export function createDurationCriterionOption(
 export class DurationCriterion extends Criterion<INumberValue> {
   constructor(type: CriterionOption) {
     super(type, { value: undefined, value2: undefined });
-  }
-
-  public cloneValues() {
-    this.value = { ...this.value };
   }
 
   public toCriterionInput(): IntCriterionInput {
@@ -862,14 +828,6 @@ export function createDateCriterionOption(value: CriterionType) {
 }
 
 export class DateCriterion extends Criterion<IDateValue> {
-  constructor(type: CriterionOption) {
-    super(type, { value: "", value2: undefined });
-  }
-
-  public cloneValues() {
-    this.value = { ...this.value };
-  }
-
   public encodeValue() {
     return {
       value: this.value.value,
@@ -915,6 +873,10 @@ export class DateCriterion extends Criterion<IDateValue> {
     }
 
     return true;
+  }
+
+  constructor(type: CriterionOption) {
+    super(type, { value: "", value2: undefined });
   }
 }
 
@@ -965,14 +927,6 @@ export function createMandatoryTimestampCriterionOption(value: CriterionType) {
 }
 
 export class TimestampCriterion extends Criterion<ITimestampValue> {
-  constructor(type: CriterionOption) {
-    super(type, { value: "", value2: undefined });
-  }
-
-  public cloneValues() {
-    this.value = { ...this.value };
-  }
-
   public encodeValue() {
     return {
       value: this.value?.value,
@@ -1029,5 +983,9 @@ export class TimestampCriterion extends Criterion<ITimestampValue> {
     }
 
     return true;
+  }
+
+  constructor(type: CriterionOption) {
+    super(type, { value: "", value2: undefined });
   }
 }

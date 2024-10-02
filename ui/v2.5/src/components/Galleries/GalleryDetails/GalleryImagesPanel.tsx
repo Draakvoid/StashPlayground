@@ -3,14 +3,8 @@ import * as GQL from "src/core/generated-graphql";
 import { GalleriesCriterion } from "src/models/list-filter/criteria/galleries";
 import { ListFilterModel } from "src/models/list-filter/filter";
 import { ImageList } from "src/components/Images/ImageList";
-import {
-  mutateRemoveGalleryImages,
-  mutateSetGalleryCover,
-} from "src/core/StashService";
-import {
-  showWhenSelected,
-  showWhenSingleSelection,
-} from "src/components/List/ItemList";
+import { mutateRemoveGalleryImages } from "src/core/StashService";
+import { showWhenSelected } from "src/components/List/ItemList";
 import { useToast } from "src/hooks/Toast";
 import { useIntl } from "react-intl";
 import { faMinus } from "@fortawesome/free-solid-svg-icons";
@@ -64,35 +58,6 @@ export const GalleryImagesPanel: React.FC<IGalleryDetailsProps> = ({
     return filter;
   }
 
-  async function setCover(
-    result: GQL.FindImagesQueryResult,
-    filter: ListFilterModel,
-    selectedIds: Set<string>
-  ) {
-    const coverImageID = selectedIds.values().next();
-    if (coverImageID.done) {
-      // operation should only be displayed when exactly one image is selected
-      return;
-    }
-    try {
-      await mutateSetGalleryCover({
-        gallery_id: gallery.id!,
-        cover_image_id: coverImageID.value,
-      });
-
-      Toast.success(
-        intl.formatMessage(
-          { id: "toast.updated_entity" },
-          {
-            entity: intl.formatMessage({ id: "gallery" }).toLocaleLowerCase(),
-          }
-        )
-      );
-    } catch (e) {
-      Toast.error(e);
-    }
-  }
-
   async function removeImages(
     result: GQL.FindImagesQueryResult,
     filter: ListFilterModel,
@@ -120,11 +85,6 @@ export const GalleryImagesPanel: React.FC<IGalleryDetailsProps> = ({
   }
 
   const otherOperations = [
-    {
-      text: intl.formatMessage({ id: "actions.set_cover" }),
-      onClick: setCover,
-      isDisplayed: showWhenSingleSelection,
-    },
     {
       text: intl.formatMessage({ id: "actions.remove_from_gallery" }),
       onClick: removeImages,

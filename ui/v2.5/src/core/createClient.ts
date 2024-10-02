@@ -46,8 +46,8 @@ const typePolicies: TypePolicies = {
       findStudio: {
         read: readReference("Studio"),
       },
-      findGroup: {
-        read: readReference("Group"),
+      findMovie: {
+        read: readReference("Movie"),
       },
       findGallery: {
         read: readReference("Gallery"),
@@ -80,7 +80,7 @@ const typePolicies: TypePolicies = {
       },
     },
   },
-  Group: {
+  Movie: {
     fields: {
       studio: {
         read: readDanglingNull,

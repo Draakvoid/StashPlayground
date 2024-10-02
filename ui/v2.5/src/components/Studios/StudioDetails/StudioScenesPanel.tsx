@@ -7,15 +7,13 @@ import { View } from "src/components/List/views";
 interface IStudioScenesPanel {
   active: boolean;
   studio: GQL.StudioDataFragment;
-  showChildStudioContent?: boolean;
 }
 
 export const StudioScenesPanel: React.FC<IStudioScenesPanel> = ({
   active,
   studio,
-  showChildStudioContent,
 }) => {
-  const filterHook = useStudioFilterHook(studio, showChildStudioContent);
+  const filterHook = useStudioFilterHook(studio);
   return (
     <SceneList
       filterHook={filterHook}

@@ -31,5 +31,4 @@ export enum View {
   StudioChildren = "studio_children",
 
   GroupScenes = "group_scenes",
-  GroupSubGroups = "group_sub_groups",
 }

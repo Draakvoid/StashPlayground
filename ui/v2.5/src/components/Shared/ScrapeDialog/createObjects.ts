@@ -1,7 +1,7 @@
 import { useToast } from "src/hooks/Toast";
 import * as GQL from "src/core/generated-graphql";
 import {
-  useGroupCreate,
+  useMovieCreate,
   usePerformerCreate,
   useStudioCreate,
   useTagCreate,
@@ -9,7 +9,7 @@ import {
 import { ObjectScrapeResult, ScrapeResult } from "./scrapeResult";
 import { useIntl } from "react-intl";
 import { scrapedPerformerToCreateInput } from "src/core/performers";
-import { scrapedGroupToCreateInput } from "src/core/groups";
+import { scrapedGroupToCreateInput } from "src/core/movies";
 
 function useCreateObject<T>(
   entityTypeID: string,
@@ -124,12 +124,12 @@ export function useCreateScrapedPerformer(
 }
 
 export function useCreateScrapedGroup(
-  props: IUseCreateNewObjectProps<GQL.ScrapedGroup>
+  props: IUseCreateNewObjectProps<GQL.ScrapedMovie>
 ) {
   const { scrapeResult, setScrapeResult, newObjects, setNewObjects } = props;
-  const [createGroup] = useGroupCreate();
+  const [createGroup] = useMovieCreate();
 
-  async function createNewGroup(toCreate: GQL.ScrapedGroup) {
+  async function createNewGroup(toCreate: GQL.ScrapedMovie) {
     const input = scrapedGroupToCreateInput(toCreate);
 
     const result = await createGroup({
@@ -137,10 +137,10 @@ export function useCreateScrapedGroup(
     });
 
     const newValue = [...(scrapeResult.newValue ?? [])];
-    if (result.data?.groupCreate)
+    if (result.data?.movieCreate)
       newValue.push({
-        stored_id: result.data.groupCreate.id,
-        name: result.data.groupCreate.name,
+        stored_id: result.data.movieCreate.id,
+        name: result.data.movieCreate.name,
       });
 
     // add the new object to the new object value

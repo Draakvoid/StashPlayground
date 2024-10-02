@@ -1,7 +1,14 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { FormattedMessage, useIntl } from "react-intl";
 import { Prompt } from "react-router-dom";
-import { Button, Form, Col, Row } from "react-bootstrap";
+import {
+  Button,
+  Dropdown,
+  DropdownButton,
+  Form,
+  Col,
+  Row,
+} from "react-bootstrap";
 import Mousetrap from "mousetrap";
 import * as GQL from "src/core/generated-graphql";
 import * as yup from "yup";
@@ -11,10 +18,12 @@ import {
   useListGalleryScrapers,
   mutateReloadScrapers,
 } from "src/core/StashService";
+import { Icon } from "src/components/Shared/Icon";
 import { LoadingIndicator } from "src/components/Shared/LoadingIndicator";
 import { useToast } from "src/hooks/Toast";
 import { useFormik } from "formik";
 import { GalleryScrapeDialog } from "./GalleryScrapeDialog";
+import { faSyncAlt } from "@fortawesome/free-solid-svg-icons";
 import isEqual from "lodash-es/isEqual";
 import { handleUnsavedChanges } from "src/utils/navigation";
 import {
@@ -30,7 +39,6 @@ import { formikUtils } from "src/utils/form";
 import { Studio, StudioSelect } from "src/components/Studios/StudioSelect";
 import { Scene, SceneSelect } from "src/components/Scenes/SceneSelect";
 import { useTagsEdit } from "src/hooks/tagsEdit";
-import { ScraperMenu } from "src/components/Shared/ScraperMenu";
 
 interface IProps {
   gallery: Partial<GQL.GalleryDataFragment>;
@@ -54,7 +62,8 @@ export const GalleryEditPanel: React.FC<IProps> = ({
 
   const isNew = gallery.id === undefined;
 
-  const scrapers = useListGalleryScrapers();
+  const Scrapers = useListGalleryScrapers();
+  const [queryableScrapers, setQueryableScrapers] = useState<GQL.Scraper[]>([]);
 
   const [scrapedGallery, setScrapedGallery] =
     useState<GQL.ScrapedGallery | null>();
@@ -156,11 +165,13 @@ export const GalleryEditPanel: React.FC<IProps> = ({
     }
   });
 
-  const fragmentScrapers = useMemo(() => {
-    return (scrapers?.data?.listScrapers ?? []).filter((s) =>
-      s.gallery?.supported_scrapes.includes(GQL.ScrapeType.Fragment)
+  useEffect(() => {
+    const newQueryableScrapers = (Scrapers?.data?.listScrapers ?? []).filter(
+      (s) => s.gallery?.supported_scrapes.includes(GQL.ScrapeType.Fragment)
     );
-  }, [scrapers]);
+
+    setQueryableScrapers(newQueryableScrapers);
+  }, [Scrapers]);
 
   async function onSave(input: InputValues) {
     setIsLoading(true);
@@ -173,12 +184,12 @@ export const GalleryEditPanel: React.FC<IProps> = ({
     setIsLoading(false);
   }
 
-  async function onScrapeClicked(s: GQL.ScraperSourceInput) {
+  async function onScrapeClicked(scraper: GQL.Scraper) {
     if (!gallery || !gallery.id) return;
 
     setIsLoading(true);
     try {
-      const result = await queryScrapeGallery(s.scraper_id!, gallery.id);
+      const result = await queryScrapeGallery(scraper.id, gallery.id);
       if (!result.data || !result.data.scrapeSingleGallery?.length) {
         Toast.success("No galleries found");
         return;
@@ -233,8 +244,36 @@ export const GalleryEditPanel: React.FC<IProps> = ({
     );
   }
 
+  function renderScraperMenu() {
+    if (isNew) {
+      return;
+    }
+
+    return (
+      <DropdownButton
+        className="d-inline-block"
+        id="gallery-scrape"
+        title={intl.formatMessage({ id: "actions.scrape_with" })}
+      >
+        {queryableScrapers.map((s) => (
+          <Dropdown.Item key={s.name} onClick={() => onScrapeClicked(s)}>
+            {s.name}
+          </Dropdown.Item>
+        ))}
+        <Dropdown.Item onClick={() => onReloadScrapers()}>
+          <span className="fa-icon">
+            <Icon icon={faSyncAlt} />
+          </span>
+          <span>
+            <FormattedMessage id="actions.reload_scrapers" />
+          </span>
+        </Dropdown.Item>
+      </DropdownButton>
+    );
+  }
+
   function urlScrapable(scrapedUrl: string): boolean {
-    return (scrapers?.data?.listScrapers ?? []).some((s) =>
+    return (Scrapers?.data?.listScrapers ?? []).some((s) =>
       (s?.gallery?.urls ?? []).some((u) => scrapedUrl.includes(u))
     );
   }
@@ -422,16 +461,7 @@ export const GalleryEditPanel: React.FC<IProps> = ({
               <FormattedMessage id="actions.delete" />
             </Button>
           </div>
-          <div className="ml-auto text-right d-flex">
-            {!isNew && (
-              <ScraperMenu
-                toggle={intl.formatMessage({ id: "actions.scrape_with" })}
-                scrapers={fragmentScrapers}
-                onScraperClicked={onScrapeClicked}
-                onReloadScrapers={onReloadScrapers}
-              />
-            )}
-          </div>
+          <div className="ml-auto text-right d-flex">{renderScraperMenu()}</div>
         </Row>
         <Row className="form-container px-3">
           <Col lg={7} xl={12}>

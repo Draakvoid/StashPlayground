@@ -4,7 +4,6 @@ import { useIntl } from "react-intl";
 import { CriterionModifier } from "../../../core/generated-graphql";
 import { INumberValue } from "../../../models/list-filter/types";
 import { NumberCriterion } from "../../../models/list-filter/criteria/criterion";
-import { NumberField } from "src/utils/form";
 
 interface IDurationFilterProps {
   criterion: NumberCriterion;
@@ -37,8 +36,9 @@ export const NumberFilter: React.FC<IDurationFilterProps> = ({
   ) {
     equalsControl = (
       <Form.Group>
-        <NumberField
+        <Form.Control
           className="btn-secondary"
+          type="number"
           onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
             onChanged(e, "value")
           }
@@ -57,8 +57,9 @@ export const NumberFilter: React.FC<IDurationFilterProps> = ({
   ) {
     lowerControl = (
       <Form.Group>
-        <NumberField
+        <Form.Control
           className="btn-secondary"
+          type="number"
           onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
             onChanged(e, "value")
           }
@@ -77,8 +78,9 @@ export const NumberFilter: React.FC<IDurationFilterProps> = ({
   ) {
     upperControl = (
       <Form.Group>
-        <NumberField
+        <Form.Control
           className="btn-secondary"
+          type="number"
           onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
             onChanged(
               e,

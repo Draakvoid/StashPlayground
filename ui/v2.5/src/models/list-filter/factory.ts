@@ -2,7 +2,7 @@ import { FilterMode } from "src/core/generated-graphql";
 import { ListFilterOptions } from "./filter-options";
 import { GalleryListFilterOptions } from "./galleries";
 import { ImageListFilterOptions } from "./images";
-import { GroupListFilterOptions } from "./groups";
+import { MovieListFilterOptions } from "./movies";
 import { PerformerListFilterOptions } from "./performers";
 import { SceneMarkerListFilterOptions } from "./scene-markers";
 import { SceneListFilterOptions } from "./scenes";
@@ -22,8 +22,7 @@ export function getFilterOptions(mode: FilterMode): ListFilterOptions {
     case FilterMode.SceneMarkers:
       return SceneMarkerListFilterOptions;
     case FilterMode.Movies:
-    case FilterMode.Groups:
-      return GroupListFilterOptions;
+      return MovieListFilterOptions;
     case FilterMode.Tags:
       return TagListFilterOptions;
     case FilterMode.Images:

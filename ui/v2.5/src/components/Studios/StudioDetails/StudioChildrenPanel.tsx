@@ -5,8 +5,16 @@ import { ListFilterModel } from "src/models/list-filter/filter";
 import { StudioList } from "../StudioList";
 import { View } from "src/components/List/views";
 
-function useFilterHook(studio: GQL.StudioDataFragment) {
-  return (filter: ListFilterModel) => {
+interface IStudioChildrenPanel {
+  active: boolean;
+  studio: GQL.StudioDataFragment;
+}
+
+export const StudioChildrenPanel: React.FC<IStudioChildrenPanel> = ({
+  active,
+  studio,
+}) => {
+  function filterHook(filter: ListFilterModel) {
     const studioValue = { id: studio.id!, label: studio.name! };
     // if studio is already present, then we modify it, otherwise add
     let parentStudioCriterion = filter.criteria.find((c) => {
@@ -36,19 +44,7 @@ function useFilterHook(studio: GQL.StudioDataFragment) {
     }
 
     return filter;
-  };
-}
-
-interface IStudioChildrenPanel {
-  active: boolean;
-  studio: GQL.StudioDataFragment;
-}
-
-export const StudioChildrenPanel: React.FC<IStudioChildrenPanel> = ({
-  active,
-  studio,
-}) => {
-  const filterHook = useFilterHook(studio);
+  }
 
   return (
     <StudioList

@@ -4,7 +4,6 @@ import { useIntl } from "react-intl";
 import { IPhashDistanceValue } from "../../../models/list-filter/types";
 import { Criterion } from "../../../models/list-filter/criteria/criterion";
 import { CriterionModifier } from "src/core/generated-graphql";
-import { NumberField } from "src/utils/form";
 
 interface IPhashFilterProps {
   criterion: Criterion<IPhashDistanceValue>;
@@ -50,9 +49,10 @@ export const PhashFilter: React.FC<IPhashFilterProps> = ({
       {criterion.modifier !== CriterionModifier.IsNull &&
         criterion.modifier !== CriterionModifier.NotNull && (
           <Form.Group>
-            <NumberField
+            <Form.Control
               className="btn-secondary"
               onChange={distanceChanged}
+              type="number"
               value={value ? value.distance : ""}
               placeholder={intl.formatMessage({ id: "distance" })}
             />

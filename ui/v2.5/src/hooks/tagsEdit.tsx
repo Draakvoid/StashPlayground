@@ -1,7 +1,7 @@
 import * as GQL from "src/core/generated-graphql";
 import { useTagCreate } from "src/core/StashService";
 import { useEffect, useState } from "react";
-import { Tag, TagSelect, TagSelectProps } from "src/components/Tags/TagSelect";
+import { Tag, TagSelect } from "src/components/Tags/TagSelect";
 import { useToast } from "src/hooks/Toast";
 import { useIntl } from "react-intl";
 import { Badge, Button } from "react-bootstrap";
@@ -125,10 +125,15 @@ export function useTagsEdit(
     return ret;
   }
 
-  function tagsControl(props?: TagSelectProps) {
+  function tagsControl() {
     return (
       <>
-        <TagSelect isMulti onSelect={onSetTags} values={tags} {...props} />
+        <TagSelect
+          menuPortalTarget={document.body}
+          isMulti
+          onSelect={onSetTags}
+          values={tags}
+        />
         {renderNewTags()}
       </>
     );
