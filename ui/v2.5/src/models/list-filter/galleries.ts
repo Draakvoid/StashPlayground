@@ -41,6 +41,7 @@ const displayModeOptions = [
   DisplayMode.Grid,
   DisplayMode.List,
   DisplayMode.Wall,
+  DisplayMode.Card,
 ];
 
 const criterionOptions = [

@@ -157,6 +157,15 @@ export const GalleryList: React.FC<IGalleryList> = ({
           </div>
         );
       }
+      if (filter.displayMode === DisplayMode.Card) {
+        return (
+          <GalleryListTable
+            galleries={result.data.findGalleries.galleries}
+            selectedIds={selectedIds}
+            onSelectChange={onSelectChange}
+          />
+        );
+      }
     }
 
     return (
