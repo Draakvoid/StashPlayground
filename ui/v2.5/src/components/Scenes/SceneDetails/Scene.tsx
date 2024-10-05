@@ -852,11 +852,8 @@ const UtilityBar: React.FC<UBarProps> = ({
   }
 
   const maybeScanGaleries = () => {
-    var gid = "1235678789"
-    if (scene.galleries[0]) {
-      gid = scene.galleries[0].id
-    }
-      const {data} = GQL.useFindImagesQuery({
+    var gid = scene.galleries[0] ? scene.galleries[0].id : "8675309"
+      const {data, } = GQL.useFindImagesQuery({
         variables: {
           filter: {
             per_page: -1,
@@ -869,6 +866,7 @@ const UtilityBar: React.FC<UBarProps> = ({
           }
         }
       })
+      console.info(data?.findImages)
       const images = data?.findImages.images ?? [];
       const showGalleryLightbox = useGalleryLightbox(gid);
     
@@ -918,8 +916,7 @@ const UtilityBar: React.FC<UBarProps> = ({
       </Button>
       </Nav.Item> : ""
     }
-    {isGalleryOpen ? <>
-    <div className="scenepage-gallery">
+    <div className={`scenepage-gallery ${isGalleryOpen ? "" : "d-none"}`}>
       <Button
         className="btn-clear gclose"
         onClick={() => setGalleryOpen(false)}
@@ -931,8 +928,6 @@ const UtilityBar: React.FC<UBarProps> = ({
       </div>
       <div className="aftersgfade"></div>
     </div>
-    
-    </> : ""}
     <Nav.Item>
       <Button 
       className="btn-clear"
