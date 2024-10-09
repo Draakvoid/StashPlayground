@@ -851,9 +851,30 @@ const UtilityBar: React.FC<UBarProps> = ({
     return imagesrender
   }
 
+  const galleriesimages = scene.galleries.map((gallery) => {
+    const {data} = GQL.useFindImagesQuery({
+      variables: {
+        filter: {
+          per_page: -1,
+        },
+        image_filter: {
+          galleries: {
+            modifier: GQL.CriterionModifier.Includes,
+            value: [gallery.id]
+          }
+        }
+      }
+    })
+    const renderoutput = data?.findImages.images.map((img) => <a href={`/images/${img.id}`} style={{backgroundImage: `url(${img.paths.thumbnail ?? ""})`}} className="scenegallerylink" />)
+    return renderoutput
+  })
+
   const maybeScanGaleries = () => {
-    var gid = scene.galleries[0] ? scene.galleries[0].id : "8675309"
-      const {data, } = GQL.useFindImagesQuery({
+    var gid = "1235678789"
+    if (scene.galleries[0]) {
+      gid = scene.galleries[0].id
+    }
+      const {data} = GQL.useFindImagesQuery({
         variables: {
           filter: {
             per_page: -1,
@@ -866,7 +887,6 @@ const UtilityBar: React.FC<UBarProps> = ({
           }
         }
       })
-      console.info(data?.findImages)
       const images = data?.findImages.images ?? [];
       const showGalleryLightbox = useGalleryLightbox(gid);
     
@@ -916,7 +936,8 @@ const UtilityBar: React.FC<UBarProps> = ({
       </Button>
       </Nav.Item> : ""
     }
-    <div className={`scenepage-gallery ${isGalleryOpen ? "" : "d-none"}`}>
+    {isGalleryOpen ? <>
+    <div className="scenepage-gallery">
       <Button
         className="btn-clear gclose"
         onClick={() => setGalleryOpen(false)}
@@ -924,10 +945,12 @@ const UtilityBar: React.FC<UBarProps> = ({
         <Icon icon={faX} />
       </Button>
       <div className="imgsection">
-      {maybeScanGaleries()}
+      {galleriesimages}
       </div>
       <div className="aftersgfade"></div>
     </div>
+    
+    </> : ""}
     <Nav.Item>
       <Button 
       className="btn-clear"
