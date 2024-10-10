@@ -865,7 +865,20 @@ const UtilityBar: React.FC<UBarProps> = ({
         }
       }
     })
-    const renderoutput = data?.findImages.images.map((img) => <a href={`/images/${img.id}`} style={{backgroundImage: `url(${img.paths.thumbnail ?? ""})`}} className="scenegallerylink" />)
+    const images = data?.findImages.images ?? [];
+    const showGalleryLightbox = useGalleryLightbox(gallery.id);
+    const renderoutput = data?.findImages.images.map((img) => (
+      <a
+        key={img.id}
+        href={`/images/${img.id}`}
+        onClick={(e) => {
+          e.preventDefault(); // Prevent navigation
+          showGalleryLightbox(images.indexOf(img)); // Open Lightbox at clicked image index
+        }}
+        style={{ backgroundImage: `url(${img.paths.thumbnail ?? ""})` }}
+        className="scenegallerylink"
+      />
+    ));    
     return renderoutput
   })
 
