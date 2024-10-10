@@ -852,6 +852,10 @@ const UtilityBar: React.FC<UBarProps> = ({
   }
 
   const galleriesimages = scene.galleries.map((gallery) => {
+    var gid = "1235678789"
+    if (scene.galleries[0]) {
+      gid = scene.galleries[0].id
+    }
     const {data} = GQL.useFindImagesQuery({
       variables: {
         filter: {
@@ -860,13 +864,13 @@ const UtilityBar: React.FC<UBarProps> = ({
         image_filter: {
           galleries: {
             modifier: GQL.CriterionModifier.Includes,
-            value: [gallery.id]
+            value: [gid]
           }
         }
       }
     })
     const images = data?.findImages.images ?? [];
-    const showGalleryLightbox = useGalleryLightbox(gallery.id);
+    const showGalleryLightbox = useGalleryLightbox(gid);
     const renderoutput = data?.findImages.images.map((img) => (
       <a
         key={img.id}
@@ -1034,7 +1038,7 @@ scene,
             <ScenePreview image={sc.paths.screenshot ?? ""} video={sc.paths.preview ?? ""} isPortrait={false} soundActive={false}/>
             <span className="scTitle">{sc.title ? sc.title! : "Assign Title"}</span>
             <span className="scStudio">{sc.studio ? sc.studio!.name : "Assign Studio"}</span>
-            <span className="scPerfs">{sc.performers.length != 0 ? sc.performers.map((perf) => perf.name + ", ") : ""}</span>
+            <span className="scPerfs">{sc.performers.length != 0 ? sc.performers.map((perf) => perf.name + "  ") : ""}</span>
             <span className="scDate">{sc.date ? sc.date! : ""}</span>
           </a>)}
         </div>
@@ -1083,7 +1087,7 @@ scene,
             <ScenePreview image={sc.paths.screenshot ?? ""} video={sc.paths.preview ?? ""} isPortrait={false} soundActive={false}/>
             <span className="scTitle">{sc.title ? sc.title! : "Assign Title"}</span>
             <span className="scStudio">{sc.studio ? sc.studio!.name : "Assign Studio"}</span>
-            <span className="scPerfs">{sc.performers.length != 0 ? sc.performers.map((perf) => perf.name + ", ") : ""}</span>
+            <span className="scPerfs">{sc.performers.length != 0 ? sc.performers.map((perf) => perf.name + "  ") : ""}</span>
             <span className="scDate">{sc.date ? sc.date! : ""}</span>
           </a>)}
         </div>
@@ -1126,7 +1130,7 @@ scene,
             <ScenePreview image={sc.paths.screenshot ?? ""} video={sc.paths.preview ?? ""} isPortrait={false} soundActive={false}/>
             <span className="scTitle">{sc.title ? sc.title! : "Assign Title"}</span>
             <span className="scStudio">{sc.studio ? sc.studio!.name : "Assign Studio"}</span>
-            <span className="scPerfs">{sc.performers.length != 0 ? sc.performers.map((perf) => perf.name + ", ") : ""}</span>
+            <span className="scPerfs">{sc.performers.length != 0 ? sc.performers.map((perf) => perf.name + "  ") : ""}</span>
             <span className="scDate">{sc.date ? sc.date! : ""}</span>
           </a>)}
         </div>
